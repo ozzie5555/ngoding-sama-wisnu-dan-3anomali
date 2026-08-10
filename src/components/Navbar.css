@@ -1,0 +1,92 @@
+/* Navbar container styling */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #000000;
+  padding: 1.1rem 6%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Logo container and image sizing */
+.navbar-logo img {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+/* Navigation menu list */
+.navbar-links {
+  display: flex;
+  list-style: none;
+  gap: 2.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual navigation link */
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding-bottom: 6px;
+  border-bottom: 2.5px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Active navigation link */
+.nav-link.active {
+  color: #32b8c6;
+  border-bottom-color: #32b8c6;
+}
+
+/* Hover state for navigation link */
+.nav-link:hover {
+  color: #32b8c6;
+}
+
+/* Login/register button styling */
+.navbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #32b8c6;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.3rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-btn:hover {
+  opacity: 0.9;
+}
+
+/* User icon styling inside button */
+.user-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 850px) {
+  .navbar {
+    padding: 1rem 4%;
+  }
+
+  .navbar-links {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-links {
+    display: none;
+  }
+}
