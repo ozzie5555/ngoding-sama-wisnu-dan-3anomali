@@ -1,17 +1,15 @@
 import React from 'react';
 import Navbar from './components/Navbar';
+import Home from './pages/Home';
 
 function App() {
   return (
-    <div>
-      {/* Render the Navbar component */}
+    <div className="app-container">
+      {/* Existing Navbar - DO NOT MODIFY */}
       <Navbar />
-      
-      {/* Main page content area */}
-      <main style={{ padding: '2rem', color: '#ffffff' }}>
-        <h1>Selamat Datang</h1>
-        <p>KRISNA paok kink web hacker international.</p>
-      </main>
+
+      {/* Homepage Content */}
+      <Home />
     </div>
   );
 }
