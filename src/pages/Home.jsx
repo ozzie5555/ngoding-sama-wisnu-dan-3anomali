@@ -20,7 +20,7 @@ export default function Home() {
       category: 'Gaya Hidup',
       title: 'Tips Mengurangi Sampah Plastik',
       author: 'By - Tim KEMBALI',
-      image: '/src/assets/images/article-01.png',
+      image: '/src/assets/images/article-02.png',
       link: '#',
     },
     {
@@ -28,7 +28,7 @@ export default function Home() {
       category: 'Ekonomi Sirkular',
       title: 'Peluang Usaha dari Barang Bekas',
       author: 'By - Redaksi Eco',
-      image: '/src/assets/images/article-01.png',
+      image: '/src/assets/images/article-0.png',
       link: '#',
     },
   ];
