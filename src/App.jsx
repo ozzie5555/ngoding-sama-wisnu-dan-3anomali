@@ -1,17 +1,8 @@
-import React from 'react';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import { Route, Routes } from 'react-router'
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import Donation from './pages/Donation'
 
-function App() {
-  return (
-    <div className="app-container">
-      {/* Existing Navbar - DO NOT MODIFY */}
-      <Navbar />
-
-      {/* Homepage Content */}
-      <Home />
-    </div>
-  );
+export default function App() {
+  return <><Navbar /><Routes><Route path="/" element={<Home />} /><Route path="/donasi" element={<Donation />} /></Routes></>
 }
-
-export default App;
