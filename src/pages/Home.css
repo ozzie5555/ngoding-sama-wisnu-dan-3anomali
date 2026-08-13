@@ -168,15 +168,18 @@
 .final-cta .button { min-width: 220px; padding: 14px 22px; border-radius: 10px; font-size: 14px; }
 
 /* Impact Banner */
-.home .impact-banner { position: relative; isolation: isolate; min-height: 338px; display: grid; grid-template-columns: 1.15fr 2.15fr .75fr; gap: 24px; align-items: center; overflow: hidden; padding: 80px 5vw 0; background: #011b2a; color: #fff; }
-.impact-banner::before { position: absolute; z-index: -1; inset: 38px 3vw -28px; border-radius: 38px 38px 0 0; background: #011b2a; box-shadow: 0 -8px 28px rgba(0, 15, 23, .42); content: ''; }
+.home .impact-banner { position: relative; isolation: isolate; min-height: 363px; display: grid; grid-template-columns: 1.47fr 2fr .7fr; gap: 28px; align-items: start; overflow: hidden; padding: 0 4vw 0 7.35vw; background: #011b2a; color: #fff; }
+.impact-banner::before { position: absolute; z-index: -1; inset: 0 max(3.6vw, 24px) 0 max(4.72vw, 24px); border-radius: 45px; background: #011b2a; box-shadow: 0 -10px 32px rgba(0, 15, 23, .48); content: ''; }
+.impact-banner > div:first-child { margin-top: 36px; }
+.impact-banner .mini-stats { margin-top: 56px; }
 .impact-banner h2 { font-size: 25px; font-weight: 800; line-height: 1.2; margin: 0 0 14px; }
 .impact-banner p { max-width: 380px; font-size: 14px; line-height: 1.45; color: #d8e2e2; margin: 0; }
-.impact-banner > img { align-self: end; width: 100%; height: 220px; object-fit: contain; object-position: center bottom; transform: none; }
+.impact-banner > img { align-self: start; width: 100%; height: 192px; margin-top: 82px; object-fit: contain; object-position: center bottom; transform: none; }
 .mini-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.mini-stats article { min-width: 0; min-height: 165px; display: flex; flex-direction: column; justify-content: center; padding: 22px 10px; border-radius: 12px; background: #fff; box-shadow: 0 4px 4px rgba(0, 0, 0, .28); color: #050505; text-align: center; }
+.mini-stats article { min-width: 0; min-height: 165px; display: flex; flex-direction: column; justify-content: center; padding: 22px 10px; border-radius: 20px; background: #fff; box-shadow: 0 4px 4px rgba(0, 0, 0, .28); color: #050505; text-align: center; }
 .mini-stats strong { display: block; font-size: 25px; font-weight: 800; margin-bottom: 8px; white-space: nowrap; }
 .mini-stats span { display: block; color: #789093; font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: .2px; }
+.home > .site-footer { z-index: 2; margin-top: -98px; }
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {
@@ -190,10 +193,13 @@
   .step-grid { grid-template-columns: repeat(2, 1fr); }
   .home .final-cta { min-height: auto; grid-template-columns: 1fr; padding: 80px 24px; }
   .final-cta > img { display: none; }
-  .home .impact-banner { grid-template-columns: 1fr; padding: 80px 40px 44px; text-align: center; gap: 40px; }
+  .home .impact-banner { min-height: auto; grid-template-columns: 1fr; padding: 80px 40px 68px; text-align: center; gap: 40px; }
+  .impact-banner::before { inset: 24px 16px 0; border-radius: 30px; }
+  .impact-banner > div:first-child, .impact-banner .mini-stats { margin-top: 0; }
   .impact-banner p { margin-inline: auto; }
   .impact-banner > img { display: none; }
   .mini-stats { grid-template-columns: repeat(2, 1fr); justify-content: center; }
+  .home > .site-footer { margin-top: -24px; }
   .article-window { flex-direction: column; }
   .article-window article.is-featured { flex-direction: column; }
   .article-window article.is-featured img { width: 100%; height: 200px; }
