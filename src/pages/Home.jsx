@@ -91,8 +91,10 @@ export default function Home(){
 
     <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas."/><PartnerGrid/></section>
 
-    <section className="final-cta"><img src="/jumping-2194230-0.svg" alt="" /><div><span className="outline-pill">Melakukan Kebaikan untuk Bumi & Sesama</span><h2>Mari Berdonasi & Jelajahi<br/>Komunitas Kami!</h2><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan <strong>penerima manfaat</strong>, menyelamatkan barang layak pakai dari tempat sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang →</Link><a className="button dark-outline" href="#steps">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/order-delivered.svg" alt="" /></section>
-    <section className="impact-banner"><div><h2>Siap Memberikan Kehidupan<br/>Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div className="mini-stats">{stats.map(([n,l])=><article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
+    <div className="dark-band">
+      <section className="final-cta"><img src="/jumping-2194230-0.svg" alt="" /><div><span className="outline-pill">Melakukan Kebaikan untuk Bumi & Sesama</span><h2>Mari Berdonasi & Jelajahi<br/>Komunitas Kami!</h2><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan <strong>penerima manfaat</strong>, menyelamatkan barang layak pakai dari tempat sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang →</Link><a className="button dark-outline" href="#steps">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/order-delivered.svg" alt="" /></section>
+      <section className="impact-banner"><div><h2>Siap Memberikan Kehidupan<br/>Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div className="mini-stats">{stats.map(([n,l])=><article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
+    </div>
     <Footer/>
   </main>
 }
