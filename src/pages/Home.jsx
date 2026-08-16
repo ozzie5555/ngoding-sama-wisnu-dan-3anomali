@@ -70,8 +70,10 @@ export default function Home(){
   const visibleArticles=[0,1,2].map(offset=>articles[(article+offset)%articles.length])
   return <main className="home">
     <section className="hero">
-      <div className="hero-copy"><span className="outline-pill">Donasikan Barang Bekas & Karya Daur Ulangmu!</span><h1><em>Jangan Buang!</em> Beri Kesempatan<span className="desktop-break"><br/></span> Kedua untuk Barangmu!</h1><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br/></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br/></span> sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link><a className="button secondary" href="#layanan">Hubungi Kami</a></div></div>
-      <img className="hero-art" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
+      <div className="hero-inner">
+        <div className="hero-copy"><span className="outline-pill">Donasikan Barang Bekas & Karya Daur Ulangmu!</span><h1><em>Jangan Buang!</em> Beri Kesempatan<span className="desktop-break"><br/></span> Kedua untuk Barangmu!</h1><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br/></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br/></span> sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link><a className="button secondary" href="#layanan">Hubungi Kami</a></div></div>
+        <img className="hero-art" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
+      </div>
       <div className="landscape" aria-hidden="true"><i/><i/><i/><i/></div>
     </section>
 
