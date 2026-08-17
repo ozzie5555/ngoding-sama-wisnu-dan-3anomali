@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
-import { DatePickerModal } from './ProfileModal'
+import { DatePickerModal, LocationPickerModal } from './ProfileModal'
 import './EditProfile.css'
 
 export default function EditProfile() {
@@ -18,6 +18,7 @@ export default function EditProfile() {
   }))
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
 
   const handleChange = (field, value) => {
@@ -178,30 +179,49 @@ export default function EditProfile() {
 
             <div className="input-group">
               <label htmlFor="input-phone">Nomor Telepon</label>
-              <input
-                id="input-phone"
-                type="text"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="contoh: +62 812-XXXX-XXXX"
-              />
+              <div style={{ display: 'flex', alignItems: 'center', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '8px', overflow: 'hidden' }}>
+                <span style={{ padding: '10px 12px', background: '#f6f9f8', color: 'var(--color-navy)', borderRight: '1px solid var(--color-border)', fontWeight: 500, fontSize: '13px' }}>+62</span>
+                <input
+                  id="input-phone"
+                  type="tel"
+                  value={formData.phone.replace(/^\+62\s*/, '')}
+                  onChange={(e) => handleChange('phone', '+62 ' + e.target.value.replace(/[^0-9]/g, ''))}
+                  onFocus={(e) => {
+                    // Jika hanya ada prefix +62, select semua agar user bisa langsung replace
+                    if (formData.phone === '+62 ' || !formData.phone) {
+                      e.target.select()
+                    }
+                  }}
+                  placeholder="Contoh: 812-3456-7890"
+                  style={{ border: 'none', borderRadius: '0', flex: 1, padding: '10px 12px', fontSize: '13px', outline: 'none', color: 'var(--color-text-main)', fontFamily: 'var(--font-sora)' }}
+                />
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px', display: 'block' }}>Nomor telepon dimulai dengan digit (contoh: 812-3456-7890)</span>
             </div>
 
             <div className="input-group">
               <label htmlFor="input-location">Lokasi</label>
-              <div className="input-with-icon-wrapper">
+              <div 
+                className="input-with-icon-wrapper"
+                onClick={() => setIsLocationPickerOpen(true)}
+              >
                 <input
                   id="input-location"
                   type="text"
                   value={formData.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
-                  placeholder="Kota Semarang, Jawa Tengah"
+                  placeholder="Atur Lokasi (Provinsi, Kota, dll)"
+                  readOnly
+                  style={{ cursor: 'pointer' }}
                 />
-                <div className="input-trailing-icon">
+                <button
+                  type="button"
+                  className="input-trailing-btn"
+                  aria-label="Pilih lokasi"
+                >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -230,6 +250,14 @@ export default function EditProfile() {
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         onSelectDate={(dateStr) => handleChange('birthDate', dateStr)}
+      />
+
+      {/* Location Picker Popup Modal */}
+      <LocationPickerModal
+        isOpen={isLocationPickerOpen}
+        onClose={() => setIsLocationPickerOpen(false)}
+        currentLocation={formData.location}
+        onSaveLocation={(locStr) => handleChange('location', locStr)}
       />
     </div>
   )

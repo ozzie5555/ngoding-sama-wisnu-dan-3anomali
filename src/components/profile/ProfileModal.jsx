@@ -1,37 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './ProfileModal.css'
 
 // ==========================================================
 // 1. DATE PICKER MODAL / POPOVER (Figma Page 5)
 // ==========================================================
 export function DatePickerModal({ isOpen, onClose, onSelectDate }) {
-  const [currentYear, setCurrentYear] = useState(2027)
+  const [currentYear, setCurrentYear] = useState(1990)
   const [currentMonth, setCurrentMonth] = useState(0) // 0 = January
-  const [selectedDay, setSelectedDay] = useState(6)
-  const endDay = 13
+  const [selectedDay, setSelectedDay] = useState(1)
+  const [viewMode, setViewMode] = useState('date') // 'date', 'month', 'year'
+  
+  // For year view pagination
+  const [yearPageStart, setYearPageStart] = useState(1980)
 
   if (!isOpen) return null
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ]
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11)
-      setCurrentYear((y) => y - 1)
-    } else {
-      setCurrentMonth((m) => m - 1)
+  const handlePrev = () => {
+    if (viewMode === 'date') {
+      if (currentMonth === 0) {
+        setCurrentMonth(11)
+        setCurrentYear((y) => y - 1)
+      } else {
+        setCurrentMonth((m) => m - 1)
+      }
+    } else if (viewMode === 'year') {
+      setYearPageStart((y) => y - 12)
     }
   }
 
-  const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0)
-      setCurrentYear((y) => y + 1)
-    } else {
-      setCurrentMonth((m) => m + 1)
+  const handleNext = () => {
+    if (viewMode === 'date') {
+      if (currentMonth === 11) {
+        setCurrentMonth(0)
+        setCurrentYear((y) => y + 1)
+      } else {
+        setCurrentMonth((m) => m + 1)
+      }
+    } else if (viewMode === 'year') {
+      setYearPageStart((y) => y + 12)
     }
   }
 
@@ -41,81 +52,119 @@ export function DatePickerModal({ isOpen, onClose, onSelectDate }) {
     onClose()
   }
 
-  // Calendar dates matrix for Jan 2027 matching Figma layout
-  const prevMonthDates = [26, 27, 28, 29, 30, 31]
-  const currentMonthDates = Array.from({ length: 31 }, (_, i) => i + 1)
-  const nextMonthDates = [1, 2, 3, 4, 5]
+  // Generate calendar dates for the current month
+  const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate()
+  const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay() || 7 // 1=Mon...7=Sun
+  
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear)
+  const firstDay = getFirstDayOfMonth(currentMonth, currentYear)
+  
+  const prevMonthDays = getDaysInMonth(currentMonth === 0 ? 11 : currentMonth - 1, currentMonth === 0 ? currentYear - 1 : currentYear)
+  
+  const prevMonthDates = Array.from({ length: firstDay - 1 }, (_, i) => prevMonthDays - firstDay + 2 + i)
+  const currentMonthDates = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+  const nextMonthDates = Array.from({ length: 42 - (prevMonthDates.length + currentMonthDates.length) }, (_, i) => i + 1)
 
   return (
     <div className="profile-modal-overlay" onClick={onClose}>
       <div className="profile-modal-box datepicker-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Month Navigation */}
+        {/* Navigation Header */}
         <div className="dp-header">
-          <button type="button" className="dp-nav-btn" onClick={handlePrevMonth} aria-label="Bulan sebelumnya">
-            ‹
-          </button>
-          <span className="dp-month-title">
-            {monthNames[currentMonth]} {currentYear}
-          </span>
-          <button type="button" className="dp-nav-btn" onClick={handleNextMonth} aria-label="Bulan selanjutnya">
-            ›
-          </button>
-        </div>
-
-        {/* Selected Range Display */}
-        <div className="dp-range-display">
-          <div className="dp-range-pill">{monthNames[currentMonth].slice(0, 3)} {selectedDay}, {currentYear}</div>
-          <span className="dp-range-sep">-</span>
-          <div className="dp-range-pill">{monthNames[currentMonth].slice(0, 3)} {endDay}, {currentYear}</div>
-        </div>
-
-        {/* Days Header */}
-        <div className="dp-days-header">
-          <span>Mo</span>
-          <span>Tu</span>
-          <span>We</span>
-          <span>Th</span>
-          <span>Fr</span>
-          <span>Sat</span>
-          <span>Su</span>
-        </div>
-
-        {/* Calendar Grid */}
-        <div className="dp-grid">
-          {prevMonthDates.map((day, idx) => (
-            <button key={`prev-${idx}`} type="button" className="dp-day-btn is-other-month">
-              {day}
+          {(viewMode === 'date' || viewMode === 'year') && (
+            <button type="button" className="dp-nav-btn" onClick={handlePrev}>
+              ‹
             </button>
-          ))}
-          {currentMonthDates.map((day) => {
-            const isSelectedStart = day === selectedDay
-            const isSelectedEnd = day === endDay
-            const inRange = day > selectedDay && day < endDay
-            return (
-              <button
-                key={`curr-${day}`}
-                type="button"
-                className={`dp-day-btn ${isSelectedStart || isSelectedEnd ? 'is-selected' : ''} ${inRange ? 'is-in-range' : ''}`}
-                onClick={() => setSelectedDay(day)}
+          )}
+          
+          <div className="dp-title-group">
+            {viewMode === 'date' && (
+              <>
+                <span className="dp-month-title clickable" onClick={() => setViewMode('month')}>
+                  {monthNames[currentMonth]}
+                </span>
+                <span className="dp-month-title clickable" onClick={() => { setYearPageStart(currentYear - 4); setViewMode('year'); }}>
+                  {currentYear}
+                </span>
+              </>
+            )}
+            {viewMode === 'month' && <span className="dp-month-title">Pilih Bulan</span>}
+            {viewMode === 'year' && <span className="dp-month-title">{yearPageStart} - {yearPageStart + 11}</span>}
+          </div>
+
+          {(viewMode === 'date' || viewMode === 'year') && (
+            <button type="button" className="dp-nav-btn" onClick={handleNext}>
+              ›
+            </button>
+          )}
+        </div>
+
+        {viewMode === 'date' && (
+          <>
+            <div className="dp-days-header">
+              <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+            </div>
+            <div className="dp-grid">
+              {prevMonthDates.map((day, idx) => (
+                <button key={`prev-${idx}`} type="button" className="dp-day-btn is-other-month">
+                  {day}
+                </button>
+              ))}
+              {currentMonthDates.map((day) => (
+                <button
+                  key={`curr-${day}`}
+                  type="button"
+                  className={`dp-day-btn ${day === selectedDay ? 'is-selected' : ''}`}
+                  onClick={() => setSelectedDay(day)}
+                >
+                  {day}
+                </button>
+              ))}
+              {nextMonthDates.map((day, idx) => (
+                <button key={`next-${idx}`} type="button" className="dp-day-btn is-other-month">
+                  {day}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {viewMode === 'month' && (
+          <div className="dp-grid-month-year">
+            {monthNames.map((month, idx) => (
+              <button 
+                key={month} 
+                type="button" 
+                className={`dp-month-year-btn ${idx === currentMonth ? 'is-selected' : ''}`}
+                onClick={() => { setCurrentMonth(idx); setViewMode('date'); }}
               >
-                {day}
+                {month.slice(0, 3)}
               </button>
-            )
-          })}
-          {nextMonthDates.map((day, idx) => (
-            <button key={`next-${idx}`} type="button" className="dp-day-btn is-other-month">
-              {day}
-            </button>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {viewMode === 'year' && (
+          <div className="dp-grid-month-year">
+            {Array.from({ length: 12 }, (_, i) => yearPageStart + i).map(year => (
+              <button 
+                key={year} 
+                type="button" 
+                className={`dp-month-year-btn ${year === currentYear ? 'is-selected' : ''}`}
+                onClick={() => { setCurrentYear(year); setViewMode('date'); }}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Actions */}
-        <div className="dp-actions">
+        <div className="dp-actions" style={{ marginTop: '16px' }}>
           <button type="button" className="modal-btn-cancel" onClick={onClose}>
-            Cancel
+            Batal
           </button>
           <button type="button" className="modal-btn-primary" onClick={handleApply}>
-            Apply
+            Pilih
           </button>
         </div>
       </div>
@@ -478,6 +527,215 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
             </form>
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ==========================================================
+// 6. LOCATION PICKER MODAL
+// ==========================================================
+export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLocation }) {
+  const [provinces, setProvinces] = useState([])
+  const [cities, setCities] = useState([])
+  const [districts, setDistricts] = useState([])
+  const [villages, setVillages] = useState([])
+
+  const [selectedProvince, setSelectedProvince] = useState({ id: '', name: '' })
+  const [selectedCity, setSelectedCity] = useState({ id: '', name: '' })
+  const [selectedDistrict, setSelectedDistrict] = useState({ id: '', name: '' })
+  const [selectedVillage, setSelectedVillage] = useState({ id: '', name: '' })
+
+  const [detail, setDetail] = useState('')
+  const [isLocating, setIsLocating] = useState(false)
+
+  // Fetch provinces on mount
+  useEffect(() => {
+    fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+      .then(res => res.json())
+      .then(data => setProvinces(data))
+      .catch(err => console.error("Error fetching provinces:", err))
+  }, [])
+
+  const handleProvinceChange = (e) => {
+    const pId = e.target.value
+    const pName = e.target.options[e.target.selectedIndex].text
+    setSelectedProvince({ id: pId, name: pName })
+    setSelectedCity({ id: '', name: '' })
+    setSelectedDistrict({ id: '', name: '' })
+    setSelectedVillage({ id: '', name: '' })
+    setCities([])
+    setDistricts([])
+    setVillages([])
+
+    if (pId) {
+      fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pId}.json`)
+        .then(res => res.json())
+        .then(data => setCities(data))
+        .catch(err => console.error("Error fetching cities:", err))
+    }
+  }
+
+  const handleCityChange = (e) => {
+    const cId = e.target.value
+    const cName = e.target.options[e.target.selectedIndex].text
+    setSelectedCity({ id: cId, name: cName })
+    setSelectedDistrict({ id: '', name: '' })
+    setSelectedVillage({ id: '', name: '' })
+    setDistricts([])
+    setVillages([])
+
+    if (cId) {
+      fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cId}.json`)
+        .then(res => res.json())
+        .then(data => setDistricts(data))
+        .catch(err => console.error("Error fetching districts:", err))
+    }
+  }
+
+  const handleDistrictChange = (e) => {
+    const dId = e.target.value
+    const dName = e.target.options[e.target.selectedIndex].text
+    setSelectedDistrict({ id: dId, name: dName })
+    setSelectedVillage({ id: '', name: '' })
+    setVillages([])
+
+    if (dId) {
+      fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${dId}.json`)
+        .then(res => res.json())
+        .then(data => setVillages(data))
+        .catch(err => console.error("Error fetching villages:", err))
+    }
+  }
+
+  const handleVillageChange = (e) => {
+    const vId = e.target.value
+    const vName = e.target.options[e.target.selectedIndex].text
+    setSelectedVillage({ id: vId, name: vName })
+  }
+
+  const handleDetectLocation = () => {
+    setIsLocating(true)
+    // Simulate API call for geolocation
+    setTimeout(() => {
+      // Mocking setting predefined values. In a real app we'd reverse-geocode coords to EMSIFA IDs.
+      // This is just a UI simulation.
+      setSelectedProvince({ id: '33', name: 'JAWA TENGAH' })
+      setSelectedCity({ id: '3374', name: 'KOTA SEMARANG' })
+      setSelectedDistrict({ id: '3374020', name: 'SEMARANG BARAT' })
+      setSelectedVillage({ id: '3374020005', name: 'NGEMPLAK SIMONGAN' })
+      setDetail('Jl. Simongan No. 69')
+      setIsLocating(false)
+    }, 1500)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    let locationString = ''
+    if (detail) locationString += `${detail}, `
+    if (selectedVillage.name) locationString += `Kel. ${selectedVillage.name}, `
+    if (selectedDistrict.name) locationString += `Kec. ${selectedDistrict.name}, `
+    if (selectedCity.name) locationString += `${selectedCity.name}, `
+    if (selectedProvince.name) locationString += `${selectedProvince.name}`
+    
+    // Fallback if they didn't fill anything but hit submit
+    if (!locationString) locationString = currentLocation || 'Lokasi Belum Diatur'
+    
+    onSaveLocation(locationString.replace(/, $/, ''))
+    onClose()
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="profile-modal-overlay" onClick={onClose}>
+      <div className="profile-modal-box location-modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="modal-x-close" onClick={onClose} aria-label="Tutup modal">
+          &times;
+        </button>
+
+        <div className="modal-header-with-icon">
+          <div className="location-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3 className="modal-title">Atur Lokasi Anda</h3>
+            <p className="modal-subtitle">Pilih wilayah Anda agar kami dapat mencocokkan dengan komunitas terdekat.</p>
+          </div>
+        </div>
+
+        <button 
+          type="button" 
+          className="btn-detect-location" 
+          onClick={handleDetectLocation}
+          disabled={isLocating}
+        >
+          {isLocating ? 'Mendeteksi...' : '📍 Gunakan Lokasi Saat Ini'}
+        </button>
+
+        <form onSubmit={handleSubmit} className="modal-form location-form">
+          <div className="modal-form-group">
+            <label>Provinsi</label>
+            <select value={selectedProvince.id} onChange={handleProvinceChange} required>
+              <option value="" disabled>Pilih Provinsi</option>
+              {provinces.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="modal-form-group">
+            <label>Kota / Kabupaten</label>
+            <select value={selectedCity.id} onChange={handleCityChange} disabled={!selectedProvince.id} required>
+              <option value="" disabled>Pilih Kota/Kabupaten</option>
+              {cities.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="modal-form-group">
+            <label>Kecamatan</label>
+            <select value={selectedDistrict.id} onChange={handleDistrictChange} disabled={!selectedCity.id} required>
+              <option value="" disabled>Pilih Kecamatan</option>
+              {districts.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="modal-form-group">
+            <label>Kelurahan</label>
+            <select value={selectedVillage.id} onChange={handleVillageChange} disabled={!selectedDistrict.id} required>
+              <option value="" disabled>Pilih Kelurahan</option>
+              {villages.map(v => (
+                <option key={v.id} value={v.id}>{v.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="modal-form-group">
+            <label>Detail Alamat (Opsional)</label>
+            <input 
+              type="text" 
+              placeholder="Nama Jalan, Gedung, No. Rumah, RT/RW" 
+              value={detail}
+              onChange={(e) => setDetail(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-buttons-row modal-space-between" style={{ marginTop: '24px' }}>
+            <button type="button" className="modal-btn-cancel" onClick={onClose}>
+              Batal
+            </button>
+            <button type="submit" className="modal-btn-primary">
+              Simpan
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )
