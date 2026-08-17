@@ -1,3 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-:root{font-family:'Montserrat',Arial,sans-serif;color:#062632;background:#fcfff4;font-synthesis:none;text-rendering:optimizeLegibility;--ink:#062632;--cyan:#3fbec7;--lime:#dfff86;--cream:#fcfff4;--muted:#789093}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px;background:var(--cream)}button,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}img{max-width:100%}
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Sora', 'Montserrat', Arial, sans-serif;
+  color: #062632;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  /* Colors based on Figma design */
+  --ink: #062632;
+  --cyan: #3fbec7;
+  --lime: #dfff86;
+  --cream: #fcfff4;
+  --muted: #789093;
+
+  --color-primary: #3fbec7;
+  --color-teal: #238b94;
+  --color-dark-teal: #1f5156;
+  --color-navy: #08212b;
+  --color-text-main: #062632;
+  --color-text-secondary: #658185;
+  --color-text-muted: #8b9fa2;
+  --color-border: #e2e8e7;
+  --color-border-light: #edf2f1;
+  --color-bg-subtle: #f6f9f8;
+  --color-danger: #d9383a;
+  --color-danger-bg: #fee2e2;
+  --color-success: #10b981;
+  --color-disabled-bg: #dbe3e3;
+  --color-disabled-text: #899c9e;
+
+  /* Font variables */
+  --font-sora: 'Sora', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+  font-family: var(--font-sora);
+  color: var(--color-text-main);
+}
+
+button, input, select, textarea {
+  font-family: var(--font-sora);
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+}
+

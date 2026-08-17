@@ -1,0 +1,484 @@
+/* Modal Overlay */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 33, 43, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 16px;
+  animation: fadeIn 150ms ease;
+  font-family: var(--font-sora);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Base Modal Box */
+.profile-modal-box {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 45px rgba(8, 33, 43, 0.16);
+  padding: 24px;
+  width: 100%;
+  position: relative;
+  animation: slideUp 180ms ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-x-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: none;
+  border: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: #8b9fa2;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 150ms ease;
+}
+
+.modal-x-close:hover {
+  color: var(--color-text-main);
+}
+
+/* =======================================================
+   1. DatePicker Modal
+   ======================================================= */
+.datepicker-modal {
+  max-width: 320px;
+  padding: 20px;
+}
+
+.dp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.dp-month-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.dp-nav-btn {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  color: #4b6366;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.dp-nav-btn:hover {
+  background: #f0f7f6;
+  color: var(--color-teal);
+}
+
+.dp-range-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dp-range-pill {
+  background: #f6f9f8;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--color-navy);
+  font-weight: 500;
+}
+
+.dp-range-sep {
+  color: #8b9fa2;
+  font-size: 12px;
+}
+
+.dp-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  color: #8b9fa2;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.dp-day-btn {
+  background: transparent;
+  border: 0;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-main);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease;
+  font-family: var(--font-sora);
+}
+
+.dp-day-btn:hover {
+  background: #e8f4f5;
+  color: var(--color-teal);
+}
+
+.dp-day-btn.is-other-month {
+  color: #b2c4c6;
+}
+
+.dp-day-btn.is-selected {
+  background: var(--color-teal);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.dp-day-btn.is-in-range {
+  background: #d4ecec;
+  color: var(--color-dark-teal);
+  border-radius: 0;
+}
+
+.dp-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* =======================================================
+   2. Delete Account Modal
+   ======================================================= */
+.delete-modal {
+  max-width: 480px;
+  padding: 24px 28px;
+}
+
+.delete-modal-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.delete-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.delete-icon-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.delete-modal-text {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0 0 6px;
+}
+
+.modal-subtitle {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.delete-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.modal-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.modal-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-space-between {
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* =======================================================
+   3. Security / Password / Email / WA Modals
+   ======================================================= */
+.security-modal {
+  max-width: 420px;
+  padding: 24px;
+}
+
+.modal-header-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.security-icon-badge,
+.green-check-badge,
+.shield-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.security-icon-badge {
+  background: #f0f7f6;
+  color: var(--color-teal);
+}
+
+.security-icon-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.green-check-badge {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.green-check-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.shield-icon-badge {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.shield-icon-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-navy);
+}
+
+.modal-form-group input {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.modal-form-group input:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 2px rgba(46, 165, 165, 0.15);
+}
+
+.modal-field-note {
+  font-size: 11px;
+  color: #8b9fa2;
+}
+
+.modal-alert-error {
+  background: #fee2e2;
+  color: var(--color-danger);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.modal-form-actions-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* =======================================================
+   Button Styles within Modals
+   ======================================================= */
+.modal-btn-primary {
+  background: var(--color-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.modal-btn-primary:hover {
+  background: #1c727a;
+}
+
+.modal-btn-teal-full {
+  background: var(--color-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.modal-btn-teal-full:hover {
+  background: #1c727a;
+}
+
+.modal-btn-cancel {
+  background: #ffffff;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.modal-btn-cancel:hover {
+  background: #f6f9f8;
+  color: var(--color-text-main);
+}
+
+.modal-btn-cancel-full {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 0;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font-sora);
+}
+
+.modal-btn-cancel-full:hover {
+  color: var(--color-text-main);
+}
+
+.modal-btn-danger {
+  background: var(--color-danger);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.modal-btn-danger:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 520px) {
+  .delete-modal-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .modal-buttons-row {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

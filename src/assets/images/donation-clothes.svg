@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400" fill="none">
+  <!-- Replace with final Figma asset: donation-clothes.jpg -->
+  <rect width="600" height="400" fill="#f4ede8"/>
+  <path d="M220 120 L270 120 C270 140, 330 140, 330 120 L380 120 L420 180 L380 200 L370 180 L370 300 L230 300 L230 180 L220 200 L180 180 Z" fill="#d9383a" opacity="0.6"/>
+  <text x="300" y="350" font-family="sans-serif" font-size="18" fill="#541b1f" text-anchor="middle" font-weight="600">Pakaian Layak Pakai</text>
+</svg>

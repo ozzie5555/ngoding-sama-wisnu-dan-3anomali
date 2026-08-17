@@ -1,0 +1,162 @@
+.profile-page-main {
+  min-height: calc(100vh - 80px);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sora);
+}
+
+.profile-page-container {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+  padding: 44px 44px 80px;
+  flex: 1;
+}
+
+/* =======================================================
+   Settings Layout (Pages 2, 3, 4)
+   ======================================================= */
+.profile-settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.profile-settings-content {
+  flex: 1;
+  background: #ffffff;
+  min-width: 0;
+}
+
+/* =======================================================
+   Unauthenticated State
+   ======================================================= */
+.profile-page-unauthenticated {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.unauth-card {
+  max-width: 480px;
+  margin: 60px auto 80px;
+  padding: 40px 32px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(8, 33, 43, 0.06);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.unauth-icon-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e8f4f5;
+  color: var(--color-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.unauth-icon-badge svg {
+  width: 28px;
+  height: 28px;
+}
+
+.unauth-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.unauth-card p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.unauth-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.btn-unauth-login {
+  flex: 1;
+  background: var(--color-dark-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-unauth-login:hover {
+  background: #173d41;
+}
+
+.btn-unauth-home {
+  flex: 1;
+  background: #ffffff;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-unauth-home:hover {
+  background: #f6f9f8;
+  color: var(--color-text-main);
+}
+
+/* =======================================================
+   Responsive
+   ======================================================= */
+@media (max-width: 1024px) {
+  .profile-page-container {
+    padding: 32px 24px 60px;
+  }
+  .profile-settings-layout {
+    grid-template-columns: 200px 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 840px) {
+  .profile-page-container {
+    padding: 24px 16px 48px;
+  }
+  .profile-settings-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .unauth-actions {
+    flex-direction: column;
+  }
+  .btn-unauth-login,
+  .btn-unauth-home {
+    width: 100%;
+  }
+}

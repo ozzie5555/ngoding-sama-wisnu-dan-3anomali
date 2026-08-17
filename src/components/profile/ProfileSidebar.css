@@ -1,0 +1,135 @@
+.profile-sidebar-wrapper {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: var(--font-sora);
+}
+
+.sidebar-back-overview-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: var(--font-sora);
+  margin-bottom: 8px;
+}
+
+.sidebar-back-overview-btn:hover {
+  background: #f0f7f6;
+  color: var(--color-teal);
+  border-color: var(--color-teal);
+}
+
+.sidebar-back-overview-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.profile-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #8b9fa2;
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  transition: color 150ms ease, background 150ms ease;
+  font-family: var(--font-sora);
+  width: 100%;
+}
+
+.sidebar-menu-btn:hover {
+  color: var(--color-text-main);
+  background: #f7faf9;
+}
+
+.sidebar-active-indicator {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 3.5px;
+  border-radius: 4px;
+  background: transparent;
+  transition: background 150ms ease;
+}
+
+.sidebar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sidebar-label {
+  flex: 1;
+}
+
+/* Active State */
+.sidebar-menu-btn.is-active {
+  color: var(--color-teal);
+  font-weight: 600;
+  background: #edf8f8;
+}
+
+.sidebar-menu-btn.is-active .sidebar-active-indicator {
+  background: var(--color-teal);
+}
+
+.sidebar-menu-btn.is-active .sidebar-icon svg {
+  stroke: var(--color-teal);
+}
+
+/* Responsive */
+@media (max-width: 840px) {
+  .profile-sidebar-wrapper {
+    width: 100%;
+  }
+  .profile-sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  .sidebar-menu-btn {
+    white-space: nowrap;
+    padding: 8px 14px;
+  }
+  .sidebar-active-indicator {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 3px;
+  }
+}

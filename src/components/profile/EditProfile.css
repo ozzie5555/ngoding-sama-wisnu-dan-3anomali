@@ -1,0 +1,263 @@
+.edit-profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: var(--font-sora);
+  width: 100%;
+}
+
+.edit-profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edit-profile-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.edit-profile-subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.save-notification-toast {
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.edit-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* =======================================================
+   Photo Upload Section
+   ======================================================= */
+.photo-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.photo-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-navy);
+}
+
+.photo-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.edit-avatar-wrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f7f6;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 15px rgba(8, 33, 43, 0.08);
+  flex-shrink: 0;
+}
+
+.edit-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.photo-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-avatar-change {
+  background: #dbe3e3;
+  color: var(--color-navy);
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-avatar-change:hover {
+  background: #cbd8d8;
+}
+
+.btn-avatar-delete {
+  background: var(--color-danger);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-avatar-delete:hover {
+  background: #b91c1c;
+}
+
+/* =======================================================
+   2-Column Form Fields Grid
+   ======================================================= */
+.form-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 32px;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-navy);
+}
+
+.input-group input {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.input-group input:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 2px rgba(46, 165, 165, 0.15);
+}
+
+.input-group input::placeholder {
+  color: #8b9fa2;
+  font-weight: 400;
+}
+
+.input-with-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon-wrapper input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.input-trailing-btn,
+.input-trailing-icon {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: 0;
+  color: #8b9fa2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.input-trailing-btn svg,
+.input-trailing-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =======================================================
+   Bottom Actions
+   ======================================================= */
+.form-bottom-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.btn-form-reset {
+  background: #dbe3e3;
+  color: var(--color-text-secondary);
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-form-reset:hover {
+  background: #cad7d7;
+  color: var(--color-text-main);
+}
+
+.btn-form-save {
+  background: var(--color-dark-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.btn-form-save:hover {
+  background: #173d41;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-fields-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .form-bottom-actions {
+    flex-direction: column-reverse;
+  }
+  .btn-form-reset,
+  .btn-form-save {
+    width: 100%;
+  }
+}

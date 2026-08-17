@@ -1,0 +1,462 @@
+.profile-overview-container {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 48px;
+  align-items: start;
+  font-family: var(--font-sora);
+}
+
+/* =======================================================
+   LEFT COLUMN: Profile Card & Stats
+   ======================================================= */
+.profile-left-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.profile-avatar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.profile-avatar-large-wrap {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background: #f0f7f6;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 20px rgba(8, 33, 43, 0.08);
+}
+
+.profile-avatar-large {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.profile-user-fullname {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+
+.profile-user-handle {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  margin: 0 0 12px;
+  font-weight: 400;
+}
+
+.profile-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.profile-meta-item svg {
+  width: 15px;
+  height: 15px;
+  color: var(--color-teal);
+  flex-shrink: 0;
+}
+
+.profile-donor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark-teal);
+  margin: 4px 0 18px;
+}
+
+.profile-donor-badge svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-teal);
+  fill: #e8f4f5;
+}
+
+.profile-edit-btn {
+  background: var(--color-dark-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: background 150ms ease, transform 150ms ease;
+  font-family: var(--font-sora);
+}
+
+.profile-edit-btn:hover {
+  background: #173d41;
+}
+
+/* 3 Statistic Cards */
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.profile-stat-box {
+  background: #08212b;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 80px;
+}
+
+.profile-stat-number {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.profile-stat-label {
+  font-size: 12px;
+  color: #a2c2c6;
+  font-weight: 400;
+}
+
+/* =======================================================
+   RIGHT COLUMN: Aktifitas Section
+   ======================================================= */
+.profile-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.profile-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.activity-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-group-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.activity-see-all {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.activity-see-all:hover {
+  color: var(--color-teal);
+}
+
+/* Slider Row */
+.activity-cards-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.activity-cards-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  flex: 1;
+}
+
+.slider-next-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  color: #4b6366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.slider-next-arrow:hover {
+  background: #f0f7f6;
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.slider-next-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Donation Card */
+.donation-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.donation-card:hover {
+  border-color: #c4dcda;
+  box-shadow: 0 8px 20px rgba(8, 33, 43, 0.05);
+}
+
+.donation-card-img-wrap {
+  width: 100%;
+  height: 140px;
+  background: #f6f9f8;
+  overflow: hidden;
+}
+
+.donation-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.donation-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.donation-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.donation-card-recipient {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.donation-card-desc {
+  font-size: 11px;
+  color: #7b9497;
+  line-height: 1.4;
+  margin: 0 0 6px;
+}
+
+.donation-tags-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.donation-tags-label {
+  font-size: 10px;
+  color: #8b9fa2;
+  font-weight: 500;
+}
+
+.donation-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.donation-tag-chip {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: #557276;
+  font-weight: 500;
+}
+
+.donation-card-action-btn {
+  margin-top: 12px;
+  background: var(--color-dark-teal);
+  color: #ffffff;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  font-family: var(--font-sora);
+  transition: background 150ms ease;
+}
+
+.donation-card-action-btn:hover {
+  background: #173d41;
+}
+
+/* Partner Card */
+.partner-card-profile {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 150ms ease;
+}
+
+.partner-card-profile:hover {
+  border-color: #c4dcda;
+}
+
+.partner-card-img-wrap {
+  width: 100%;
+  height: 140px;
+  background: #f6f9f8;
+  overflow: hidden;
+}
+
+.partner-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.partner-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.partner-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.partner-card-desc {
+  font-size: 12px;
+  color: #7b9497;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Activity detail backdrop / modal */
+.activity-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 33, 43, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.activity-detail-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(8, 33, 43, 0.15);
+}
+
+.activity-detail-modal h3 {
+  margin: 0 0 4px;
+  color: var(--color-navy);
+  font-size: 18px;
+}
+
+.activity-detail-modal .modal-sub {
+  color: var(--color-teal);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: #8b9fa2;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .profile-overview-container {
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+  }
+  .profile-avatar-large-wrap {
+    width: 170px;
+    height: 170px;
+  }
+}
+
+@media (max-width: 840px) {
+  .profile-overview-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .profile-left-col {
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .activity-cards-row {
+    grid-template-columns: 1fr;
+  }
+}
