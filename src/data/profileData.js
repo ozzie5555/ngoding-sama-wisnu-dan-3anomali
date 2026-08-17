@@ -29,7 +29,7 @@ export const DEFAULT_USER = {
 export const DUMMY_ACTIVITIES = [
   {
     id: 'act-1',
-    image: '/src/assets/images/donation-book.svg', // Replace with final Figma asset
+    image: '/buku-pelajarn.svg',
     title: 'Buku Pelajaran SMP',
     recipient: 'Untuk Panti Asuhan Al Jannah',
     description: '6 buku pelajaran layak pakai. Diajukan pada 4 Agustus 2026',
@@ -38,7 +38,7 @@ export const DUMMY_ACTIVITIES = [
   },
   {
     id: 'act-2',
-    image: '/src/assets/images/donation-clothes.svg', // Replace with final Figma asset
+    image: '/pakaian-layak.svg',
     title: 'Pakaian Layak Pakai',
     recipient: 'Untuk Sedekas Semarang',
     description: '10 potong pakaian bersih dan layak pakai. Diajukan pada 10 Agustus 2026',
@@ -51,13 +51,13 @@ export const DUMMY_ACTIVITIES = [
 export const DUMMY_PARTNERS = [
   {
     id: 'partner-1',
-    image: '/src/assets/images/donation-charity.svg', // Replace with final Figma asset
+    image: '/sedekas.svg',
     title: 'Sedekas',
     description: 'Mengumpulkan dan menyalurkan barang bekas layak pakai agar kembali bermanfaat.',
   },
   {
     id: 'partner-2',
-    image: '/src/assets/images/donation-foundation.svg', // Replace with final Figma asset
+    image: '/panti-asuhan.svg',
     title: 'Panti Asuhan Al Jannah',
     description: 'Membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.',
   },

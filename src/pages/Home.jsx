@@ -30,7 +30,7 @@ const reviews=[
 const stats=[['12.400+','Barang Tersirkulasi'],['2.000 kg','Sampah Dikurangi'],['4.680 kg','CO2 Dihemat'],['1.500+','Pengguna Aktif']]
 
 function Heading({eyebrow,title,accent,sub,preAccent}){return <header className="section-heading">{eyebrow&&<span className="eyebrow">{eyebrow}</span>}<h2>{preAccent&&<em>{preAccent} </em>}{title}{accent&&<em> {accent}</em>}</h2>{sub&&<p>{sub}</p>}</header>}
-function PartnerGrid(){return <div className="partner-grid">{partners.map(([image,name,desc,address,handle])=><article className="partner-card" key={name}><img src={'/'+image} alt="" /><h3>{name}</h3><p>{desc}</p><div className="partner-meta"><address>{address}</address><span>{handle}</span></div></article>)}</div>}
+function PartnerGrid(){return <div className="partner-grid">{partners.map(([image,name,desc,address,handle])=><article className="partner-card" key={name}><img src={'/'+image} alt="" /><h3>{name}</h3><p>{desc}</p><div className="partner-meta"><address>{address}</address><span><img src="/mdi_instagram.svg" alt="Instagram" className="partner-sosmed-icon"/>{handle}</span></div></article>)}</div>}
 function AnimatedStat({value}){
   const ref=useRef(null)
   const [display,setDisplay]=useState('0')
@@ -74,6 +74,7 @@ export default function Home(){
         <div className="hero-copy"><span className="outline-pill">Donasikan Barang Bekas & Karya Daur Ulangmu!</span><h1><em>Jangan Buang!</em> Beri Kesempatan<span className="desktop-break"><br/></span> Kedua untuk Barangmu!</h1><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br/></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br/></span> sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link><a className="button secondary" href="#layanan">Hubungi Kami</a></div></div>
         <img className="hero-art" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
       </div>
+      <img className="hero-grass" src="/rumput.svg" alt="" aria-hidden="true" />
       <div className="landscape" aria-hidden="true"><i/><i/><i/><i/></div>
     </section>
 
