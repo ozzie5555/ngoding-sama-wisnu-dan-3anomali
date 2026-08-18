@@ -161,7 +161,7 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <button className="login-button" type="button" onClick={login}>
+          <button className="login-button" type="button" onClick={() => navigate('/login')}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="8" r="3.5" />
               <path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6" />

@@ -30,7 +30,7 @@ const reviews=[
 const stats=[['12.400+','Barang Tersirkulasi'],['2.000 kg','Sampah Dikurangi'],['4.680 kg','CO2 Dihemat'],['1.500+','Pengguna Aktif']]
 
 function Heading({eyebrow,title,accent,sub,preAccent}){return <header className="section-heading">{eyebrow&&<span className="eyebrow">{eyebrow}</span>}<h2>{preAccent&&<em>{preAccent} </em>}{title}{accent&&<em> {accent}</em>}</h2>{sub&&<p>{sub}</p>}</header>}
-function PartnerGrid(){return <div className="partner-grid">{partners.map(([image,name,desc,address,handle])=><article className="partner-card" key={name}><img src={'/'+image} alt="" /><h3>{name}</h3><p>{desc}</p><div className="partner-meta"><address>{address}</address><span><img src="/mdi_instagram.svg" alt="Instagram" className="partner-sosmed-icon"/>{handle}</span></div></article>)}</div>}
+function PartnerGrid(){return <div className="partner-grid">{partners.map(([image,name,desc,address,handle])=><article className="partner-card" key={name}><img src={'/'+image} alt="" /><h3>{name}</h3><p>{desc}</p><div className="partner-meta"><address>{address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="partner-sosmed-icon"/>{handle}</span></div></article>)}</div>}
 function AnimatedStat({value}){
   const ref=useRef(null)
   const [display,setDisplay]=useState('0')

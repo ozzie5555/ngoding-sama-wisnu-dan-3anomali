@@ -456,7 +456,7 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 
 ## 11. Roadmap implementasi
 
-### Fase 0 — Fondasi
+### Fase 0 — Fondasi ✅ SELESAI
 
 - Tambahkan client Supabase dan `.env.example`.
 - Buat migration, seed, helper RLS, dan tipe status.
@@ -464,7 +464,7 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 
 **Lulus jika:** tidak ada service key di browser dan schema development konsisten.
 
-### Fase 1 — Auth dan Profile
+### Fase 1 — Auth dan Profile ✅ SELESAI
 
 - Ganti AuthContext localStorage dengan Supabase Auth.
 - Buat `/auth` atau modal auth.

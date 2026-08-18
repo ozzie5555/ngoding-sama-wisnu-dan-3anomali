@@ -1,10 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { DatePickerModal, LocationPickerModal } from './ProfileModal'
+import { authService } from '../../features/auth/services/authService'
 import './EditProfile.css'
 
 export default function EditProfile() {
-  const { user, updateProfile } = useAuth()
+  const { user, updateProfile, refreshProfile } = useAuth()
+
+  // Force refresh profile from DB on mount
+  useEffect(() => {
+    refreshProfile()
+  }, [])
 
   // Local form state initialized from user context
   const [formData, setFormData] = useState(() => ({
@@ -16,6 +22,20 @@ export default function EditProfile() {
     location: user?.location || '',
     avatar: user?.avatar || '',
   }))
+
+  // Sync form when user data loads from DB (only update fields that have values)
+  useEffect(() => {
+    if (!user) return
+    setFormData((prev) => ({
+      name: user.name || prev.name,
+      username: user.username || prev.username,
+      email: user.email || prev.email,
+      phone: user.phone || prev.phone,
+      birthDate: user.birthDate || prev.birthDate,
+      location: user.location || prev.location,
+      avatar: user.avatar || prev.avatar,
+    }))
+  }, [user])
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false)
@@ -44,10 +64,25 @@ export default function EditProfile() {
     setTimeout(() => setSaveMessage(''), 3000)
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    updateProfile(formData)
-    setSaveMessage('Profil berhasil disimpan!')
+    try {
+      // Save to database
+      await authService.updateProfile({
+        name: formData.name,
+        username: formData.username,
+        phone: formData.phone,
+        birthDate: formData.birthDate,
+        location: formData.location,
+      })
+      // Update local context
+      updateProfile(formData)
+      // Refresh from DB to ensure consistency
+      await refreshProfile()
+      setSaveMessage('Profil berhasil disimpan!')
+    } catch (err) {
+      setSaveMessage('Gagal menyimpan: ' + err.message)
+    }
     setTimeout(() => setSaveMessage(''), 3000)
   }
 
@@ -184,15 +219,17 @@ export default function EditProfile() {
                 <input
                   id="input-phone"
                   type="tel"
-                  value={formData.phone.replace(/^\+62\s*/, '')}
-                  onChange={(e) => handleChange('phone', '+62 ' + e.target.value.replace(/[^0-9]/g, ''))}
+                  value={(formData.phone || '').replace(/^\+62\s*/, '')}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/[^0-9]/g, '')
+                    handleChange('phone', raw ? '+62 ' + raw : '')
+                  }}
                   onFocus={(e) => {
-                    // Jika hanya ada prefix +62, select semua agar user bisa langsung replace
-                    if (formData.phone === '+62 ' || !formData.phone) {
+                    if (!formData.phone || formData.phone === '+62 ') {
                       e.target.select()
                     }
                   }}
-                  placeholder="Contoh: 812-3456-7890"
+                  placeholder="812-3456-7890"
                   style={{ border: 'none', borderRadius: '0', flex: 1, padding: '10px 12px', fontSize: '13px', outline: 'none', color: 'var(--color-text-main)', fontFamily: 'var(--font-sora)' }}
                 />
               </div>

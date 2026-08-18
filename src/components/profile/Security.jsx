@@ -93,7 +93,7 @@ export default function Security() {
         <div className="security-row-item">
           <div className="security-item-info">
             <h3 className="security-item-title">Email</h3>
-            <p className="security-item-value">{user?.email || 'wisnubrsm3anomali@gmail.com'}</p>
+            <p className="security-item-value">{user?.email || 'Belum diatur'}</p>
           </div>
           <button
             type="button"
@@ -171,7 +171,7 @@ export default function Security() {
       <ChangeEmailModal
         isOpen={isEmailModalOpen}
         onClose={() => setIsEmailModalOpen(false)}
-        currentEmail={user?.email || 'wisnubrsm3anomali@gmail.com'}
+        currentEmail={user?.email || ''}
         onSaveEmail={handleSaveEmail}
       />
 

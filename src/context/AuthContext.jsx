@@ -1,39 +1,111 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { AuthContext } from './authContextDef'
+import { supabase } from '../lib/supabase/client'
 import { DEFAULT_USER } from '../data/profileData'
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const saved = localStorage.getItem('kembali_is_authenticated')
-    return saved !== null ? JSON.parse(saved) : true // Default true for development & testing
-  })
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(DEFAULT_USER)
+  const [initialized, setInitialized] = useState(false)
 
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('kembali_user_profile')
-    return saved !== null ? JSON.parse(saved) : DEFAULT_USER
-  })
+  // Fetch profile from database
+  const fetchProfile = useCallback(async (userId, sessionEmail) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
 
+      const email = sessionEmail || ''
+
+      if (error) {
+        console.error('[Auth] fetchProfile error:', error.message)
+      }
+
+      if (profile) {
+        setUser({
+          id: profile.id,
+          name: profile.full_name || DEFAULT_USER.name,
+          shortName: (profile.full_name || DEFAULT_USER.name).split(' ')[0],
+          username: profile.username || DEFAULT_USER.username,
+          email: email,
+          phone: profile.phone || '',
+          birthDate: profile.birth_date || '',
+          location: profile.address || '',
+          status: profile.role === 'admin' ? 'Admin' : profile.role === 'manager' ? 'Manager Komunitas' : 'Donatur Aktif',
+          avatar: profile.avatar_path || DEFAULT_USER.avatar,
+          stats: DEFAULT_USER.stats,
+          passwordLastUpdated: DEFAULT_USER.passwordLastUpdated,
+          whatsapp: profile.phone || '',
+          privacy: DEFAULT_USER.privacy,
+        })
+      } else {
+        console.warn('[Auth] No profile found for user:', userId)
+        setUser((prev) => ({
+          ...prev,
+          id: userId,
+          email: email,
+          name: email.split('@')[0],
+          shortName: email.split('@')[0],
+          username: '@' + email.split('@')[0],
+        }))
+      }
+    } catch (err) {
+      console.error('[Auth] fetchProfile exception:', err)
+    }
+  }, [])
+
+  // Refresh profile (call after profile updates)
+  const refreshProfile = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) {
+      await fetchProfile(session.user.id, session.user.email)
+    }
+  }, [fetchProfile])
+
+  // Listen for auth state changes
   useEffect(() => {
-    localStorage.setItem('kembali_is_authenticated', JSON.stringify(isAuthenticated))
-  }, [isAuthenticated])
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setIsAuthenticated(true)
+          await fetchProfile(session.user.id, session.user.email)
+        } else {
+          setIsAuthenticated(false)
+          setUser(DEFAULT_USER)
+        }
+        setInitialized(true)
+      }
+    )
 
-  useEffect(() => {
-    localStorage.setItem('kembali_user_profile', JSON.stringify(user))
-  }, [user])
+    // Check initial session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        setIsAuthenticated(true)
+        await fetchProfile(session.user.id, session.user.email)
+      }
+      setInitialized(true)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [fetchProfile])
 
   const login = () => {
     setIsAuthenticated(true)
   }
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut()
     setIsAuthenticated(false)
+    setUser(DEFAULT_USER)
   }
 
   const updateProfile = (updatedFields) => {
     setUser((prev) => {
       const updated = { ...prev, ...updatedFields }
       if (updatedFields.name) {
-        updated.shortName = updatedFields.name.trim().split(' ')[0] || 'Wisnu'
+        updated.shortName = updatedFields.name.trim().split(' ')[0] || 'User'
       }
       return updated
     })
@@ -60,11 +132,9 @@ export function AuthProvider({ children }) {
     setUser(DEFAULT_USER)
   }
 
-  const deleteAccount = () => {
+  const deleteAccount = async () => {
     setUser(DEFAULT_USER)
     setIsAuthenticated(false)
-    localStorage.removeItem('kembali_user_profile')
-    localStorage.removeItem('kembali_is_authenticated')
   }
 
   return (
@@ -72,6 +142,7 @@ export function AuthProvider({ children }) {
       value={{
         isAuthenticated,
         user,
+        initialized,
         login,
         logout,
         updateProfile,
@@ -79,6 +150,7 @@ export function AuthProvider({ children }) {
         updateSecurity,
         resetProfile,
         deleteAccount,
+        refreshProfile,
       }}
     >
       {children}

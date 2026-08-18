@@ -42,7 +42,7 @@ export default function Profile() {
           <h2>Akses Terbatas</h2>
           <p>Silakan masuk ke akun Anda terlebih dahulu untuk melihat dan mengelola profil donatur Anda.</p>
           <div className="unauth-actions">
-            <button type="button" className="btn-unauth-login" onClick={login}>
+            <button type="button" className="btn-unauth-login" onClick={() => navigate('/login')}>
               Masuk Sekarang
             </button>
             <button type="button" className="btn-unauth-home" onClick={() => navigate('/')}>

@@ -1,19 +1,27 @@
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useLocation } from 'react-router'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Donation from './pages/Donation'
 import Profile from './pages/Profile'
+import Login from './features/auth/pages/Login'
+import SignUp from './features/auth/pages/SignUp'
 
 export default function App() {
+  const location = useLocation()
+  const isAuthPage = ['/login', '/sign-up'].includes(location.pathname)
+
   return (
     <AuthProvider>
-      <Navbar />
+      {!isAuthPage && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/donasi" element={<Donation />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<SignUp />} />
       </Routes>
     </AuthProvider>
   )
 }
+
