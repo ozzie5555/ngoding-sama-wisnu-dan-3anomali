@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../../../context/useAuth';
 import AuthLayout from '../components/AuthLayout';
 import { authService } from '../services/authService';
@@ -53,6 +53,8 @@ export default function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -91,10 +93,14 @@ export default function Login() {
       const response = await authService.login(emailOrUsername, password);
       if (response.success) {
         setLoginSuccess(true);
+        // Determine return destination
+        const returnTo = location.state?.returnTo || (sessionStorage.getItem('pendingDonation') ? '/donasi/form' : '/');
         // Show success screen for 1.5s, then navigate
         setTimeout(() => {
           login(); // Set isAuthenticated true
-          navigate('/');
+          navigate(returnTo, {
+            state: location.state?.pendingDonation || undefined,
+          });
         }, 1500);
       }
     } catch (err) {

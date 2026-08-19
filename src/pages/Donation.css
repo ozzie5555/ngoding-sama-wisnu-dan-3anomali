@@ -38,18 +38,222 @@
   font-weight: 700;
   cursor: pointer;
 }
-.donation-actions button {
+/* ── Authenticated Activity & History Section (Page 1) ── */
+.donation-activity-section {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  margin-top: 28px !important;
+}
+
+.donation-activity-col,
+.donation-history-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.donation-section-heading-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 0;
-  background: #31595b;
-  color: #fff;
+  margin-bottom: 14px;
 }
-.donation-actions button:disabled { opacity: 1; cursor: not-allowed; }
-.donation-actions button span { font-size: 11px; opacity: 0.8; }
-.donation-actions a { color: #31595b; }
-.donation-actions a:hover { background: #eef7f0; }
+
+.donation-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #050505;
+  margin: 0;
+}
+
+.donation-section-sub {
+  font-size: 13.5px;
+  color: #5a7476;
+}
+
+.donation-section-link {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #31595b;
+  text-decoration: none;
+}
+
+.donation-section-link:hover {
+  text-decoration: underline;
+}
+
+/* Active Tracker Card */
+.active-donation-card {
+  background-color: #3FBEC7;
+  border-radius: 20px;
+  padding: 24px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(63, 190, 199, 0.2);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.active-donation-header {
+  background-color: #2BAAB3;
+  border-radius: 14px;
+  padding: 16px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.active-donation-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.active-donation-header p {
+  font-size: 12.5px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.active-donation-body {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: #191919;
+  flex: 1;
+}
+
+.active-tracking-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #191919;
+  margin: 0 0 14px 0;
+}
+
+/* Tracking Step Bar */
+.active-tracking-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.active-tracking-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  flex: 1;
+}
+
+.active-tracking-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #E0E8E8;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #7F9697;
+  margin-bottom: 6px;
+}
+
+.active-tracking-step.is-active .active-tracking-dot {
+  background-color: #3FBEC7;
+  box-shadow: 0 0 0 2px #3FBEC7;
+}
+
+.active-tracking-step.is-done .active-tracking-dot {
+  background-color: #375657;
+}
+
+.active-tracking-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8A9FA0;
+}
+
+.active-tracking-step.is-active .active-tracking-label {
+  color: #191919;
+}
+
+.active-donation-details {
+  border-top: 1px solid #EEF2F2;
+  padding-top: 14px;
+}
+
+.active-donation-detail-row {
+  margin-bottom: 8px;
+}
+
+.active-donation-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8A9FA0;
+  text-transform: uppercase;
+}
+
+.active-donation-detail-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: #191919;
+  margin: 2px 0 0 0;
+}
+
+/* History Cards List */
+.donation-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.donation-history-item {
+  background-color: #ffffff;
+  border: 1.5px solid #d4e3e4;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.donation-history-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  object-fit: contain;
+  background-color: #F3F7F6;
+  padding: 6px;
+}
+
+.donation-history-info {
+  flex: 1;
+}
+
+.donation-history-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #191919;
+  margin: 0 0 4px 0;
+}
+
+.donation-history-meta {
+  font-size: 12px;
+  color: #5a7476;
+  margin: 0;
+}
+
+.donation-history-status-badge {
+  background-color: #DCF4ED;
+  color: #1f5156;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
 
 /* ── Flow ─── (matched to Home .steps sizing) ─── */
 .donation-flow {

@@ -264,7 +264,9 @@ export default function SignUp() {
 
       login(); // Set authenticated
 
-      if (targetTab === 'donasi') {
+      if (sessionStorage.getItem('pendingDonation')) {
+        navigate('/donasi/form');
+      } else if (targetTab === 'donasi') {
         navigate('/donasi');
       } else if (targetTab === 'komunitas') {
         navigate('/komunitas');

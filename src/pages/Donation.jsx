@@ -1,26 +1,341 @@
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router'
+import { useAuth } from '../context/useAuth'
+import CariKebutuhanModal from '../components/donation/CariKebutuhanModal'
 import Footer from '../components/Footer'
 import './Donation.css'
-const flow=[['abandoned-cart.svg','Cari Kebutuhan Donasi','Cari barang yang sedang dibutuhkan oleh komunitas di sekitarmu.','Cari Kebutuhan'],['fingers-id.svg','Isi Form Donasi','Sudah tahu barang yang ingin didonasikan? Isi formulir donasi di sini.','Isi Form Donasi'],['families.svg','Komunitas Penerima','Lihat komunitas terverifikasi yang menerima donasi sesuai kategori.','Lihat Komunitas'],['free-shipping.svg','Status Donasi','Pantau status donasi mulai dari verifikasi hingga barang diterima.','Cek Status Donasi']]
-const partners=[
-  ['sedekas semarang barat 1.svg','Sedekas','Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.','Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148','@sedekas'],
-  ['dipo waste bank 1.svg','Dipo Waste Bank','Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.','Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang','@dipowastebank'],
-  ['Panji AL JANNAH 1.svg','Panti Asuhan Al Jannah','Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.','Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah','@pantialjannah'],
-  ['Panti asuhan kristen tanah putih 1.svg','Panti Asuhan Kristen Tanah Putih','Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.','Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia','@pantiasuhankristentanahputih']
+
+const flow = [
+  ['abandoned-cart.svg', 'Cari Kebutuhan Donasi', 'Cari barang yang sedang dibutuhkan oleh komunitas di sekitarmu.', 'Cari Kebutuhan', 'modal'],
+  ['fingers-id.svg', 'Isi Form Donasi', 'Sudah tahu barang yang ingin didonasikan? Isi formulir donasi di sini.', 'Isi Form Donasi', '/donasi/form'],
+  ['families.svg', 'Komunitas Penerima', 'Lihat komunitas terverifikasi yang menerima donasi sesuai kategori.', 'Lihat Komunitas', '#verified'],
+  ['free-shipping.svg', 'Status Donasi', 'Pantau status donasi mulai dari verifikasi hingga barang diterima.', 'Cek Status Donasi', '#aktivitas'],
 ]
-const stats=[['12.400+','Barang Tersirkulasi'],['2.000 kg','Sampah Dikurangi'],['4.680 kg','CO2 Dihemat'],['1.500+','Pengguna Aktif']]
+
+const partners = [
+  ['sedekas semarang barat 1.svg', 'Sedekas', 'Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.', 'Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148', '@sedekas', 'sedekas'],
+  ['dipo waste bank 1.svg', 'Dipo Waste Bank', 'Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.', 'Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang', '@dipowastebank', 'dipo-waste-bank'],
+  ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah', 'panti-al-jannah'],
+  ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih', 'panti-kristen-tanah-putih'],
+]
+
+const stats = [
+  ['12.400+', 'Barang Tersirkulasi'],
+  ['2.000 kg', 'Sampah Dikurangi'],
+  ['4.680 kg', 'CO2 Dihemat'],
+  ['1.500+', 'Pengguna Aktif'],
+]
+
+export default function Donation() {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
+
+  // Modal State
+  const [isCariModalOpen, setIsCariModalOpen] = useState(false)
+  const [modalCommunityId, setModalCommunityId] = useState(null)
+
+  // Open modal if navigated with hash or state or search param
+  useEffect(() => {
+    if (location.state?.openCariModal || location.search.includes('cari=true')) {
+      setIsCariModalOpen(true)
+      if (location.state?.modalCommunityId) {
+        setModalCommunityId(location.state.modalCommunityId)
+      }
+    }
+  }, [location])
+
+  const handleOpenCariModal = (communityId = null) => {
+    setModalCommunityId(communityId)
+    setIsCariModalOpen(true)
+  }
+
+  return (
+    <main className="donation-page">
+      {/* Hero Section */}
+      <section className="donation-hero">
+        <div>
+          <h1>
+            Donasikan Barang,<br />
+            Berikan Manfaat,<br />
+            <em>Kembalikan Nilai.</em>
+          </h1>
+          <p>
+            Barang layak pakai milikmu dapat membantu orang lain sekaligus mengurangi limbah. Bersama KEMBALI, wujudkan masa depan yang lebih hijau dan berkelanjutan.
+          </p>
+          <div className="donation-actions" style={{ display: 'flex', gap: '16px', marginTop: '28px' }}>
+            <button
+              type="button"
+              onClick={() => handleOpenCariModal()}
+              style={{
+                backgroundColor: '#31595b',
+                color: '#fff',
+                padding: '14px 24px',
+                borderRadius: '12px',
+                border: 'none',
+                fontWeight: '700',
+                fontSize: '15px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              Mulai Donasi Sekarang &rarr;
+            </button>
+            <a href="#alur" style={{ padding: '14px 24px', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', fontSize: '15px', border: '1.5px solid #31595b', color: '#31595b' }}>
+              ▶ &nbsp; Pelajari Lebih Lanjut
+            </a>
+          </div>
+        </div>
+        <img src="/design-thinking.svg" alt="Ilustrasi berbagi ide dan barang" />
+      </section>
+
+      {/* Authenticated Activity & History Section (Page 1) */}
+      {isAuthenticated && (
+        <section className="donation-activity-section" id="aktivitas">
+          {/* Active Donation Tracker Card */}
+          <div className="donation-activity-col">
+            <div className="donation-section-heading-row">
+              <h2 className="donation-section-title">Aktivitas Donasi</h2>
+            </div>
+            <div className="active-donation-card">
+              <div className="active-donation-header">
+                <h3>Donasi Anda Sedang Dalam Perjalanan</h3>
+                <p>Jangan Lupa Mengisi Ulasan Ketika Donasi Sampai</p>
+              </div>
+
+              <div className="active-donation-body">
+                <h4 className="active-tracking-title">Lacak Donasi</h4>
+                <div className="active-tracking-steps">
+                  <div className="active-tracking-step is-done">
+                    <div className="active-tracking-dot" />
+                    <span className="active-tracking-label">Form</span>
+                  </div>
+                  <div className="active-tracking-step is-done">
+                    <div className="active-tracking-dot" />
+                    <span className="active-tracking-label">Konfirmasi</span>
+                  </div>
+                  <div className="active-tracking-step is-active">
+                    <div className="active-tracking-dot" />
+                    <span className="active-tracking-label">Pengiriman</span>
+                  </div>
+                  <div className="active-tracking-step">
+                    <div className="active-tracking-dot" />
+                    <span className="active-tracking-label">Diterima</span>
+                  </div>
+                </div>
+
+                <div className="active-donation-details">
+                  <div className="active-donation-detail-row">
+                    <span className="active-donation-detail-label">Donasi</span>
+                    <p className="active-donation-detail-val">Buku & Alat Tulis (sesuai opsi yang sudah dipilih)</p>
+                  </div>
+                  <div className="active-donation-detail-row">
+                    <span className="active-donation-detail-label">Tujuan Donasi</span>
+                    <p className="active-donation-detail-val">Panti Asuhan Kristen Tanah Putih - Semarang</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Past Donations History */}
+          <div className="donation-history-col">
+            <div className="donation-section-heading-row">
+              <h2 className="donation-section-title">Riwayat</h2>
+              <span className="donation-section-sub">Donasi saya</span>
+            </div>
+            <div className="donation-history-list">
+              <article className="donation-history-item">
+                <img src="/buku-pelajarn.svg" alt="" className="donation-history-img" />
+                <div className="donation-history-info">
+                  <h4 className="donation-history-title">Buku Pelajaran SMP</h4>
+                  <p className="donation-history-meta">Untuk Panti Asuhan Al Jannah</p>
+                </div>
+                <span className="donation-history-status-badge">Selesai</span>
+              </article>
+
+              <article className="donation-history-item">
+                <img src="/girl-doing-shopping-with-cart-2194198-0.svg" alt="" className="donation-history-img" />
+                <div className="donation-history-info">
+                  <h4 className="donation-history-title">Pakaian Layak Pakai</h4>
+                  <p className="donation-history-meta">Untuk Komunitas Sedekas</p>
+                </div>
+                <span className="donation-history-status-badge">Selesai</span>
+              </article>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Donation Flow */}
+      <section className="donation-flow" id="alur">
+        <h2>Alur Donasi di KEMBALI</h2>
+        <div className="flow-row">
+          {[
+            ['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'],
+            ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'],
+            ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'],
+            ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.'],
+          ].map(([t, d], i) => (
+            <article key={t}>
+              <b>{i + 1}</b>
+              <div>
+                <h3>{t}</h3>
+                <p>{d}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* 4 Options Grid */}
+      <section className="donation-options">
+        {flow.map(([img, title, desc, action, linkTarget], i) => (
+          <article key={title}>
+            <header>
+              <div className="option-icon">
+                {[
+                  <svg key="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+                  <svg key="2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><path d="M9 14l2 2 4-4" /></svg>,
+                  <svg key="3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+                  <svg key="4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10 17h4V5H2v12h3" /><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2" /><circle cx="7.5" cy="17.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" /></svg>,
+                ][i]}
+              </div>
+              <div>
+                <h3>{i + 1}. {title}</h3>
+                <p>{desc}</p>
+              </div>
+            </header>
+            <img src={'/' + img} alt="" />
+            {linkTarget === 'modal' ? (
+              <button
+                type="button"
+                onClick={() => handleOpenCariModal()}
+                style={{
+                  background: '#609400',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '14px 20px',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span>{action}</span>
+                <span>&rarr;</span>
+              </button>
+            ) : linkTarget.startsWith('/') ? (
+              <Link to={linkTarget}>{action} &rarr;</Link>
+            ) : (
+              <a href={linkTarget}>{action} &rarr;</a>
+            )}
+          </article>
+        ))}
+      </section>
+
+      {/* Why Section */}
+      <section className="why">
+        <h2>Mengapa Berdonasi di KEMBALI?</h2>
+        <div>
+          {[
+            ['mengapa-berdonasi-ikon/ri_leaf-fill.svg', 'Tersalurkan Tepat Sasaran', 'Donasimu akan disalurkan kepada penerima yang benar-benar membutuhkan.'],
+            ['mengapa-berdonasi-ikon/mdi_recycle.svg', 'Dukung Ekonomi Sirkular', 'Mengurangi limbah dengan memanfaatkan kembali barang agar bernilai.'],
+            ['mengapa-berdonasi-ikon/ant-design_safety-outlined.svg', 'Transparan & Terpercaya', 'Proses donasi transparan dan dapat dipantau setiap saat.'],
+            ['mengapa-berdonasi-ikon/fluent_people-community-16-regular.svg', 'Bersama Komunitas', 'Berkolaborasi dengan komunitas, relawan, dan bank sampah.'],
+          ].map(([icon, t, d]) => (
+            <article key={t}>
+              <img src={'/' + icon} alt="" className="why-icon" />
+              <div>
+                <h3>{t}</h3>
+                <p>{d}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Verified Communities */}
+      <section className="verified" id="verified">
+        <h2>Komunitas Terverifikasi</h2>
+        <div className="verified-grid">
+          {partners.map(([img, name, desc, address, handle, communityId]) => (
+            <article key={name}>
+              <img src={'/' + img} alt="" />
+              <h3>{name}</h3>
+              <p>{desc}</p>
+              <div className="verified-meta">
+                <address>{address}</address>
+                <span>
+                  <img src="/ri_instagram-fill.svg" alt="Instagram" className="verified-sosmed-icon" />
+                  {handle}
+                </span>
+                <div style={{ marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenCariModal(communityId)}
+                    style={{
+                      display: 'inline-block',
+                      padding: '8px 16px',
+                      backgroundColor: '#3FBEC7',
+                      color: '#ffffff',
+                      borderRadius: '8px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontWeight: '600',
+                      fontSize: '12px',
+                    }}
+                  >
+                    Lihat Kebutuhan &rarr;
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Impact Banner */}
+      <section className="donation-impact">
+        <div>
+          <h2>
+            Siap Memberikan Kehidupan<br />
+            Kedua untuk Barangmu?
+          </h2>
+          <p>
+            Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.
+          </p>
+        </div>
+        <div>
+          {stats.map(([n, l]) => (
+            <article key={l}>
+              <strong>{n}</strong>
+              <span>{l}</span>
+            </article>
+          ))}
+        </div>
+        <img src="/Donation Streamline Bruxelles.svg" alt="" />
+      </section>
+
+      {/* Premium Cari Kebutuhan Modal Component */}
+      <CariKebutuhanModal
+        isOpen={isCariModalOpen}
+        onClose={() => {
+          setIsCariModalOpen(false)
+          setModalCommunityId(null)
+        }}
+        initialCommunityId={modalCommunityId}
+      />
+
+      <Footer />
+    </main>
+  )
+}
 
 
-export default function Donation(){return <main className="donation-page">
-  <section className="donation-hero"><div><h1>Donasikan Barang,<br/>Berikan Manfaat,<br/><em>Kembalikan Nilai.</em></h1><p>Barang layak pakai milikmu dapat membantu orang lain sekaligus mengurangi limbah. Bersama KEMBALI, wujudkan masa depan yang lebih hijau dan berkelanjutan.</p><div className="donation-actions"><button disabled title="Form donasi belum tersedia">Mulai Donasi Sekarang <span>Segera hadir</span></button><a href="#alur">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/design-thinking.svg" alt="Ilustrasi berbagi ide dan barang" /></section>
-  <section className="donation-flow" id="alur"><h2>Alur Donasi di KEMBALI</h2><div className="flow-row">{[['Cari Kebutuhan','Temukan barang yang sedang dibutuhkan oleh komunitas.'],['Isi Form Donasi','Lengkapi informasi barang dan data diri dengan mudah.'],['Konfirmasi','Periksa kembali detail donasi dan konfirmasi pengajuan.'],['Tracking Donasi','Pantau proses donasi hingga sampai ke penerima.']].map(([t,d],i)=><article key={t}><b>{i+1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
-  <section className="donation-options">{flow.map(([img,title,desc,action],i)=><article key={title}><header><div className="option-icon">{[
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>,
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
-  ][i]}</div><div><h3>{i+1}. {title}</h3><p>{desc}</p></div></header><img src={'/'+img} alt="" />{i===1?<button disabled>{action}</button>:<a href={i===2?'#verified':'#alur'}>{action} →</a>}</article>)}</section>
-  <section className="why"><h2>Mengapa Berdonasi di KEMBALI?</h2><div>{[['mengapa-berdonasi-ikon/ri_leaf-fill.svg','Tersalurkan Tepat Sasaran','Donasimu akan disalurkan kepada penerima yang benar-benar membutuhkan.'],['mengapa-berdonasi-ikon/mdi_recycle.svg','Dukung Ekonomi Sirkular','Mengurangi limbah dengan memanfaatkan kembali barang agar bernilai.'],['mengapa-berdonasi-ikon/ant-design_safety-outlined.svg','Transparan & Terpercaya','Proses donasi transparan dan dapat dipantau setiap saat.'],['mengapa-berdonasi-ikon/fluent_people-community-16-regular.svg','Bersama Komunitas','Berkolaborasi dengan komunitas, relawan, dan bank sampah.']].map(([icon,t,d])=><article key={t}><img src={'/'+icon} alt="" className="why-icon"/><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
-  <section className="verified" id="verified"><h2>Komunitas Terverifikasi</h2><div className="verified-grid">{partners.map(([img,name,desc,address,handle])=><article key={name}><img src={'/'+img} alt="" /><h3>{name}</h3><p>{desc}</p><div className="verified-meta"><address>{address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="verified-sosmed-icon"/>{handle}</span></div></article>)}</div></section>
-  <section className="donation-impact"><div><h2>Siap Memberikan Kehidupan<br/>Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div>{stats.map(([n,l])=><article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
-  <Footer/>
-</main>}
