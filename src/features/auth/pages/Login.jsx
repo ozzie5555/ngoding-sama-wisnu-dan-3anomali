@@ -114,7 +114,6 @@ export default function Login() {
     return (
       <AuthLayout>
         <div className="success-screen">
-          <img src={KembaliLogo} alt="KEMBALI" className="auth-page-logo" />
           <SuccessRosette />
           <h2>Sign-in Berhasil!</h2>
           <p>Selamat datang di KEMBALI</p>

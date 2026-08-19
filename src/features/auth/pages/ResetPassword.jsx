@@ -325,36 +325,35 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout>
-      <div className="reset-auth-container">
         {/* Logo always centered above header */}
-        <img src={KembaliLogo} alt="KEMBALI" className="reset-page-logo" />
+        <img src={KembaliLogo} alt="KEMBALI" className="auth-page-logo" />
 
         {/* ===================================================================
             SCREEN 1: EMAIL RESET (Initial)
             =================================================================== */}
         {step === 'email' && (
           <>
-            <header className="reset-header">
-              <h1 className="reset-heading">Reset Password</h1>
-              <p className="reset-subtitle">
+            <header className="auth-header">
+              <h1 className="">Reset Password</h1>
+              <p className="">
                 Reset menggunakan Email/Nomor Seluler{'\n'}Anda
               </p>
             </header>
 
-            <form className="reset-form" onSubmit={handleRequestEmailReset}>
-              <div className="reset-form-group">
-                <label htmlFor="reset-email" className="reset-label">
+            <form className="auth-form" onSubmit={handleRequestEmailReset}>
+              <div className="form-group">
+                <label htmlFor="reset-email" className="">
                   Masukkan Email
                 </label>
-                <div className={`reset-input-action-wrapper ${emailError ? 'has-error' : ''}`}>
-                  <span className="reset-input-icon-left">
+                <div className={`input-wrapper ${emailError ? 'has-error' : ''}`}>
+                  <span className="input-icon-left">
                     <MailIcon />
                   </span>
                   <input
                     id="reset-email"
                     type="email"
-                    className="reset-field-input"
-                    placeholder="wisnubrsm3anomali@gmail.com"
+                    className="auth-input"
+                    placeholder="cth: email@contoh.com"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -365,28 +364,28 @@ export default function ResetPassword() {
                   />
                   <button
                     type="submit"
-                    className="btn-reset-verify-action"
+                    className="btn-whatsapp-verify"
                     disabled={loading || !email.trim()}
                     aria-label="Verifikasi Email"
                   >
                     {loading ? <LoadingDots size="mini" color="#FFFFFF" /> : 'Verifikasi'}
                   </button>
                 </div>
-                {emailError && <span className="reset-hint-text has-error">{emailError}</span>}
+                {emailError && <span className="auth-error-msg">{emailError}</span>}
               </div>
 
               {/* Disabled Waiting Button */}
-              <button type="button" className="btn-reset-disabled" disabled>
+              <button type="button" className="auth-submit-btn" disabled>
                 Menunggu Konfirmasi
               </button>
 
               {/* OR Divider */}
-              <div className="reset-divider">Or</div>
+              <div className="auth-divider">Or</div>
 
               {/* Alternative WhatsApp Button */}
               <button
                 type="button"
-                className="btn-reset-secondary"
+                className="google-btn"
                 onClick={() => {
                   setEmailError('');
                   setStep('whatsapp');
@@ -403,51 +402,51 @@ export default function ResetPassword() {
             =================================================================== */}
         {step === 'email-sent' && (
           <>
-            <header className="reset-header">
-              <h1 className="reset-heading">Reset Password</h1>
-              <p className="reset-subtitle">
+            <header className="auth-header">
+              <h1 className="">Reset Password</h1>
+              <p className="">
                 Reset menggunakan Email/Nomor Seluler{'\n'}Anda
               </p>
             </header>
 
-            <div className="reset-form">
-              <div className="reset-form-group">
-                <label className="reset-label">Masukkan Email</label>
-                <div className="reset-input-action-wrapper">
-                  <span className="reset-input-icon-left">
+            <div className="auth-form">
+              <div className="form-group">
+                <label className="">Masukkan Email</label>
+                <div className="input-wrapper">
+                  <span className="input-icon-left">
                     <MailIcon />
                   </span>
                   <input
                     type="email"
-                    className="reset-field-input"
+                    className="auth-input"
                     value={email}
                     disabled
                   />
-                  <span className="reset-timer-pill">
+                  <span className="btn-whatsapp-verify" style={{ cursor: "default" }}>
                     {formatTime(emailCountdown)}
                   </span>
                 </div>
               </div>
 
               {/* Information Notice */}
-              <p className="reset-info-text">
+              <p className="" style={{ fontSize: "13px", color: "#658185", textAlign: "center", lineHeight: "1.5" }}>
                 Link reset password telah dikirimkan ke Email anda. Mohon
                 buka Email anda dan lakukan konfirmasi kemudian kembali
                 lagi ke halaman ini.
               </p>
 
               {/* Waiting For Confirmation Button */}
-              <button type="button" className="btn-reset-disabled" disabled>
+              <button type="button" className="auth-submit-btn" disabled>
                 Menunggu Konfirmasi
               </button>
 
               {/* Development Mode Simulation Tool */}
               {import.meta.env.DEV && (
-                <div className="dev-action-notice">
+                <div style={{ marginTop: "14px", padding: "10px 14px", background: "#f0f7f5", border: "1px dashed #3FBEC7", borderRadius: "12px", textAlign: "center" }}>
                   <p>Mode Development: Simulasikan klik link reset dari email</p>
                   <button
                     type="button"
-                    className="btn-dev-action"
+                    className="auth-submit-btn" style={{ marginTop: "8px", fontSize: "12px", height: "36px" }}
                     onClick={() => setStep('reset-confirmed')}
                   >
                     Simulasikan Link Dikonfirmasi &rarr;
@@ -456,12 +455,12 @@ export default function ResetPassword() {
               )}
 
               {/* OR Divider */}
-              <div className="reset-divider">Or</div>
+              <div className="auth-divider">Or</div>
 
               {/* Alternative WhatsApp Button */}
               <button
                 type="button"
-                className="btn-reset-secondary"
+                className="google-btn"
                 onClick={() => {
                   setStep('whatsapp');
                 }}
@@ -477,27 +476,27 @@ export default function ResetPassword() {
             =================================================================== */}
         {step === 'whatsapp' && (
           <>
-            <header className="reset-header">
-              <h1 className="reset-heading">Reset Password</h1>
-              <p className="reset-subtitle">
+            <header className="auth-header">
+              <h1 className="">Reset Password</h1>
+              <p className="">
                 Reset menggunakan Email/Nomor Seluler{'\n'}Anda
               </p>
             </header>
 
-            <form className="reset-form" onSubmit={handleRequestWhatsappOtp}>
+            <form className="auth-form" onSubmit={handleRequestWhatsappOtp}>
               {/* WhatsApp Number Field */}
-              <div className="reset-form-group">
-                <label htmlFor="reset-whatsapp" className="reset-label">
+              <div className="form-group">
+                <label htmlFor="reset-whatsapp" className="">
                   Nomor Whatsapp
                 </label>
-                <div className={`reset-input-action-wrapper ${whatsappError ? 'has-error' : ''}`}>
-                  <span className="reset-input-icon-left">
+                <div className={`input-wrapper ${whatsappError ? 'has-error' : ''}`}>
+                  <span className="input-icon-left">
                     <PhoneIcon />
                   </span>
                   <input
                     id="reset-whatsapp"
                     type="tel"
-                    className="reset-field-input"
+                    className="auth-input"
                     placeholder="+62 812-XXXX-XXXX"
                     value={whatsapp}
                     onChange={(e) => {
@@ -509,26 +508,26 @@ export default function ResetPassword() {
                   />
                   <button
                     type="submit"
-                    className="btn-reset-verify-action"
+                    className="btn-whatsapp-verify"
                     disabled={loading || !whatsapp.trim()}
                     aria-label="Verifikasi Nomor WhatsApp"
                   >
                     {loading ? <LoadingDots size="mini" color="#FFFFFF" /> : 'Verifikasi'}
                   </button>
                 </div>
-                {whatsappError && <span className="reset-hint-text has-error">{whatsappError}</span>}
+                {whatsappError && <span className="auth-error-msg">{whatsappError}</span>}
               </div>
 
               {/* Verification Code Box Placeholder (Disabled) */}
-              <div className="reset-form-group">
-                <label className="reset-label">Kode Verifikasi</label>
-                <span className="reset-hint-text">*Masukkan 4 digit kode verifikasi.</span>
-                <div className="reset-otp-grid">
+              <div className="form-group">
+                <label className="">Kode Verifikasi</label>
+                <span className="" style={{ fontSize: "12px", color: "#8b9fa2" }}>*Masukkan 4 digit kode verifikasi.</span>
+                <div className="otp-container">
                   {[0, 1, 2, 3].map((idx) => (
                     <input
                       key={idx}
                       type="text"
-                      className="reset-otp-box"
+                      className="otp-input"
                       disabled
                       aria-hidden="true"
                     />
@@ -537,17 +536,17 @@ export default function ResetPassword() {
               </div>
 
               {/* Disabled Confirm Button */}
-              <button type="button" className="btn-reset-disabled" disabled>
+              <button type="button" className="auth-submit-btn" disabled>
                 Konfirmasi
               </button>
 
               {/* OR Divider */}
-              <div className="reset-divider">Or</div>
+              <div className="auth-divider">Or</div>
 
               {/* Switch Back to Email Button */}
               <button
                 type="button"
-                className="btn-reset-secondary"
+                className="google-btn"
                 onClick={() => {
                   setWhatsappError('');
                   setStep('email');
@@ -564,41 +563,41 @@ export default function ResetPassword() {
             =================================================================== */}
         {step === 'otp' && (
           <>
-            <header className="reset-header">
-              <h1 className="reset-heading">Reset Password</h1>
-              <p className="reset-subtitle">
+            <header className="auth-header">
+              <h1 className="">Reset Password</h1>
+              <p className="">
                 Reset menggunakan Email/Nomor Seluler{'\n'}Anda
               </p>
             </header>
 
-            <form className="reset-form" onSubmit={handleVerifyOtp}>
+            <form className="auth-form" onSubmit={handleVerifyOtp}>
               {/* WhatsApp Field with Running Countdown Pill */}
-              <div className="reset-form-group">
-                <label className="reset-label">Nomor Whatsapp</label>
-                <div className="reset-input-action-wrapper">
-                  <span className="reset-input-icon-left">
+              <div className="form-group">
+                <label className="">Nomor Whatsapp</label>
+                <div className="input-wrapper">
+                  <span className="input-icon-left">
                     <PhoneIcon />
                   </span>
                   <input
                     type="tel"
-                    className="reset-field-input"
+                    className="auth-input"
                     value={whatsapp}
                     disabled
                   />
-                  <span className="reset-timer-pill">
+                  <span className="btn-whatsapp-verify" style={{ cursor: "default" }}>
                     {formatTime(whatsappCountdown)}
                   </span>
                 </div>
-                <span className="reset-hint-text success-text" style={{ marginTop: '4px' }}>
+                <span className="" style={{ fontSize: "12px", color: "#20C47A" }} style={{ marginTop: '4px' }}>
                   *Kode verifikasi telah terkirim!
                 </span>
               </div>
 
               {/* 4-digit OTP Inputs */}
-              <div className="reset-form-group">
-                <label className="reset-label">Kode Verifikasi</label>
-                <span className="reset-hint-text">*Masukkan 4 digit kode verifikasi.</span>
-                <div className="reset-otp-grid" onPaste={handleOtpPaste}>
+              <div className="form-group">
+                <label className="">Kode Verifikasi</label>
+                <span className="" style={{ fontSize: "12px", color: "#8b9fa2" }}>*Masukkan 4 digit kode verifikasi.</span>
+                <div className="otp-container" onPaste={handleOtpPaste}>
                   {otp.map((digit, idx) => (
                     <input
                       key={idx}
@@ -607,7 +606,7 @@ export default function ResetPassword() {
                       inputMode="numeric"
                       pattern="[0-9]*"
                       maxLength={1}
-                      className={`reset-otp-box ${otpError ? 'has-error' : ''}`}
+                      className={`otp-input ${otpError ? 'has-error' : ''}`}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(idx, e)}
@@ -616,25 +615,25 @@ export default function ResetPassword() {
                     />
                   ))}
                 </div>
-                {otpError && <span className="reset-hint-text has-error">{otpError}</span>}
+                {otpError && <span className="auth-error-msg">{otpError}</span>}
               </div>
 
               {/* Active / Disabled Confirm Button */}
               <button
                 type="submit"
-                className="btn-reset-primary"
+                className="auth-submit-btn"
                 disabled={loading || !isOtpComplete}
               >
                 {loading ? <LoadingDots size="mini" color="#FFFFFF" /> : 'Konfirmasi'}
               </button>
 
               {/* OR Divider */}
-              <div className="reset-divider">Or</div>
+              <div className="auth-divider">Or</div>
 
               {/* Switch Back to Email Button */}
               <button
                 type="button"
-                className="btn-reset-secondary"
+                className="google-btn"
                 onClick={() => {
                   setOtp(['', '', '', '']);
                   setOtpError('');
@@ -651,12 +650,12 @@ export default function ResetPassword() {
             SCREEN 3: RESET PASSWORD BERHASIL (Intermediate)
             =================================================================== */}
         {step === 'reset-confirmed' && (
-          <div className="reset-confirmed-screen">
-            <header className="reset-header">
-              <h1 className="reset-heading" style={{ marginBottom: '12px' }}>
+          <div className="success-screen">
+            <header className="auth-header">
+              <h1 className="" style={{ marginBottom: '12px' }}>
                 Reset Password Berhasil
               </h1>
-              <p className="reset-subtitle">
+              <p className="">
                 Lakukan Pembuatan Ulang Password
               </p>
             </header>
@@ -671,30 +670,30 @@ export default function ResetPassword() {
             =================================================================== */}
         {step === 'new-password' && (
           <>
-            <header className="reset-header">
-              <h1 className="reset-heading">Buat Ulang Password</h1>
-              <p className="reset-subtitle">
+            <header className="auth-header">
+              <h1 className="">Buat Ulang Password</h1>
+              <p className="">
                 Reset menggunakan Email/Nomor Seluler{'\n'}Anda
               </p>
             </header>
 
-            <form className="reset-form" onSubmit={handleSavePassword}>
+            <form className="auth-form" onSubmit={handleSavePassword}>
               {/* New Password Field */}
-              <div className="reset-form-group">
-                <label htmlFor="new-password" className="reset-label">
+              <div className="form-group">
+                <label htmlFor="new-password" className="">
                   Password Baru
                 </label>
-                <span className={`reset-hint-text ${passwordError ? 'has-error' : ''}`}>
-                  {passwordError || '*Password minimal 8 karakter harus memuat huruf, angka, dan simbol'}
+                <span className={`${passwordError ? 'auth-error-msg' : ''}`} style={passwordError ? {} : { fontSize: '10px', color: '#8b9fa2' }}>
+                  {passwordError || 'Password minimal 8 karakter harus memuat huruf, angka, dan simbol'}
                 </span>
-                <div className={`reset-password-wrapper ${passwordError ? 'has-error' : ''}`}>
-                  <span className="reset-input-icon-left">
+                <div className={`input-wrapper ${passwordError ? 'has-error' : ''}`}>
+                  <span className="input-icon-left">
                     <LockIcon />
                   </span>
                   <input
                     id="new-password"
                     type={showNewPassword ? 'text' : 'password'}
-                    className="reset-field-input"
+                    className="auth-input"
                     value={newPassword}
                     onChange={(e) => {
                       setNewPassword(e.target.value);
@@ -705,7 +704,7 @@ export default function ResetPassword() {
                   />
                   <button
                     type="button"
-                    className="btn-reset-eye-toggle"
+                    className="input-icon-right"
                     onClick={() => setShowNewPassword(!showNewPassword)}
                     aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                   >
@@ -715,18 +714,18 @@ export default function ResetPassword() {
               </div>
 
               {/* Confirm New Password Field */}
-              <div className="reset-form-group">
-                <label htmlFor="confirm-new-password" className="reset-label">
+              <div className="form-group">
+                <label htmlFor="confirm-new-password" className="">
                   Konfirmasi Password Baru
                 </label>
-                <div className={`reset-password-wrapper ${confirmPasswordError ? 'has-error' : ''}`}>
-                  <span className="reset-input-icon-left">
+                <div className={`input-wrapper ${confirmPasswordError ? 'has-error' : ''}`}>
+                  <span className="input-icon-left">
                     <LockIcon />
                   </span>
                   <input
                     id="confirm-new-password"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    className="reset-field-input"
+                    className="auth-input"
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
@@ -737,7 +736,7 @@ export default function ResetPassword() {
                   />
                   <button
                     type="button"
-                    className="btn-reset-eye-toggle"
+                    className="input-icon-right"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   >
@@ -745,14 +744,14 @@ export default function ResetPassword() {
                   </button>
                 </div>
                 {confirmPasswordError && (
-                  <span className="reset-hint-text has-error">{confirmPasswordError}</span>
+                  <span className="auth-error-msg">{confirmPasswordError}</span>
                 )}
               </div>
 
               {/* Save Password Button (Height 62px) */}
               <button
                 type="submit"
-                className="btn-reset-primary save-password-btn"
+                className="auth-submit-btn"
                 disabled={loading || !canSubmitNewPassword}
                 style={{ marginTop: '8px' }}
               >
@@ -766,19 +765,19 @@ export default function ResetPassword() {
             SCREEN 5: PASSWORD BARU BERHASIL DISIMPAN (Success)
             =================================================================== */}
         {step === 'success' && (
-          <div className="reset-success-screen">
-            <div className="reset-success-badge-circle" role="img" aria-label="Sukses">
+          <div className="success-screen">
+            <div className="success-badge" role="img" aria-label="Sukses">
               <SuccessCheckmark />
             </div>
-            <h1 className="reset-success-heading">
+            <h1 className="">
               Password Baru Berhasil{'\n'}Disimpan
             </h1>
-            <p className="reset-success-subtitle">
+            <p className="">
               Selamat datang di Kembali!
             </p>
             <button
               type="button"
-              className="btn-reset-primary"
+              className="auth-submit-btn"
               style={{ marginTop: '32px', maxWidth: '320px' }}
               onClick={() => navigate('/login')}
             >
@@ -786,7 +785,6 @@ export default function ResetPassword() {
             </button>
           </div>
         )}
-      </div>
     </AuthLayout>
   );
 }
