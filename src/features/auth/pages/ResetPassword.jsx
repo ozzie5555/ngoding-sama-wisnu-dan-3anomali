@@ -89,17 +89,32 @@ export default function ResetPassword() {
 
   // Check for Supabase Password Recovery session on mount
   useEffect(() => {
-    // Check URL query parameters or hash
-    const searchParams = new URLSearchParams(location.search);
-    const hash = window.location.hash;
+    const handleRecovery = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const code = searchParams.get('code');
 
-    if (
-      searchParams.get('recovery') === 'true' ||
-      searchParams.get('type') === 'recovery' ||
-      hash.includes('type=recovery')
-    ) {
-      setStep('new-password');
-    }
+      // PKCE flow: exchange authorization code for session
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          setStep('new-password');
+        }
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+
+      // Legacy implicit flow: check hash fragment
+      if (
+        searchParams.get('type') === 'recovery' ||
+        hash.includes('type=recovery')
+      ) {
+        setStep('new-password');
+      }
+    };
+
+    handleRecovery();
 
     // Subscribe to Supabase auth state change for PASSWORD_RECOVERY
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
@@ -111,7 +126,7 @@ export default function ResetPassword() {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [location]);
+  }, []);
 
   // Email Countdown Timer Effect
   useEffect(() => {

@@ -242,14 +242,14 @@ export default function SignUp() {
   // Complete onboarding
   const handleCompleteRegistration = async (targetTab) => {
     try {
-      // Save profile to database
-      await authService.updateProfile({
+      // Try to save profile (non-blocking — navigate regardless)
+      authService.updateProfile({
         name: fullName || email.split('@')[0],
         username: username || `@${email.split('@')[0]}`,
         phone: whatsapp,
         birthDate: birthDate,
         location: domisili,
-      });
+      }).catch(() => {});
 
       // Update local context
       updateProfile({
@@ -272,7 +272,9 @@ export default function SignUp() {
         navigate('/');
       }
     } catch (err) {
-      setProfileError(err.message);
+      // Even on error, still navigate
+      login();
+      navigate(targetTab === 'donasi' ? '/donasi' : targetTab === 'komunitas' ? '/komunitas' : '/');
     }
   };
 

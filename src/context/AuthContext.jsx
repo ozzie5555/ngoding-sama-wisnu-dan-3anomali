@@ -17,13 +17,20 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single()
 
-      const email = sessionEmail || ''
+      const email = profile?.email || sessionEmail || ''
 
       if (error) {
         console.error('[Auth] fetchProfile error:', error.message)
       }
 
       if (profile) {
+        // Fetch privacy settings from profile_settings
+        const { data: settings } = await supabase
+          .from('profile_settings')
+          .select('*')
+          .eq('user_id', userId)
+          .single()
+
         setUser({
           id: profile.id,
           name: profile.full_name || DEFAULT_USER.name,
@@ -38,7 +45,12 @@ export function AuthProvider({ children }) {
           stats: DEFAULT_USER.stats,
           passwordLastUpdated: DEFAULT_USER.passwordLastUpdated,
           whatsapp: profile.phone || '',
-          privacy: DEFAULT_USER.privacy,
+          privacy: {
+            contributionVisibility: settings?.contribution_visibility ?? DEFAULT_USER.privacy.contributionVisibility,
+            generalLocation: settings?.general_location ?? DEFAULT_USER.privacy.generalLocation,
+            impactReport: settings?.impact_report ?? DEFAULT_USER.privacy.impactReport,
+            donationHistory: settings?.donation_history ?? DEFAULT_USER.privacy.donationHistory,
+          },
         })
       } else {
         console.warn('[Auth] No profile found for user:', userId)

@@ -2,25 +2,20 @@ import { supabase } from '../../../lib/supabase/client';
 
 export const authService = {
   login: async (emailOrUsername, password) => {
-    // Supabase Auth only supports email login (not username)
-    // If input contains @, treat as email; otherwise, we need to look up the email first
     let email = emailOrUsername;
 
     if (!emailOrUsername.includes('@')) {
-      // Look up email from profiles table by username
       const { data: profile, error: lookupError } = await supabase
         .from('profiles')
-        .select('id')
+        .select('email')
         .eq('username', emailOrUsername)
         .single();
 
-      if (lookupError || !profile) {
-        throw new Error('Email atau Password salah.');
+      if (lookupError || !profile || !profile.email) {
+        throw new Error('Username tidak ditemukan. Gunakan email untuk login.');
       }
 
-      // We can't get the email from profiles (not exposed via RLS for security)
-      // So we require email login for now
-      throw new Error('Silakan login menggunakan email.');
+      email = profile.email;
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -194,6 +189,7 @@ export const authService = {
       .update({
         full_name: updates.name,
         username: updates.username,
+        email: updates.email || user.email,
         phone: updates.phone,
         birth_date: updates.birthDate || null,
         address: updates.location,
@@ -211,6 +207,170 @@ export const authService = {
   getSession: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     return session;
+  },
+
+  // ==========================================
+  // AVATAR UPLOAD
+  // ==========================================
+  uploadAvatar: async (file) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${user.id}/avatar.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('profile-photos')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw new Error(uploadError.message);
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('profile-photos')
+      .getPublicUrl(filePath);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_path: publicUrl })
+      .eq('id', user.id);
+
+    if (updateError) throw new Error(updateError.message);
+
+    return { success: true, url: publicUrl };
+  },
+
+  // ==========================================
+  // PRIVACY SETTINGS
+  // ==========================================
+  getPrivacySettings: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { data, error } = await supabase
+      .from('profile_settings')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw new Error(error.message);
+
+    if (!data) {
+      const { data: newData, error: insertError } = await supabase
+        .from('profile_settings')
+        .insert({ user_id: user.id })
+        .select()
+        .single();
+
+      if (insertError) throw new Error(insertError.message);
+      return newData;
+    }
+
+    return data;
+  },
+
+  updatePrivacySettings: async (settings) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { error } = await supabase
+      .from('profile_settings')
+      .upsert({
+        user_id: user.id,
+        contribution_visibility: settings.contributionVisibility,
+        general_location: settings.generalLocation,
+        impact_report: settings.impactReport,
+        donation_history: settings.donationHistory,
+      }, { onConflict: 'user_id' });
+
+    if (error) throw new Error(error.message);
+    return { success: true };
+  },
+
+  // ==========================================
+  // DELETE ACCOUNT
+  // ==========================================
+  deleteAccount: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    // Delete from profiles (cascades to profile_settings)
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user.id);
+
+    if (profileError) throw new Error(profileError.message);
+
+    // Sign out (Supabase doesn't allow self-delete via client, so we clean up data + sign out)
+    await supabase.auth.signOut();
+
+    return { success: true };
+  },
+
+  // ==========================================
+  // CHANGE EMAIL (requires re-auth)
+  // ==========================================
+  changeEmail: async (newEmail, currentPassword) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    // Re-authenticate first
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+
+    if (authError) throw new Error('Password salah.');
+
+    // Update email
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) throw new Error(error.message);
+
+    // Update email in profiles table
+    await supabase
+      .from('profiles')
+      .update({ email: newEmail })
+      .eq('id', user.id);
+
+    return { success: true };
+  },
+
+  // ==========================================
+  // CHANGE PASSWORD (requires current password)
+  // ==========================================
+  changePassword: async (currentPassword, newPassword) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    // Re-authenticate first
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+
+    if (authError) throw new Error('Password lama salah.');
+
+    // Update password
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(error.message);
+
+    return { success: true };
+  },
+
+  // ==========================================
+  // UPDATE WHATSAPP
+  // ==========================================
+  updateWhatsapp: async (phone) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ phone })
+      .eq('id', user.id);
+
+    if (error) throw new Error(error.message);
+    return { success: true };
   },
 };
 

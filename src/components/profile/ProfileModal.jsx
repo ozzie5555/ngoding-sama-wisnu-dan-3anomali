@@ -257,7 +257,7 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
       setError('Konfirmasi kata sandi tidak cocok.')
       return
     }
-    onSavePassword(newPassword)
+    onSavePassword(currentPassword, newPassword)
     onClose()
   }
 
@@ -415,7 +415,7 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
   const handleStep2Submit = (e) => {
     e.preventDefault()
     if (newEmail) {
-      onSaveEmail(newEmail)
+      onSaveEmail(newEmail, password)
       onClose()
       setStep(1)
     }

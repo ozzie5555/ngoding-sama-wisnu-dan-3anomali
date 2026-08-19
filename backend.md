@@ -546,3 +546,22 @@ Jangan mengerjakan WhatsApp OTP, live chat, atau dashboard admin sebelum Auth, P
 - Log Edge Function tidak boleh memuat token, OTP, nomor telepon, atau alamat lengkap.
 
 Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dulu, lalu integrasikan service/component frontend.
+
+---
+
+## 15. WhatsApp OTP — Status & Rencana
+
+**Status saat ini:** Mock (simulasi success setelah delay 700ms)
+
+**Rencana implementasi:** Twilio Trial
+- Daftar akun Twilio → dapat $15 trial credit (~2000 SMS)
+- Aktifkan **Phone Auth** di Supabase Dashboard → Providers → Phone
+- Isi credentials Twilio (Account SID, Auth Token, Messaging Service SID) di Supabase Dashboard
+- Ganti `authService.requestWhatsappOtp` dari mock jadi `supabase.auth.signInWithOtp({ phone })`
+- Ganti `authService.verifyOtp` dari mock jadi `supabase.auth.verifyOtp({ phone, token, type: 'sms' })`
+- Note: Trial Twilio hanya bisa kirim ke nomor yang sudah diverifikasi di dashboard
+
+**Yang perlu didokumentasi setelah implementasi:**
+- Twilio Account SID & credentials (simpan di env, jangan commit)
+- Nomor yang sudah di-whitelist di Twilio trial
+- Flow OTP: signup, reset password, login

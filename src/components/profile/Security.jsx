@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../../context/useAuth'
+import { authService } from '../../features/auth/services/authService'
 import {
   ChangePasswordModal,
   WhatsappModal,
@@ -9,40 +10,65 @@ import {
 import './Security.css'
 
 export default function Security() {
-  const { user, updateSecurity, logout } = useAuth()
+  const { user, updateSecurity, refreshProfile, logout } = useAuth()
   const navigate = useNavigate()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
   const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false)
   const [securityToast, setSecurityToast] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSavePassword = () => {
-    const today = new Date()
-    const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ]
-    const dateFormatted = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`
-    updateSecurity('passwordLastUpdated', dateFormatted)
-    setSecurityToast('Kata sandi berhasil diperbarui!')
-    setTimeout(() => setSecurityToast(''), 3000)
+  const handleSavePassword = async (currentPassword, newPassword) => {
+    setLoading(true)
+    try {
+      await authService.changePassword(currentPassword, newPassword)
+      const today = new Date()
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ]
+      const dateFormatted = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`
+      updateSecurity('passwordLastUpdated', dateFormatted)
+      setSecurityToast('Kata sandi berhasil diperbarui!')
+    } catch (err) {
+      setSecurityToast(err.message || 'Gagal memperbarui kata sandi.')
+    } finally {
+      setLoading(false)
+      setTimeout(() => setSecurityToast(''), 3000)
+    }
   }
 
-  const handleSaveEmail = (newEmail) => {
-    updateSecurity('email', newEmail)
-    setSecurityToast('Email berhasil diperbarui!')
-    setTimeout(() => setSecurityToast(''), 3000)
+  const handleSaveEmail = async (newEmail, currentPassword) => {
+    setLoading(true)
+    try {
+      await authService.changeEmail(newEmail, currentPassword)
+      await refreshProfile()
+      setSecurityToast('Email berhasil diperbarui!')
+    } catch (err) {
+      setSecurityToast(err.message || 'Gagal memperbarui email.')
+    } finally {
+      setLoading(false)
+      setTimeout(() => setSecurityToast(''), 3000)
+    }
   }
 
-  const handleSaveWhatsapp = (newNumber) => {
-    updateSecurity('whatsapp', newNumber)
-    setSecurityToast('Nomor WhatsApp berhasil diperbarui!')
-    setTimeout(() => setSecurityToast(''), 3000)
+  const handleSaveWhatsapp = async (newNumber) => {
+    setLoading(true)
+    try {
+      await authService.updateWhatsapp(newNumber)
+      await refreshProfile()
+      setSecurityToast('Nomor WhatsApp berhasil diperbarui!')
+    } catch (err) {
+      setSecurityToast(err.message || 'Gagal memperbarui nomor WhatsApp.')
+    } finally {
+      setLoading(false)
+      setTimeout(() => setSecurityToast(''), 3000)
+    }
   }
 
-  const handleLogoutClick = () => {
-    logout()
+  const handleLogoutClick = async () => {
+    await logout()
     navigate('/')
   }
 
@@ -73,7 +99,7 @@ export default function Security() {
           <div className="security-item-info">
             <h3 className="security-item-title">Kata Sandi</h3>
             <p className="security-item-value">
-              Terakhir diperbarui: {user?.passwordLastUpdated || '12 Agustus 2026'}
+              Terakhir diperbarui: {user?.passwordLastUpdated || 'Belum pernah diperbarui'}
             </p>
           </div>
           <button

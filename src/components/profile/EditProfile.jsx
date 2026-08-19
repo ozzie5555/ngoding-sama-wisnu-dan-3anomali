@@ -71,6 +71,7 @@ export default function EditProfile() {
       await authService.updateProfile({
         name: formData.name,
         username: formData.username,
+        email: formData.email,
         phone: formData.phone,
         birthDate: formData.birthDate,
         location: formData.location,
@@ -86,18 +87,36 @@ export default function EditProfile() {
     setTimeout(() => setSaveMessage(''), 3000)
   }
 
-  const handleAvatarChange = () => {
-    const newPath = prompt(
-      'Masukkan path gambar avatar baru (contoh: /src/assets/images/profile-placeholder.svg):',
-      formData.avatar
-    )
-    if (newPath) {
-      handleChange('avatar', newPath)
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setSaveMessage('File harus berupa gambar.')
+      setTimeout(() => setSaveMessage(''), 3000)
+      return
     }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setSaveMessage('Ukuran gambar maksimal 2MB.')
+      setTimeout(() => setSaveMessage(''), 3000)
+      return
+    }
+
+    try {
+      setSaveMessage('Mengunggah foto...')
+      const result = await authService.uploadAvatar(file)
+      handleChange('avatar', result.url)
+      await refreshProfile()
+      setSaveMessage('Foto profil berhasil diperbarui!')
+    } catch (err) {
+      setSaveMessage('Gagal mengunggah: ' + err.message)
+    }
+    setTimeout(() => setSaveMessage(''), 3000)
   }
 
   const handleAvatarRemove = () => {
-    handleChange('avatar', '/src/assets/images/profile-placeholder.svg')
+    handleChange('avatar', '')
   }
 
   return (
@@ -125,13 +144,16 @@ export default function EditProfile() {
               />
             </div>
             <div className="photo-buttons">
-              <button
-                type="button"
-                className="btn-avatar-change"
-                onClick={handleAvatarChange}
-              >
+              <label className="btn-avatar-change" htmlFor="avatar-upload">
                 Ubah
-              </button>
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleAvatarChange}
+                style={{ display: 'none' }}
+              />
               <button
                 type="button"
                 className="btn-avatar-delete"

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
+import { authService } from '../../features/auth/services/authService'
 import { DeleteAccountModal } from './ProfileModal'
 import './PrivacyData.css'
 
 export default function PrivacyData() {
-  const { user, updatePrivacy, deleteAccount } = useAuth()
+  const { user, updatePrivacy, refreshProfile, logout } = useAuth()
 
   const [privacyState, setPrivacyState] = useState(() => ({
     contributionVisibility: user?.privacy?.contributionVisibility ?? true,
@@ -36,16 +37,29 @@ export default function PrivacyData() {
     setTimeout(() => setSaveToast(''), 3000)
   }
 
-  const handleSave = () => {
-    Object.keys(privacyState).forEach((k) => {
-      updatePrivacy(k, privacyState[k])
-    })
-    setSaveToast('Pengaturan privasi berhasil diperbarui!')
+  const handleSave = async () => {
+    try {
+      await authService.updatePrivacySettings(privacyState)
+      // Update local context
+      Object.keys(privacyState).forEach((k) => {
+        updatePrivacy(k, privacyState[k])
+      })
+      setSaveToast('Pengaturan privasi berhasil diperbarui!')
+    } catch (err) {
+      setSaveToast('Gagal menyimpan: ' + err.message)
+    }
     setTimeout(() => setSaveToast(''), 3000)
   }
 
-  const handleConfirmDeleteAccount = () => {
-    deleteAccount()
+  const handleConfirmDeleteAccount = async () => {
+    try {
+      await authService.deleteAccount()
+      logout()
+      window.location.href = '/'
+    } catch (err) {
+      setSaveToast('Gagal menghapus akun: ' + err.message)
+      setTimeout(() => setSaveToast(''), 3000)
+    }
   }
 
   return (
