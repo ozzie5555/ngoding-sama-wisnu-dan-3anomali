@@ -9,6 +9,8 @@ import Community from './pages/Community'
 import Login from './features/auth/pages/Login'
 import SignUp from './features/auth/pages/SignUp'
 import ResetPassword from './features/auth/pages/ResetPassword'
+import CariKebutuhan from './pages/CariKebutuhan'
+import DonationForm from './pages/DonationForm'
 
 export default function App() {
   const location = useLocation()
@@ -20,6 +22,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/donasi" element={<Donation />} />
+        <Route path="/donasi/form" element={<DonationForm />} />
+        <Route path="/donation/form" element={<DonationForm />} />
+        <Route path="/cari-kebutuhan" element={<CariKebutuhan />} />
+        <Route path="/cari-kebutuhan/:communityId" element={<CariKebutuhan />} />
         <Route path="/insight" element={<Insight />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/komunitas" element={<Community />} />
@@ -30,5 +36,6 @@ export default function App() {
     </AuthProvider>
   )
 }
+
 
 
