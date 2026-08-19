@@ -1,0 +1,1321 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   INSIGHT PAGE - SCOPED STYLING
+   ========================================================================== */
+
+.insight-page {
+  font-family: 'Poppins', var(--font-sora), sans-serif;
+  color: #062632;
+  background: #ffffff;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Shared Container */
+.insight-container {
+  max-width: 1200px;
+  width: calc(100% - 48px);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+/* Common Section Spacing */
+.insight-section {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* Section Header Row (Title + View All) */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  gap: 20px;
+}
+
+.section-heading-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #062632;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.section-heading-title.is-light {
+  color: #ffffff;
+}
+
+.btn-view-all-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  border-radius: 999px;
+  border: 1px solid #062632;
+  background: #ffffff;
+  color: #062632;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-view-all-pill:hover {
+  background: #062632;
+  color: #ffffff;
+}
+
+.btn-view-all-pill.is-light-pill {
+  border-color: #ffffff;
+  background: transparent;
+  color: #ffffff;
+}
+
+.btn-view-all-pill.is-light-pill:hover {
+  background: #ffffff;
+  color: #248689;
+}
+
+/* Category Tags */
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(6, 38, 50, 0.2);
+  font-size: 11px;
+  font-weight: 500;
+  color: #5a7476;
+  background: #ffffff;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.category-tag.tag-dots {
+  padding: 4px 8px;
+  letter-spacing: 1px;
+}
+
+.category-tag.is-light-tag {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.category-tag.is-light-outline {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   1. HERO SECTION
+   ========================================================================== */
+
+.insight-hero-section {
+  padding-top: 60px;
+  padding-bottom: 70px;
+  background: #ffffff;
+}
+
+.hero-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+}
+
+.hero-illustration-col {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-illustration-card {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(6, 38, 50, 0.12);
+  background: #f8fbfa;
+  box-shadow: 0 8px 24px rgba(6, 38, 50, 0.04);
+}
+
+.hero-main-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.hero-content-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 18px;
+  border: 1px solid rgba(6, 38, 50, 0.3);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #248689;
+  margin-bottom: 20px;
+  background: #fdfdfd;
+}
+
+.hero-main-title {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #062632;
+  margin: 0 0 16px 0;
+  letter-spacing: -1px;
+}
+
+.hero-main-title .title-accent {
+  color: #062632;
+}
+
+.hero-description {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #658185;
+  margin: 0 0 28px 0;
+  max-width: 480px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-hero-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 26px;
+  border-radius: 10px;
+  background: #248689;
+  color: #ffffff;
+  border: 1px solid #248689;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-hero-primary:hover {
+  background: #1b686b;
+  border-color: #1b686b;
+}
+
+.btn-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 26px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #062632;
+  border: 1px solid rgba(6, 38, 50, 0.25);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-hero-secondary:hover {
+  background: #f6f9f8;
+  border-color: #062632;
+}
+
+/* ==========================================================================
+   2. CAROUSEL INFRASTRUCTURE (Article By KEMBALI & News For You)
+   ========================================================================== */
+
+.carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  border-radius: 16px;
+  padding: 8px 0;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.carousel-slide {
+  flex-shrink: 0;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* Desktop: 4 cards visible for Articles (25% each) */
+.article-slide {
+  width: 25%;
+}
+
+/* Desktop: 3 cards visible for News (33.333% each) */
+.news-slide {
+  width: 33.333%;
+}
+
+/* Carousel Pagination Bar */
+.carousel-pagination-wrapper {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+}
+
+.insight-pagination-bar {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pagination-track {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pagination-number-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #8b9fa2;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pagination-number-btn.is-active {
+  color: #062632;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.pagination-connector-line {
+  display: inline-flex;
+  align-items: center;
+  width: 80px;
+  height: 2px;
+  background: #062632;
+  margin: 0 4px;
+  border-radius: 1px;
+}
+
+/* ==========================================================================
+   3. ARTICLE BY KEMBALI CARDS
+   ========================================================================== */
+
+.insight-article-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(6, 38, 50, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.insight-article-card:hover {
+  transform: translateY(-4px);
+  border-color: #3fbec7;
+  box-shadow: 0 12px 28px rgba(1, 151, 210, 0.1);
+}
+
+.article-card-media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f7f6;
+  margin-bottom: 16px;
+}
+
+.article-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.insight-article-card:hover .article-card-img {
+  transform: scale(1.03);
+}
+
+.article-card-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.article-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.article-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #062632;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 46px;
+}
+
+.article-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #8b9fa2;
+  margin-bottom: 18px;
+}
+
+.article-card-action {
+  margin-top: auto;
+}
+
+.btn-visit-now {
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(6, 38, 50, 0.3);
+  background: #ffffff;
+  color: #062632;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.insight-article-card:hover .btn-visit-now {
+  background: #248689;
+  border-color: #248689;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   4. NEWS FOR YOU CARDS
+   ========================================================================== */
+
+.insight-news-card {
+  height: 100%;
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.insight-news-card.is-standard-news {
+  border: 1px solid rgba(6, 38, 50, 0.12);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.insight-news-card.is-standard-news:hover {
+  transform: translateY(-4px);
+  border-color: #248689;
+  box-shadow: 0 12px 28px rgba(36, 134, 137, 0.1);
+}
+
+.news-card-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e2e8e7;
+  margin-bottom: 16px;
+}
+
+.news-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.news-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.news-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #062632;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #8b9fa2;
+  margin-top: auto;
+}
+
+/* Featured Turquoise News Card */
+.insight-news-card.is-featured-teal {
+  background: #248689;
+  color: #ffffff;
+  border: 1px solid #248689;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(36, 134, 137, 0.25);
+}
+
+.featured-news-title {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #ffffff;
+  margin: 20px 0 28px 0;
+}
+
+.featured-news-action {
+  margin-bottom: 24px;
+}
+
+.btn-featured-donate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #248689;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-featured-donate:hover {
+  background: #dff6f5;
+  transform: translateX(2px);
+}
+
+.news-card-meta.is-light-meta {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==========================================================================
+   5. EDUCATIONAL VIDEOS SECTION
+   ========================================================================== */
+
+.insight-educational-section {
+  background: #248689;
+  color: #ffffff;
+  padding-top: 64px;
+  padding-bottom: 72px;
+}
+
+.edu-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.video-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.insight-video-card {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 28px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.25s ease;
+}
+
+.insight-video-card:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.video-card-thumbnail-wrapper {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-card-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+}
+
+.youtube-play-btn {
+  width: 54px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ff0000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.youtube-play-btn svg {
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+}
+
+.video-card-thumbnail-wrapper:hover .youtube-play-btn {
+  transform: scale(1.1);
+}
+
+.youtube-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(18, 18, 18, 0.85);
+  color: #ffffff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.youtube-badge strong {
+  color: #ff4d4d;
+}
+
+.video-card-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.video-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.video-card-title {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.video-card-title:hover {
+  color: #dffff7;
+}
+
+.video-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ==========================================================================
+   6. DARK BAND & IMPACT / CTA SECTION
+   ========================================================================== */
+
+.insight-dark-band {
+  background: #062632;
+  color: #ffffff;
+  padding-top: 60px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.insight-impact-banner {
+  padding-bottom: 60px;
+}
+
+.impact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr auto;
+  gap: 32px;
+  align-items: center;
+}
+
+.impact-copy-col .impact-heading {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+}
+
+.impact-copy-col .impact-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #8b9fa2;
+  margin: 0;
+}
+
+.impact-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat-card-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #8b9fa2;
+  line-height: 1.3;
+}
+
+.impact-illustration-col {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.impact-bruxelles-art {
+  width: 140px;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   7. ARTICLE & NEWS DETAIL OVERLAY
+   ========================================================================== */
+
+.insight-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(6, 38, 50, 0.7);
+  backdrop-filter: blur(8px);
+  overflow-y: auto;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.insight-detail-container {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1100px;
+  padding: 48px;
+  margin: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.btn-detail-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(6, 38, 50, 0.15);
+  background: #ffffff;
+  color: #062632;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.btn-detail-close:hover {
+  background: #062632;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.btn-detail-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Detail Header Layout */
+.detail-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(6, 38, 50, 0.1);
+}
+
+.detail-header-left {
+  max-width: 680px;
+}
+
+.detail-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.detail-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #062632;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.5px;
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #8b9fa2;
+  margin-bottom: 24px;
+}
+
+.detail-intro {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4b6366;
+  margin: 0 0 12px 0;
+}
+
+.detail-subintro {
+  font-size: 15px;
+  font-weight: 600;
+  color: #062632;
+  margin: 0;
+}
+
+.detail-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-header-illustration {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Banner for Article 3 & News */
+.detail-banner-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 6;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 36px;
+  background: #f0f7f6;
+}
+
+.detail-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-editorial-body {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.editorial-intro-block p,
+.editorial-section-block p,
+.editorial-paragraphs-flow p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #3e585b;
+  margin: 0 0 18px 0;
+}
+
+.editorial-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: #062632;
+  margin: 36px 0 14px 0;
+}
+
+/* ── Article 1: Accordions List ── */
+.accordions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.accordion-box {
+  border: 1px solid rgba(6, 38, 50, 0.15);
+  border-radius: 14px;
+  padding: 16px 24px;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.accordion-title-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.accordion-number {
+  font-size: 28px;
+  font-weight: 500;
+  min-width: 44px;
+}
+
+.accordion-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-accordion-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.accordion-body {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.accordion-media {
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.accordion-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.accordion-text p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Article 2: Info Boxes List ── */
+.info-boxes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.article-info-box {
+  border: 1px solid rgba(6, 38, 50, 0.15);
+  border-radius: 14px;
+  padding: 24px 28px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+}
+
+.info-box-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  transition: color 0.25s ease;
+}
+
+.info-box-paragraphs p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b6366;
+  margin: 0 0 10px 0;
+}
+
+.info-box-paragraphs p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Article 3: Circular Action Cards Grid ── */
+.circular-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 24px 0 36px 0;
+}
+
+.circular-action-card {
+  border: 1px solid rgba(6, 38, 50, 0.12);
+  border-radius: 14px;
+  padding: 20px 16px;
+  background: #fbfdfc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.circular-action-card:hover {
+  border-color: #248689;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(36, 134, 137, 0.1);
+}
+
+.action-card-icon-wrap {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+}
+
+.action-card-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.action-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #062632;
+  line-height: 1.4;
+  margin: 0 0 12px 0;
+}
+
+.btn-action-card {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: #248689;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-action-card:hover {
+  background: #1b686b;
+}
+
+/* ── Article 4: Safety Points List ── */
+.safety-points-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 24px 0 36px 0;
+}
+
+.safety-point-box {
+  border: 1px solid rgba(6, 38, 50, 0.15);
+  border-radius: 14px;
+  padding: 20px 24px;
+  background: #ffffff;
+}
+
+.safety-point-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #062632;
+  margin: 0 0 10px 0;
+}
+
+.safety-point-paragraphs p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b6366;
+  margin: 0 0 10px 0;
+}
+
+.safety-point-paragraphs p:last-child {
+  margin-bottom: 0;
+}
+
+/* Bottom Back Action */
+.detail-bottom-actions {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(6, 38, 50, 0.1);
+  display: flex;
+  justify-content: center;
+}
+
+.btn-detail-back {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid #062632;
+  background: #ffffff;
+  color: #062632;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-detail-back:hover {
+  background: #062632;
+  color: #ffffff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM
+   ========================================================================== */
+
+/* 1200px – 1024px */
+@media (max-width: 1200px) {
+  .article-slide {
+    width: 33.333%;
+  }
+
+  .news-slide {
+    width: 50%;
+  }
+
+  .impact-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .impact-illustration-col {
+    display: none;
+  }
+
+  .circular-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 1024px – 768px (Tablet) */
+@media (max-width: 1024px) {
+  .hero-container {
+    gap: 40px;
+  }
+
+  .hero-main-title {
+    font-size: 36px;
+  }
+
+  .article-slide {
+    width: 50%;
+  }
+
+  .insight-video-card {
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+}
+
+/* 768px and below (Mobile / Small Tablet) */
+@media (max-width: 768px) {
+  .insight-section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .hero-illustration-card {
+    max-width: 380px;
+  }
+
+  .hero-main-title {
+    font-size: 30px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 100%;
+  }
+
+  .article-slide {
+    width: 85%;
+  }
+
+  .news-slide {
+    width: 85%;
+  }
+
+  .insight-video-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .impact-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .impact-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detail-header {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-header-right {
+    display: none;
+  }
+
+  .insight-detail-container {
+    padding: 24px 16px;
+  }
+
+  .accordion-body {
+    grid-template-columns: 1fr;
+  }
+
+  .circular-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 480px and below (Small Mobile) */
+@media (max-width: 480px) {
+  .article-slide {
+    width: 100%;
+  }
+
+  .news-slide {
+    width: 100%;
+  }
+
+  .section-heading-title {
+    font-size: 24px;
+  }
+
+  .hero-main-title {
+    font-size: 26px;
+  }
+
+  .featured-news-title {
+    font-size: 20px;
+  }
+
+  .detail-title {
+    font-size: 24px;
+  }
+
+  .impact-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

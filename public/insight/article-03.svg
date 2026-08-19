@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <rect width="400" height="300" rx="16" fill="#F4FAF8"/>
+  <g transform="translate(110, 40)">
+    <!-- Big circular arrows / circular economy symbol -->
+    <circle cx="90" cy="110" r="60" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+    <!-- Recycle arrows in 3 colors -->
+    <path d="M90 50 A60 60 0 0 1 142 80" fill="none" stroke="#0197D2" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="146,75 142,88 132,80" fill="#0197D2"/>
+    <path d="M142 140 A60 60 0 0 1 90 170" fill="none" stroke="#3FBEC7" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="85,175 88,162 98,170" fill="#3FBEC7"/>
+    <path d="M38 140 A60 60 0 0 1 38 80" fill="none" stroke="#248689" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="42,75 38,88 28,80" fill="#248689"/>
+    <!-- Earth in center -->
+    <circle cx="90" cy="110" r="32" fill="#DDF3EE"/>
+    <circle cx="90" cy="110" r="28" fill="#3FBEC7" fill-opacity="0.3"/>
+    <path d="M80 100 Q90 95 95 105 Q100 115 90 120 Z" fill="#808964"/>
+    <path d="M75 115 Q82 125 90 128 Z" fill="#808964"/>
+  </g>
+</svg>

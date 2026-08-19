@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <rect width="400" height="300" rx="16" fill="#F4FAF8"/>
+  <g transform="translate(100, 40)">
+    <!-- Box -->
+    <rect x="110" y="110" width="90" height="70" rx="6" fill="#D5C5A8" stroke="#8A7352" stroke-width="2"/>
+    <path d="M105 110 L155 85 L205 110" fill="#E8DBC5" stroke="#8A7352" stroke-width="2"/>
+    <rect x="140" y="130" width="30" height="20" rx="3" fill="#FFFFFF" opacity="0.8"/>
+    <!-- Person donating clothes -->
+    <circle cx="50" cy="70" r="24" fill="#FDDCB5"/>
+    <path d="M30 65 C30 45 70 45 70 65 Z" fill="#062632"/>
+    <path d="M35 100 C35 90 65 90 65 100 L75 190 L25 190 Z" fill="#0197D2"/>
+    <!-- Flying clothes into box -->
+    <path d="M80 80 Q110 50 140 85 Q130 95 110 80 Z" fill="#3FBEC7"/>
+    <path d="M120 70 Q140 40 160 75 Q150 85 130 75 Z" fill="#808964"/>
+    <!-- Sparkles -->
+    <polygon points="90,40 93,48 101,51 93,54 90,62 87,54 79,51 87,48" fill="#F59E0B"/>
+    <polygon points="180,45 182,51 188,53 182,55 180,61 178,55 172,53 178,51" fill="#3FBEC7"/>
+  </g>
+</svg>

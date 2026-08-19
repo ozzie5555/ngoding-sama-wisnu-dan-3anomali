@@ -7,7 +7,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
-  const { isAuthenticated, user, login, logout } = useAuth()
+  const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
 
   // Close dropdown when clicking outside
@@ -69,12 +69,12 @@ export default function Navbar() {
           <NavLink to="/donasi" onClick={handleNavClick}>
             Donasi
           </NavLink>
-          <a href="/#insight" onClick={handleNavClick}>
+          <NavLink to="/insight" onClick={handleNavClick}>
             Insight
-          </a>
-          <a href="/#komunitas" onClick={handleNavClick}>
+          </NavLink>
+          <NavLink to="/komunitas" onClick={handleNavClick}>
             Komunitas
-          </a>
+          </NavLink>
 
           {/* Mobile only authenticated quick links when menu is open */}
           {isAuthenticated && open && (

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <rect width="400" height="300" rx="16" fill="#F4FAF8"/>
+  <g transform="translate(130, 40)">
+    <!-- Bin -->
+    <path d="M40 70 L50 200 C50 210 90 210 90 200 L100 70 Z" fill="#062632"/>
+    <rect x="30" y="55" width="80" height="15" rx="5" fill="#062632"/>
+    <!-- Recycle logo on bin -->
+    <circle cx="70" cy="135" r="22" fill="#FFFFFF"/>
+    <path d="M70 120 L76 130 L64 130 Z" fill="#0197D2"/>
+    <path d="M80 135 L86 145 L78 145 Z" fill="#3FBEC7"/>
+    <path d="M60 135 L52 145 L62 145 Z" fill="#808964"/>
+    <!-- Character with plant -->
+    <circle cx="150" cy="70" r="25" fill="#FDDCB5"/>
+    <path d="M125 65 C125 40 175 40 175 65 Z" fill="#062632"/>
+    <path d="M130 100 C130 90 170 90 170 100 L165 190 L135 190 Z" fill="#248689"/>
+    <!-- Leaves floating -->
+    <path d="M110 50 C100 60 110 75 125 70 C125 55 115 50 110 50 Z" fill="#808964"/>
+    <path d="M30 110 C20 120 30 135 45 130 C45 115 35 110 30 110 Z" fill="#3FBEC7"/>
+  </g>
+</svg>

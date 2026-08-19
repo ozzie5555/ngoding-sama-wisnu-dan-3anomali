@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8F8F5"/>
+      <stop offset="100%" stop-color="#D5F2EC"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0197D2"/>
+      <stop offset="100%" stop-color="#3FBEC7"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="400" rx="24" fill="url(#heroBg)"/>
+  <!-- Decorative floating cards -->
+  <g transform="translate(40, 50)">
+    <rect width="180" height="110" rx="16" fill="#FFFFFF" stroke="#0197D2" stroke-width="2" filter="drop-shadow(0 8px 16px rgba(1,151,210,0.12))"/>
+    <circle cx="35" cy="35" r="18" fill="#3FBEC7" fill-opacity="0.2"/>
+    <path d="M28 35 L33 40 L43 30" stroke="#0197D2" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="65" y="25" width="90" height="10" rx="5" fill="#062632"/>
+    <rect x="65" y="42" width="70" height="8" rx="4" fill="#808964" fill-opacity="0.6"/>
+    <rect x="25" y="70" width="130" height="6" rx="3" fill="#248689" fill-opacity="0.3"/>
+    <rect x="25" y="84" width="95" height="6" rx="3" fill="#248689" fill-opacity="0.3"/>
+  </g>
+  <g transform="translate(280, 40)">
+    <rect width="170" height="120" rx="16" fill="#FFFFFF" stroke="#248689" stroke-width="2" filter="drop-shadow(0 8px 16px rgba(36,134,137,0.12))"/>
+    <circle cx="85" cy="50" r="30" fill="#E8F8F5"/>
+    <path d="M85 30 A20 20 0 1 1 65 50" stroke="#248689" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <polygon points="62,45 65,55 75,50" fill="#248689"/>
+    <rect x="35" y="95" width="100" height="8" rx="4" fill="#062632"/>
+  </g>
+  <!-- Main character illustration mockup -->
+  <g transform="translate(160, 150)">
+    <circle cx="90" cy="70" r="45" fill="#FDDCB5"/>
+    <!-- Hair -->
+    <path d="M55 65 C55 35 125 35 125 65 C125 45 110 30 90 30 C70 30 55 45 55 65 Z" fill="#062632"/>
+    <!-- Glasses -->
+    <circle cx="78" cy="70" r="10" fill="none" stroke="#062632" stroke-width="2.5"/>
+    <circle cx="102" cy="70" r="10" fill="none" stroke="#062632" stroke-width="2.5"/>
+    <line x1="88" y1="70" x2="92" y2="70" stroke="#062632" stroke-width="2.5"/>
+    <!-- Body -->
+    <path d="M40 200 C40 140 140 140 140 200 Z" fill="#0197D2"/>
+    <!-- Laptop -->
+    <rect x="50" y="160" width="80" height="45" rx="6" fill="#FFFFFF" stroke="#062632" stroke-width="2"/>
+    <path d="M80 180 L95 180" stroke="#3FBEC7" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="40,205 140,205 130,215 50,215" fill="#CBD5E1"/>
+  </g>
+  <!-- Circular leaves and lightbulb -->
+  <g transform="translate(60, 220)">
+    <circle cx="35" cy="35" r="28" fill="#808964" fill-opacity="0.15"/>
+    <path d="M25 40 C25 25 45 25 45 40 C45 45 35 48 35 48" stroke="#808964" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <line x1="32" y1="52" x2="38" y2="52" stroke="#808964" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(390, 220)">
+    <circle cx="35" cy="35" r="28" fill="#3FBEC7" fill-opacity="0.2"/>
+    <path d="M35 22 C25 30 25 45 35 48 C45 45 45 30 35 22 Z" fill="#3FBEC7"/>
+  </g>
+</svg>
