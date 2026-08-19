@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router'
 import Footer from '../components/Footer'
 import ArticleCard from '../components/insight/ArticleCard'
@@ -19,20 +19,24 @@ import './Insight.css'
 export default function Insight() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Carousel states for Article By KEMBALI
-  const [articlePage, setArticlePage] = useState(1)
+  // ── Article Carousel States (Infinite Seamless Loop) ──
+  const [articleIndex, setArticleIndex] = useState(0)
+  const [isArticleAnim, setIsArticleAnim] = useState(true)
   const [isArticlePaused, setIsArticlePaused] = useState(false)
-  const articleTrackRef = useRef(null)
 
-  // Carousel states for News For You
-  const [newsPage, setNewsPage] = useState(1)
+  // ── News Carousel States (Infinite Seamless Loop) ──
+  const [newsIndex, setNewsIndex] = useState(0)
+  const [isNewsAnim, setIsNewsAnim] = useState(true)
   const [isNewsPaused, setIsNewsPaused] = useState(false)
-  const newsTrackRef = useRef(null)
 
-  const totalArticlePages = 4
-  const totalNewsPages = 4
+  const totalArticlePages = articlesData.length
+  const totalNewsPages = newsData.length
 
-  // Directly derive selected article/news from URL search params
+  // Duplikasi data untuk efek infinite seamless transition
+  const doubledArticles = [...articlesData, ...articlesData]
+  const doubledNews = [...newsData, ...newsData]
+
+  // Search params detail modal
   const articleId = searchParams.get('article')
   const newsId = searchParams.get('news')
   const selectedItem = articleId
@@ -41,27 +45,45 @@ export default function Insight() {
     ? newsData.find((n) => n.id === newsId) || null
     : null
 
-  // Auto-slide for Article Carousel
+  // Auto-slide Articles
   useEffect(() => {
     if (isArticlePaused || selectedItem) return
 
     const interval = setInterval(() => {
-      setArticlePage((prev) => (prev % totalArticlePages) + 1)
-    }, 4500)
+      setIsArticleAnim(true)
+      setArticleIndex((prev) => prev + 1)
+    }, 3500)
 
     return () => clearInterval(interval)
-  }, [isArticlePaused, totalArticlePages, selectedItem])
+  }, [isArticlePaused, selectedItem])
 
-  // Auto-slide for News Carousel
+  // Reset posisi Article tanpa animasi saat menyentuh akhir klon
+  const handleArticleTransitionEnd = () => {
+    if (articleIndex >= totalArticlePages) {
+      setIsArticleAnim(false)
+      setArticleIndex(0)
+    }
+  }
+
+  // Auto-slide News
   useEffect(() => {
     if (isNewsPaused || selectedItem) return
 
     const interval = setInterval(() => {
-      setNewsPage((prev) => (prev % totalNewsPages) + 1)
-    }, 5500)
+      setIsNewsAnim(true)
+      setNewsIndex((prev) => prev + 1)
+    }, 4500)
 
     return () => clearInterval(interval)
-  }, [isNewsPaused, totalNewsPages, selectedItem])
+  }, [isNewsPaused, selectedItem])
+
+  // Reset posisi News tanpa animasi saat menyentuh akhir klon
+  const handleNewsTransitionEnd = () => {
+    if (newsIndex >= totalNewsPages) {
+      setIsNewsAnim(false)
+      setNewsIndex(0)
+    }
+  }
 
   const handleOpenDetail = (item) => {
     if (item.id.startsWith('article')) {
@@ -82,20 +104,16 @@ export default function Insight() {
     }
   }
 
-  // Multiply items for smooth looping visual representation in carousel
-  const carouselArticles = [...articlesData, ...articlesData, ...articlesData]
-  const carouselNews = [...newsData, ...newsData, ...newsData]
-
   return (
     <main className="insight-page">
-      {/* ── 1. HERO / INTRODUCTION SECTION ── */}
+      {/* HERO SECTION */}
       <section className="insight-hero-section">
         <div className="insight-container hero-container">
           <div className="hero-illustration-col">
             <div className="hero-illustration-card">
               <img
                 src={heroData.image}
-                alt="Ilustrasi edukasi dan informasi KEMBALI"
+                alt="Ilustrasi edukasi KEMBALI"
                 className="hero-main-img"
               />
             </div>
@@ -121,7 +139,7 @@ export default function Insight() {
         </div>
       </section>
 
-      {/* ── 2. ARTICLE BY KEMBALI SECTION ── */}
+      {/* ARTICLE CAROUSEL SECTION */}
       <section className="insight-section insight-articles-section" id="articles-section">
         <div className="insight-container">
           <div className="section-header-row">
@@ -135,39 +153,43 @@ export default function Insight() {
             </button>
           </div>
 
-          {/* Continuous sliding Carousel */}
           <div
             className="carousel-viewport"
             onMouseEnter={() => setIsArticlePaused(true)}
             onMouseLeave={() => setIsArticlePaused(false)}
-            ref={articleTrackRef}
           >
             <div
               className="carousel-track articles-track"
+              onTransitionEnd={handleArticleTransitionEnd}
               style={{
-                transform: `translateX(-${(articlePage - 1) * 25}%)`,
+                transform: `translateX(-${articleIndex * 25}%)`,
+                transition: isArticleAnim
+                  ? 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                  : 'none',
               }}
             >
-              {carouselArticles.map((article, idx) => (
-                <div key={`${article.id}-${idx}`} className="carousel-slide article-slide">
+              {doubledArticles.map((article, idx) => (
+                <div key={`article-${idx}`} className="carousel-slide article-slide">
                   <ArticleCard article={article} onCardClick={handleOpenDetail} />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Pagination bar */}
           <div className="carousel-pagination-wrapper">
             <PaginationBar
               totalPages={totalArticlePages}
-              currentPage={articlePage}
-              onSelectPage={(page) => setArticlePage(page)}
+              currentPage={(articleIndex % totalArticlePages) + 1}
+              onSelectPage={(page) => {
+                setIsArticleAnim(true)
+                setArticleIndex(page - 1)
+              }}
             />
           </div>
         </div>
       </section>
 
-      {/* ── 3. NEWS FOR YOU SECTION ── */}
+      {/* NEWS CAROUSEL SECTION */}
       <section className="insight-section insight-news-section">
         <div className="insight-container">
           <div className="section-header-row">
@@ -181,39 +203,43 @@ export default function Insight() {
             </button>
           </div>
 
-          {/* News Carousel */}
           <div
             className="carousel-viewport"
             onMouseEnter={() => setIsNewsPaused(true)}
             onMouseLeave={() => setIsNewsPaused(false)}
-            ref={newsTrackRef}
           >
             <div
               className="carousel-track news-track"
+              onTransitionEnd={handleNewsTransitionEnd}
               style={{
-                transform: `translateX(-${(newsPage - 1) * 33.333}%)`,
+                transform: `translateX(-${newsIndex * 33.333}%)`,
+                transition: isNewsAnim
+                  ? 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                  : 'none',
               }}
             >
-              {carouselNews.map((news, idx) => (
-                <div key={`${news.id}-${idx}`} className="carousel-slide news-slide">
+              {doubledNews.map((news, idx) => (
+                <div key={`news-${idx}`} className="carousel-slide news-slide">
                   <NewsCard news={news} onCardClick={handleOpenDetail} />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Pagination bar */}
           <div className="carousel-pagination-wrapper">
             <PaginationBar
               totalPages={totalNewsPages}
-              currentPage={newsPage}
-              onSelectPage={(page) => setNewsPage(page)}
+              currentPage={(newsIndex % totalNewsPages) + 1}
+              onSelectPage={(page) => {
+                setIsNewsAnim(true)
+                setNewsIndex(page - 1)
+              }}
             />
           </div>
         </div>
       </section>
 
-      {/* ── 4. ABOUT ENVIRONMENT / EDUCATIONAL VIDEOS SECTION ── */}
+      {/* EDUCATIONAL VIDEOS */}
       <section className="insight-section insight-educational-section">
         <div className="insight-container edu-container">
           <div className="section-header-row is-light-header">
@@ -238,7 +264,7 @@ export default function Insight() {
         </div>
       </section>
 
-      {/* ── 5. CTA & STATISTICS SECTION ── */}
+      {/* FOOTER CTA */}
       <div className="insight-dark-band" id="footer-cta">
         <section className="insight-impact-banner">
           <div className="insight-container impact-inner">
@@ -249,8 +275,7 @@ export default function Insight() {
                 Kedua untuk Barangmu?
               </h2>
               <p className="impact-description">
-                Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah
-                mudah.
+                Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.
               </p>
             </div>
 
@@ -274,11 +299,10 @@ export default function Insight() {
           </div>
         </section>
 
-        {/* ── 6. CONNECTED EXISTING FOOTER ── */}
         <Footer />
       </div>
 
-      {/* ── 7. ARTICLE & NEWS DETAIL OVERLAY ── */}
+      {/* DETAIL MODAL OVERLAY */}
       {selectedItem && <ArticleDetailModal item={selectedItem} onClose={handleCloseDetail} />}
     </main>
   )
