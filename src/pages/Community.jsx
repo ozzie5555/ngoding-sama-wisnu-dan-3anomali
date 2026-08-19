@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react'
+﻿import { useState } from 'react'
 import Footer from '../components/Footer'
 import './Community.css'
 
@@ -142,14 +142,8 @@ export default function Community() {
     initialCommunities.forEach((c) => { map[c.id] = [...c.messages] })
     return map
   })
-  const messagesEndRef = useRef(null)
-
   const selected = initialCommunities.find((c) => c.id === selectedId) || initialCommunities[0]
   const messages = allMessages[selectedId] || []
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length, selectedId])
 
   function handleSelectCommunity(id) {
     setSelectedId(id)
@@ -290,7 +284,6 @@ export default function Community() {
                   </div>
                 )
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             <form className="chat-input-area" onSubmit={handleSend} aria-label="Kirim pesan">

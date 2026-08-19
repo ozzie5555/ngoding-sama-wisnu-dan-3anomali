@@ -199,7 +199,7 @@
   padding: 20px 20px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   scroll-behavior: smooth;
 }
 
@@ -214,6 +214,16 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
+  padding: 12px 0 16px;
+  border-bottom: 1.5px solid var(--color-border, #e2e8e7);
+}
+
+.message-row:first-child {
+  padding-top: 0;
+}
+
+.message-row:last-child {
+  border-bottom: 0;
 }
 
 .message-own  { flex-direction: row-reverse; }
@@ -261,14 +271,14 @@
 }
 
 .message-bubble.own {
-  background: var(--color-bg-subtle, #f6f9f8);
-  border: 1px solid var(--color-border-light, #edf2f1);
+  background: transparent;
+  border: 0;
   border-bottom-right-radius: 4px;
 }
 
 .message-bubble.other {
-  background: #ffffff;
-  border: 1px solid var(--color-border, #e2e8e7);
+  background: transparent;
+  border: 0;
   border-bottom-left-radius: 4px;
 }
 
@@ -570,13 +580,28 @@
 
 /* Tablet */
 @media (max-width: 1023px) {
+  .community-wrapper { padding-inline: 20px; }
+
   .community-layout {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 118px minmax(0, 1fr) 278px;
+    gap: 14px;
   }
 
   .top-donators  { grid-column: 1; grid-row: 1; }
-  .community-list { grid-column: 2; grid-row: 1; }
-  .community-chat { grid-column: 1 / -1; grid-row: 2; min-height: 480px; }
+  .community-chat { grid-column: 2; grid-row: 1; min-height: 430px; }
+  .community-list { grid-column: 3; grid-row: 1; }
+
+  .top-donators-title,
+  .explore-title { font-size: 12px; }
+  .top-donators-sub,
+  .explore-sub { font-size: 9px; }
+  .donator-item { padding-inline: 8px; }
+  .donator-name { font-size: 10px; }
+  .community-card { gap: 8px; padding-inline: 10px; }
+  .community-card-img-wrap { width: 54px; height: 54px; }
+  .community-card-name { font-size: 12px; }
+  .community-card-meta,
+  .community-card-desc { font-size: 9px; }
 
   .impact-inner {
     grid-template-columns: 1fr 1fr;
