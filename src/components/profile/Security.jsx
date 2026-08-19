@@ -23,13 +23,7 @@ export default function Security() {
     setLoading(true)
     try {
       await authService.changePassword(currentPassword, newPassword)
-      const today = new Date()
-      const months = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-      ]
-      const dateFormatted = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`
-      updateSecurity('passwordLastUpdated', dateFormatted)
+      await refreshProfile()
       setSecurityToast('Kata sandi berhasil diperbarui!')
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui kata sandi.')
@@ -99,7 +93,11 @@ export default function Security() {
           <div className="security-item-info">
             <h3 className="security-item-title">Kata Sandi</h3>
             <p className="security-item-value">
-              Terakhir diperbarui: {user?.passwordLastUpdated || 'Belum pernah diperbarui'}
+              Terakhir diperbarui: {user?.passwordLastUpdated
+                ? new Date(user.passwordLastUpdated).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'long', year: 'numeric'
+                  })
+                : 'Belum pernah diperbarui'}
             </p>
           </div>
           <button

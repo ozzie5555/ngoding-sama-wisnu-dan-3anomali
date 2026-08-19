@@ -354,6 +354,12 @@ export const authService = {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw new Error(error.message);
 
+    // Save timestamp to profiles
+    await supabase
+      .from('profiles')
+      .update({ password_last_updated: new Date().toISOString() })
+      .eq('id', user.id);
+
     return { success: true };
   },
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../context/useAuth';
 import { COMMUNITIES_DATA } from '../data/communityData';
+import { donationService } from '../features/donation/services/donationService';
 import Footer from '../components/Footer';
 import './DonationForm.css';
 
@@ -48,8 +49,11 @@ export default function DonationForm() {
   const [deliveryMethod, setDeliveryMethod] = useState('drop-point');
   const [notes, setNotes] = useState('');
   const [fileName, setFileName] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [donationCode, setDonationCode] = useState('');
 
   // 1. STRICT ROUTE-LEVEL AUTHENTICATION CHECK
   useEffect(() => {
@@ -82,16 +86,36 @@ export default function DonationForm() {
     );
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!itemName.trim()) {
       setErrorMsg('Nama barang donasi wajib diisi.');
       return;
     }
 
-    setIsSubmitted(true);
-    // Clear pending donation storage
-    sessionStorage.removeItem('pendingDonation');
+    setSubmitting(true);
+    setErrorMsg('');
+
+    try {
+      const result = await donationService.submitDonation({
+        communityId: contextData?.communityId,
+        category: 'barang_bekas',
+        itemName: itemName.trim(),
+        conditionNote: itemCondition,
+        quantity: parseInt(itemQuantity, 10) || 1,
+        description: notes.trim(),
+        pickupAddress: deliveryMethod === 'drop-point' ? community.address : '',
+        photos: photoFile ? [photoFile] : [],
+      });
+
+      setDonationCode(result.donationCode);
+      setIsSubmitted(true);
+      sessionStorage.removeItem('pendingDonation');
+    } catch (err) {
+      setErrorMsg(err.message || 'Gagal mengirim donasi. Coba lagi.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -219,6 +243,7 @@ export default function DonationForm() {
                       onChange={(e) => {
                         if (e.target.files?.[0]) {
                           setFileName(e.target.files[0].name);
+                          setPhotoFile(e.target.files[0]);
                         }
                       }}
                     />
@@ -300,8 +325,8 @@ export default function DonationForm() {
                   >
                     Kembali
                   </button>
-                  <button type="submit" className="btn-form-submit">
-                    Kirim Pengajuan Donasi &rarr;
+                  <button type="submit" className="btn-form-submit" disabled={submitting}>
+                    {submitting ? 'Mengirim...' : 'Kirim Pengajuan Donasi →'}
                   </button>
                 </div>
               </form>
@@ -317,6 +342,12 @@ export default function DonationForm() {
             <p className="donation-success-desc">
               Terima kasih telah berkontribusi memberikan kehidupan kedua pada barang layak pakai. Pengajuan donasi Anda sedang diproses oleh mitra {community.name}.
             </p>
+            {donationCode && (
+              <div style={{ background: '#f6f9f8', borderRadius: '10px', padding: '12px 20px', marginBottom: '20px', textAlign: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#658185' }}>Kode Donasi</span>
+                <p style={{ fontSize: '18px', fontWeight: '700', color: '#062632', margin: '4px 0 0', fontFamily: 'var(--font-montserrat)' }}>{donationCode}</p>
+              </div>
+            )}
             <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"

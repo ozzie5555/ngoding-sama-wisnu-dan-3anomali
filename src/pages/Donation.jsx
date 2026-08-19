@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import { donationService } from '../features/donation/services/donationService'
 import CariKebutuhanModal from '../components/donation/CariKebutuhanModal'
 import Footer from '../components/Footer'
 import './Donation.css'
@@ -34,6 +35,11 @@ export default function Donation() {
   const [isCariModalOpen, setIsCariModalOpen] = useState(false)
   const [modalCommunityId, setModalCommunityId] = useState(null)
 
+  // Donation data from DB
+  const [activeDonation, setActiveDonation] = useState(null)
+  const [historyDonations, setHistoryDonations] = useState([])
+  const [loading, setLoading] = useState(true)
+
   // Open modal if navigated with hash or state or search param
   useEffect(() => {
     if (location.state?.openCariModal || location.search.includes('cari=true')) {
@@ -43,6 +49,28 @@ export default function Donation() {
       }
     }
   }, [location])
+
+  // Fetch donation data from DB
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const loadDonations = async () => {
+      try {
+        const [active, history] = await Promise.all([
+          donationService.getActiveDonation(),
+          donationService.getDonationHistory(),
+        ])
+        setActiveDonation(active)
+        setHistoryDonations(history)
+      } catch (err) {
+        console.error('[Donation] Failed to load donations:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDonations()
+  }, [isAuthenticated])
 
   const handleOpenCariModal = (communityId = null) => {
     setModalCommunityId(communityId)

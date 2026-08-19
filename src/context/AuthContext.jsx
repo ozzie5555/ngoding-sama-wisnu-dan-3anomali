@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { AuthContext } from './authContextDef'
 import { supabase } from '../lib/supabase/client'
 import { DEFAULT_USER } from '../data/profileData'
+import { donationService } from '../features/donation/services/donationService'
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -31,6 +32,14 @@ export function AuthProvider({ children }) {
           .eq('user_id', userId)
           .single()
 
+        // Compute stats from donations table
+        let stats = DEFAULT_USER.stats
+        try {
+          stats = await donationService.getUserStats()
+        } catch (e) {
+          // Keep default stats if query fails
+        }
+
         setUser({
           id: profile.id,
           name: profile.full_name || DEFAULT_USER.name,
@@ -42,8 +51,8 @@ export function AuthProvider({ children }) {
           location: profile.address || '',
           status: profile.role === 'admin' ? 'Admin' : profile.role === 'manager' ? 'Manager Komunitas' : 'Donatur Aktif',
           avatar: profile.avatar_path || DEFAULT_USER.avatar,
-          stats: DEFAULT_USER.stats,
-          passwordLastUpdated: DEFAULT_USER.passwordLastUpdated,
+          stats: stats,
+          passwordLastUpdated: profile.password_last_updated || '',
           whatsapp: profile.phone || '',
           privacy: {
             contributionVisibility: settings?.contribution_visibility ?? DEFAULT_USER.privacy.contributionVisibility,

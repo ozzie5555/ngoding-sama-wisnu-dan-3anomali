@@ -1,11 +1,75 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router'
 import { useAuth } from '../../context/useAuth'
-import { DUMMY_ACTIVITIES, DUMMY_PARTNERS } from '../../data/profileData'
+import { donationService } from '../../features/donation/services/donationService'
 import './ProfileOverview.css'
+
+const STATUS_LABELS = {
+  pending: 'Menunggu',
+  verified: 'Terverifikasi',
+  in_transit: 'Dalam Pengiriman',
+  received: 'Diterima',
+  cancelled: 'Dibatalkan',
+}
+
+const CATEGORY_LABELS = {
+  barang_bekas: 'Barang Bekas',
+  pakaian_layak: 'Pakaian Layak',
+  buku_atk: 'Buku & ATK',
+  karya_daur_ulang: 'Karya Daur Ulang',
+}
 
 export default function ProfileOverview({ onNavigateToEdit }) {
   const { user } = useAuth()
+  const [activities, setActivities] = useState([])
+  const [partners, setPartners] = useState([])
   const [selectedActivity, setSelectedActivity] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [donations, communities] = await Promise.all([
+          donationService.getUserDonations(),
+          donationService.getUserCommunities(),
+        ])
+
+        // Map donations to activity cards
+        const acts = donations.map((d) => ({
+          id: d.id,
+          image: '/buku-pelajarn.svg',
+          title: d.item_name,
+          recipient: d.communities?.name || 'Komunitas',
+          description: `${d.item_name} (${d.quantity} barang). Diajukan pada ${new Date(d.submitted_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+          tags: [
+            CATEGORY_LABELS[d.category] || d.category,
+            d.condition_note || 'Layak Pakai',
+            `${d.quantity} Barang`,
+            STATUS_LABELS[d.status] || d.status,
+          ],
+          actionText: 'Lihat Detail',
+        }))
+
+        setActivities(acts)
+
+        // Map communities to partner cards
+        const parts = communities.map((c) => ({
+          id: c.id,
+          image: c.logo_path || '/sedekas.svg',
+          title: c.name,
+          description: c.description || c.location || 'Komunitas verified',
+        }))
+
+        setPartners(parts)
+      } catch (err) {
+        console.error('[ProfileOverview] Failed to load data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
 
   return (
     <div className="profile-overview-container">
@@ -14,11 +78,10 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         <div className="profile-avatar-card">
           <div className="profile-avatar-large-wrap">
             <img
-              src={user.avatar}
+              src={user.avatar || '/src/assets/images/profile-placeholder.svg'}
               alt={user.name}
               className="profile-avatar-large"
               onError={(e) => {
-                // Fallback to SVG placeholder if image is missing
                 e.target.src = '/src/assets/images/profile-placeholder.svg'
               }}
             />
@@ -32,7 +95,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <span>{user.location}</span>
+            <span>{user.location || 'Lokasi belum diatur'}</span>
           </div>
 
           <div className="profile-donor-badge">
@@ -54,15 +117,15 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         {/* 3 Statistic Cards */}
         <div className="profile-stats-grid">
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.donations ?? 8}</span>
+            <span className="profile-stat-number">{user.stats?.donations ?? 0}</span>
             <span className="profile-stat-label">Donasi</span>
           </div>
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.distributed ?? 6}</span>
+            <span className="profile-stat-number">{user.stats?.distributed ?? 0}</span>
             <span className="profile-stat-label">Tersalur</span>
           </div>
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.saved ?? 4}</span>
+            <span className="profile-stat-number">{user.stats?.saved ?? 0}</span>
             <span className="profile-stat-label">Simpan</span>
           </div>
         </div>
@@ -76,106 +139,133 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         <div className="activity-group">
           <div className="activity-group-header">
             <h3 className="activity-group-title">Donasi saya</h3>
-            <a href="#lihat-semua-donasi" className="activity-see-all">
-              Lihat Semua →
-            </a>
           </div>
 
-          <div className="activity-cards-slider">
-            <div className="activity-cards-row">
-              {DUMMY_ACTIVITIES.map((act) => (
-                <article key={act.id} className="donation-card">
-                  <div className="donation-card-img-wrap">
-                    <img
-                      src={act.image}
-                      alt={act.title}
-                      className="donation-card-img"
-                      onError={(e) => {
-                        e.target.src = '/src/assets/images/donation-book.svg'
-                      }}
-                    />
-                  </div>
-                  <div className="donation-card-body">
-                    <h4 className="donation-card-title">{act.title}</h4>
-                    <p className="donation-card-recipient">{act.recipient}</p>
-                    <p className="donation-card-desc">{act.description}</p>
-
-                    <div className="donation-tags-section">
-                      <span className="donation-tags-label">Detail Donasi</span>
-                      <div className="donation-tags-list">
-                        {act.tags.map((tag, idx) => (
-                          <span key={idx} className="donation-tag-chip">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="donation-card-action-btn"
-                      onClick={() => setSelectedActivity(act)}
-                    >
-                      {act.actionText}
-                    </button>
-                  </div>
-                </article>
-              ))}
+          {loading ? (
+            <div className="activity-loading">
+              <div className="activity-loading-dots">
+                <span /><span /><span />
+              </div>
             </div>
+          ) : activities.length === 0 ? (
+            <div className="activity-empty-state">
+              <div className="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </div>
+              <h4 className="empty-state-title">Mulai Perjalanan Donasimu</h4>
+              <p className="empty-state-desc">Barang bekasmu bernilai. Donasikan ke komunitas yang membutuhkan.</p>
+              <Link to="/donasi" className="empty-state-btn">
+                Mulai Donasi
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+            </div>
+          ) : (
+            <div className="activity-cards-slider">
+              <div className="activity-cards-row">
+                {activities.map((act) => (
+                  <article key={act.id} className="donation-card">
+                    <div className="donation-card-img-wrap">
+                      <img
+                        src={act.image}
+                        alt={act.title}
+                        className="donation-card-img"
+                        onError={(e) => {
+                          e.target.src = '/src/assets/images/donation-book.svg'
+                        }}
+                      />
+                    </div>
+                    <div className="donation-card-body">
+                      <h4 className="donation-card-title">{act.title}</h4>
+                      <p className="donation-card-recipient">{act.recipient}</p>
+                      <p className="donation-card-desc">{act.description}</p>
 
-            <button
-              type="button"
-              className="slider-next-arrow"
-              aria-label="Lihat aktivitas selanjutnya"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          </div>
+                      <div className="donation-tags-section">
+                        <span className="donation-tags-label">Detail Donasi</span>
+                        <div className="donation-tags-list">
+                          {act.tags.map((tag, idx) => (
+                            <span key={idx} className="donation-tag-chip">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="donation-card-action-btn"
+                        onClick={() => setSelectedActivity(act)}
+                      >
+                        {act.actionText}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Group 2: Partner / Komunitas Donasi */}
         <div className="activity-group">
           <div className="activity-group-header">
-            <h3 className="activity-group-title">Donasi saya</h3>
-            <a href="#lihat-semua-mitra" className="activity-see-all">
-              Lihat Semua →
-            </a>
+            <h3 className="activity-group-title">Komunitas Mitra</h3>
           </div>
 
-          <div className="activity-cards-slider">
-            <div className="activity-cards-row">
-              {DUMMY_PARTNERS.map((partner) => (
-                <article key={partner.id} className="partner-card-profile">
-                  <div className="partner-card-img-wrap">
-                    <img
-                      src={partner.image}
-                      alt={partner.title}
-                      className="partner-card-img"
-                      onError={(e) => {
-                        e.target.src = '/src/assets/images/donation-charity.svg'
-                      }}
-                    />
-                  </div>
-                  <div className="partner-card-body">
-                    <h4 className="partner-card-title">{partner.title}</h4>
-                    <p className="partner-card-desc">{partner.description}</p>
-                  </div>
-                </article>
-              ))}
+          {loading ? (
+            <div className="activity-loading">
+              <div className="activity-loading-dots">
+                <span /><span /><span />
+              </div>
             </div>
-
-            <button
-              type="button"
-              className="slider-next-arrow"
-              aria-label="Lihat mitra selanjutnya"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          </div>
+          ) : partners.length === 0 ? (
+            <div className="activity-empty-state">
+              <div className="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <h4 className="empty-state-title">Belum Ada Komunitas Mitra</h4>
+              <p className="empty-state-desc">Donasi pertamamu akan menghubungkanmu dengan komunitas penerima.</p>
+              <Link to="/donasi" className="empty-state-btn">
+                Lihat Komunitas
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+            </div>
+          ) : (
+            <div className="activity-cards-slider">
+              <div className="activity-cards-row">
+                {partners.map((partner) => (
+                  <article key={partner.id} className="partner-card-profile">
+                    <div className="partner-card-img-wrap">
+                      <img
+                        src={partner.image}
+                        alt={partner.title}
+                        className="partner-card-img"
+                        onError={(e) => {
+                          e.target.src = '/src/assets/images/donation-charity.svg'
+                        }}
+                      />
+                    </div>
+                    <div className="partner-card-body">
+                      <h4 className="partner-card-title">{partner.title}</h4>
+                      <p className="partner-card-desc">{partner.description}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
