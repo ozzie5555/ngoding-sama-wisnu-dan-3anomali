@@ -16,8 +16,8 @@ const flow = [
 const partners = [
   ['sedekas semarang barat 1.svg', 'Sedekas', 'Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.', 'Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148', '@sedekas', 'sedekas'],
   ['dipo waste bank 1.svg', 'Dipo Waste Bank', 'Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.', 'Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang', '@dipowastebank', 'dipo-waste-bank'],
-  ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah', 'panti-al-jannah'],
-  ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih', 'panti-kristen-tanah-putih'],
+  ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah', 'panti-asuhan-al-jannah'],
+  ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih', 'panti-asuhan-kristen-tanah-putih'],
 ]
 
 const stats = [
@@ -119,80 +119,118 @@ export default function Donation() {
         <img src="/design-thinking.svg" alt="Ilustrasi berbagi ide dan barang" />
       </section>
 
-      {/* Authenticated Activity & History Section (Page 1) */}
+      {/* Authenticated Activity & History Section */}
       {isAuthenticated && (
         <section className="donation-activity-section" id="aktivitas">
-          {/* Active Donation Tracker Card */}
+          {/* Active Donation */}
           <div className="donation-activity-col">
             <div className="donation-section-heading-row">
               <h2 className="donation-section-title">Aktivitas Donasi</h2>
             </div>
-            <div className="active-donation-card">
-              <div className="active-donation-header">
-                <h3>Donasi Anda Sedang Dalam Perjalanan</h3>
-                <p>Jangan Lupa Mengisi Ulasan Ketika Donasi Sampai</p>
+            {loading ? (
+              <div className="donation-empty-card">
+                <p>Memuat data...</p>
               </div>
-
-              <div className="active-donation-body">
-                <h4 className="active-tracking-title">Lacak Donasi</h4>
-                <div className="active-tracking-steps">
-                  <div className="active-tracking-step is-done">
-                    <div className="active-tracking-dot" />
-                    <span className="active-tracking-label">Form</span>
-                  </div>
-                  <div className="active-tracking-step is-done">
-                    <div className="active-tracking-dot" />
-                    <span className="active-tracking-label">Konfirmasi</span>
-                  </div>
-                  <div className="active-tracking-step is-active">
-                    <div className="active-tracking-dot" />
-                    <span className="active-tracking-label">Pengiriman</span>
-                  </div>
-                  <div className="active-tracking-step">
-                    <div className="active-tracking-dot" />
-                    <span className="active-tracking-label">Diterima</span>
-                  </div>
+            ) : activeDonation ? (
+              <div className="active-donation-card">
+                <div className="active-donation-header">
+                  <h3>Donasi Anda Sedang Diproses</h3>
+                  <p>Jangan Lupa Mengisi Ulasan Ketika Donasi Sampai</p>
                 </div>
 
-                <div className="active-donation-details">
-                  <div className="active-donation-detail-row">
-                    <span className="active-donation-detail-label">Donasi</span>
-                    <p className="active-donation-detail-val">Buku & Alat Tulis (sesuai opsi yang sudah dipilih)</p>
+                <div className="active-donation-body">
+                  <h4 className="active-tracking-title">Lacak Donasi</h4>
+                  <div className="active-tracking-steps">
+                    {['pending', 'verified', 'pickup', 'shipping', 'received'].map((step, i) => {
+                      const statusOrder = { pending: 0, verified: 1, pickup: 2, shipping: 3, received: 4 }
+                      const currentOrder = statusOrder[activeDonation.status] ?? 0
+                      const isDone = i < currentOrder
+                      const isActive = i === currentOrder
+                      const labels = ['Form', 'Konfirmasi', 'Pengambilan', 'Pengiriman', 'Diterima']
+                      return (
+                        <div key={step} className={`active-tracking-step${isDone ? ' is-done' : ''}${isActive ? ' is-active' : ''}`}>
+                          <div className="active-tracking-dot" />
+                          <span className="active-tracking-label">{labels[i]}</span>
+                        </div>
+                      )
+                    })}
                   </div>
-                  <div className="active-donation-detail-row">
-                    <span className="active-donation-detail-label">Tujuan Donasi</span>
-                    <p className="active-donation-detail-val">Panti Asuhan Kristen Tanah Putih - Semarang</p>
+
+                  <div className="active-donation-details">
+                    <div className="active-donation-detail-row">
+                      <span className="active-donation-detail-label">Kode Donasi</span>
+                      <p className="active-donation-detail-val" style={{ fontWeight: 700 }}>{activeDonation.donation_code}</p>
+                    </div>
+                    <div className="active-donation-detail-row">
+                      <span className="active-donation-detail-label">Donasi</span>
+                      <p className="active-donation-detail-val">{activeDonation.item_name} ({activeDonation.quantity} barang)</p>
+                    </div>
+                    <div className="active-donation-detail-row">
+                      <span className="active-donation-detail-label">Tujuan Donasi</span>
+                      <p className="active-donation-detail-val">{activeDonation.communities?.name || 'Menunggu konfirmasi'}</p>
+                    </div>
                   </div>
+
+                  <button
+                    type="button"
+                    style={{
+                      width: '100%',
+                      marginTop: '16px',
+                      padding: '10px 0',
+                      background: '#238b94',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-sora)',
+                    }}
+                  >
+                    Lihat Detail &rarr;
+                  </button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="donation-empty-card">
+                <p>Belum ada donasi aktif.</p>
+                <Link to="/donasi" className="donation-empty-link" onClick={(e) => { e.preventDefault(); handleOpenCariModal(); }}>
+                  Mulai Donasi →
+                </Link>
+              </div>
+            )}
           </div>
 
-          {/* Past Donations History */}
+          {/* Donation History */}
           <div className="donation-history-col">
             <div className="donation-section-heading-row">
               <h2 className="donation-section-title">Riwayat</h2>
               <span className="donation-section-sub">Donasi saya</span>
             </div>
-            <div className="donation-history-list">
-              <article className="donation-history-item">
-                <img src="/buku-pelajarn.svg" alt="" className="donation-history-img" />
-                <div className="donation-history-info">
-                  <h4 className="donation-history-title">Buku Pelajaran SMP</h4>
-                  <p className="donation-history-meta">Untuk Panti Asuhan Al Jannah</p>
-                </div>
-                <span className="donation-history-status-badge">Selesai</span>
-              </article>
-
-              <article className="donation-history-item">
-                <img src="/girl-doing-shopping-with-cart-2194198-0.svg" alt="" className="donation-history-img" />
-                <div className="donation-history-info">
-                  <h4 className="donation-history-title">Pakaian Layak Pakai</h4>
-                  <p className="donation-history-meta">Untuk Komunitas Sedekas</p>
-                </div>
-                <span className="donation-history-status-badge">Selesai</span>
-              </article>
-            </div>
+            {loading ? (
+              <div className="donation-empty-card">
+                <p>Memuat data...</p>
+              </div>
+            ) : historyDonations.length === 0 ? (
+              <div className="donation-empty-card">
+                <p>Belum ada riwayat donasi.</p>
+              </div>
+            ) : (
+              <div className="donation-history-list">
+                {historyDonations.map((d) => (
+                  <article key={d.id} className="donation-history-item">
+                    <img src="/buku-pelajarn.svg" alt="" className="donation-history-img" />
+                    <div className="donation-history-info">
+                      <h4 className="donation-history-title">{d.item_name}</h4>
+                      <p className="donation-history-meta">Untuk {d.communities?.name || 'Komunitas'}</p>
+                    </div>
+                    <span className={`donation-history-status-badge ${d.status === 'received' ? 'status-selesai' : 'status-dibatalkan'}`}>
+                      {d.status === 'received' ? 'Selesai' : d.status === 'cancelled' ? 'Dibatalkan' : d.status}
+                    </span>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

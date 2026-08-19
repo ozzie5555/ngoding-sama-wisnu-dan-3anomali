@@ -18,6 +18,28 @@ export const donationService = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
+    // Resolve communityId — could be slug or UUID
+    let resolvedCommunityId = communityId;
+    // UUID format: 8-4-4-4-12 hex chars (e.g. a1b2c3d4-e5f6-...)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(communityId);
+
+    if (communityId && !isUUID) {
+      const { data: community, error: lookupError } = await supabase
+        .from('communities')
+        .select('id')
+        .eq('slug', communityId)
+        .single();
+
+      if (lookupError || !community) {
+        throw new Error(`Komunitas "${communityId}" tidak ditemukan di database.`);
+      }
+      resolvedCommunityId = community.id;
+    }
+
+    if (!resolvedCommunityId) {
+      throw new Error('Komunitas tidak ditemukan.');
+    }
+
     const donationCode = generateDonationCode();
 
     // Insert donation
@@ -26,7 +48,7 @@ export const donationService = {
       .insert({
         donation_code: donationCode,
         donor_id: user.id,
-        community_id: communityId,
+        community_id: resolvedCommunityId,
         need_id: needId || null,
         category: category || 'barang_bekas',
         item_name: itemName,
@@ -53,14 +75,19 @@ export const donationService = {
           .from('item-photos')
           .upload(filePath, file);
 
-        if (!uploadError) {
-          await supabase
+        if (uploadError) {
+          console.error('[donationService] Photo upload failed:', uploadError.message);
+        } else {
+          const { error: insertError } = await supabase
             .from('donation_items')
             .insert({
               donation_id: donation.id,
               storage_path: filePath,
               sort_order: i,
             });
+          if (insertError) {
+            console.error('[donationService] donation_items insert failed:', insertError.message);
+          }
         }
       }
     }
@@ -86,15 +113,31 @@ export const donationService = {
         submitted_at,
         received_at,
         condition_note,
+        community_id,
         communities (
-          name
+          id, name, slug
+        ),
+        donation_items (
+          storage_path
         )
       `)
       .eq('donor_id', user.id)
       .order('submitted_at', { ascending: false });
 
     if (error) throw new Error(error.message);
-    return data || [];
+
+    // Map photos to public URLs
+    return (data || []).map((d) => {
+      let photoUrl = null;
+      if (d.donation_items && d.donation_items.length > 0) {
+        const path = d.donation_items[0].storage_path;
+        const { data: urlData } = supabase.storage
+          .from('item-photos')
+          .getPublicUrl(path);
+        photoUrl = urlData?.publicUrl || null;
+      }
+      return { ...d, photoUrl };
+    });
   },
 
   /**
@@ -120,6 +163,9 @@ export const donationService = {
       donations: totalDonations,
       distributed: distributed,
       saved: totalItems,
+    };
+  },
+
   /**
    * Get unique communities the user has donated to
    */
@@ -148,8 +194,6 @@ export const donationService = {
 
     return Array.from(communityMap.values());
   },
-};
-  },
 
   /**
    * Get active (in-progress) donation for the current user
@@ -174,13 +218,12 @@ export const donationService = {
         )
       `)
       .eq('donor_id', user.id)
-      .in('status', ['pending', 'verified', 'in_transit'])
+      .in('status', ['pending', 'verified', 'pickup', 'shipping'])
       .order('submitted_at', { ascending: false })
-      .limit(1)
-      .single();
+      .limit(1);
 
-    if (error && error.code !== 'PGRST116') return null;
-    return data;
+    if (error || !data || data.length === 0) return null;
+    return data[0];
   },
 
   /**

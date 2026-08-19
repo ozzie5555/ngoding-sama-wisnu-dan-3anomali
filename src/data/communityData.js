@@ -107,7 +107,7 @@ export const COMMUNITIES_DATA = [
     ],
   },
   {
-    id: 'panti-al-jannah',
+    id: 'panti-asuhan-al-jannah',
     name: 'Panti Asuhan Al Jannah',
     headerName: 'PANTI ASUHAN AL-JANNAH',
     category: 'Panti Asuhan',
@@ -159,7 +159,7 @@ export const COMMUNITIES_DATA = [
     ],
   },
   {
-    id: 'panti-kristen-tanah-putih',
+    id: 'panti-asuhan-kristen-tanah-putih',
     name: 'Panti Asuhan Kristen Tanah Putih',
     headerName: 'Panti Asuhan Kristen Tanah Putih',
     category: 'Panti Asuhan',

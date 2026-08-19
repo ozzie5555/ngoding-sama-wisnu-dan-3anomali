@@ -7,7 +7,8 @@ import './ProfileOverview.css'
 const STATUS_LABELS = {
   pending: 'Menunggu',
   verified: 'Terverifikasi',
-  in_transit: 'Dalam Pengiriman',
+  pickup: 'Pengambilan',
+  shipping: 'Pengiriman',
   received: 'Diterima',
   cancelled: 'Dibatalkan',
 }
@@ -17,6 +18,14 @@ const CATEGORY_LABELS = {
   pakaian_layak: 'Pakaian Layak',
   buku_atk: 'Buku & ATK',
   karya_daur_ulang: 'Karya Daur Ulang',
+}
+
+// Community slug to logo mapping
+const COMMUNITY_LOGOS = {
+  sedekas: '/sedekas.svg',
+  'dipo-waste-bank': '/dipo waste bank 1.svg',
+  'panti-asuhan-al-jannah': '/Panji AL JANNAH 1.svg',
+  'panti-asuhan-kristen-tanah-putih': '/Panti asuhan kristen tanah putih 1.svg',
 }
 
 export default function ProfileOverview({ onNavigateToEdit }) {
@@ -37,7 +46,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         // Map donations to activity cards
         const acts = donations.map((d) => ({
           id: d.id,
-          image: '/buku-pelajarn.svg',
+          image: d.photoUrl || '/buku-pelajarn.svg',
           title: d.item_name,
           recipient: d.communities?.name || 'Komunitas',
           description: `${d.item_name} (${d.quantity} barang). Diajukan pada ${new Date(d.submitted_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
@@ -55,7 +64,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         // Map communities to partner cards
         const parts = communities.map((c) => ({
           id: c.id,
-          image: c.logo_path || '/sedekas.svg',
+          image: COMMUNITY_LOGOS[c.slug] || c.logo_path || '/sedekas.svg',
           title: c.name,
           description: c.description || c.location || 'Komunitas verified',
         }))
@@ -81,6 +90,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
               src={user.avatar || '/src/assets/images/profile-placeholder.svg'}
               alt={user.name}
               className="profile-avatar-large"
+              style={{ objectPosition: user.avatarPosition || '50% 50%' }}
               onError={(e) => {
                 e.target.src = '/src/assets/images/profile-placeholder.svg'
               }}

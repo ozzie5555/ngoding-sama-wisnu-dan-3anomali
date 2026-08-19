@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { DatePickerModal, LocationPickerModal } from './ProfileModal'
 import { authService } from '../../features/auth/services/authService'
@@ -21,25 +21,38 @@ export default function EditProfile() {
     birthDate: user?.birthDate || '',
     location: user?.location || '',
     avatar: user?.avatar || '',
+    avatarPosition: user?.avatarPosition || '50% 50%',
   }))
 
-  // Sync form when user data loads from DB (only update fields that have values)
+  // Sync form when user data loads from DB (once per user ID)
+  const [syncedUserId, setSyncedUserId] = useState(null)
   useEffect(() => {
-    if (!user) return
-    setFormData((prev) => ({
-      name: user.name || prev.name,
-      username: user.username || prev.username,
-      email: user.email || prev.email,
-      phone: user.phone || prev.phone,
-      birthDate: user.birthDate || prev.birthDate,
-      location: user.location || prev.location,
-      avatar: user.avatar || prev.avatar,
-    }))
-  }, [user])
+    if (!user?.id || user.id === syncedUserId) return
+    setFormData({
+      name: user.name || '',
+      username: user.username || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      birthDate: user.birthDate || '',
+      location: user.location || '',
+      avatar: user.avatar || '',
+      avatarPosition: user.avatarPosition || '50% 50%',
+    })
+    setSyncedUserId(user.id)
+  }, [user, syncedUserId])
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
+
+  // Avatar positioning
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const [avatarPosition, setAvatarPosition] = useState({ x: 50, y: 50 })
+  const [showPositionModal, setShowPositionModal] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const positionContainerRef = useRef(null)
+  const isDragging = useRef(false)
+  const dragStart = useRef({ x: 0, y: 0 })
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({
@@ -67,7 +80,6 @@ export default function EditProfile() {
   const handleSave = async (e) => {
     e.preventDefault()
     try {
-      // Save to database
       await authService.updateProfile({
         name: formData.name,
         username: formData.username,
@@ -76,10 +88,7 @@ export default function EditProfile() {
         birthDate: formData.birthDate,
         location: formData.location,
       })
-      // Update local context
       updateProfile(formData)
-      // Refresh from DB to ensure consistency
-      await refreshProfile()
       setSaveMessage('Profil berhasil disimpan!')
     } catch (err) {
       setSaveMessage('Gagal menyimpan: ' + err.message)
@@ -87,7 +96,7 @@ export default function EditProfile() {
     setTimeout(() => setSaveMessage(''), 3000)
   }
 
-  const handleAvatarChange = async (e) => {
+  const handleAvatarChange = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -103,16 +112,78 @@ export default function EditProfile() {
       return
     }
 
+    setSelectedFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+    setAvatarPosition({ x: 50, y: 50 })
+    setShowPositionModal(true)
+    e.target.value = ''
+  }
+
+  const handlePositionMouseDown = (e) => {
+    isDragging.current = true
+    dragStart.current = { x: e.clientX, y: e.clientY }
+    e.preventDefault()
+  }
+
+  const handlePositionMouseMove = useCallback((e) => {
+    if (!isDragging.current || !positionContainerRef.current) return
+    const rect = positionContainerRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    setAvatarPosition({
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    })
+  }, [])
+
+  const handlePositionMouseUp = useCallback(() => {
+    isDragging.current = false
+  }, [])
+
+  useEffect(() => {
+    if (showPositionModal) {
+      window.addEventListener('mousemove', handlePositionMouseMove)
+      window.addEventListener('mouseup', handlePositionMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handlePositionMouseMove)
+        window.removeEventListener('mouseup', handlePositionMouseUp)
+      }
+    }
+  }, [showPositionModal, handlePositionMouseMove, handlePositionMouseUp])
+
+  const handleSaveAvatarPosition = async () => {
+    if (!selectedFile) {
+      console.error('[Avatar] No file selected')
+      return
+    }
     try {
       setSaveMessage('Mengunggah foto...')
-      const result = await authService.uploadAvatar(file)
-      handleChange('avatar', result.url)
-      await refreshProfile()
+      console.log('[Avatar] Uploading:', selectedFile.name, selectedFile.size)
+      const result = await authService.uploadAvatar(selectedFile)
+      console.log('[Avatar] Upload success, URL:', result.url)
+      const positionStr = `${avatarPosition.x}% ${avatarPosition.y}%`
+
+      // Update local form state directly
+      setFormData((prev) => ({
+        ...prev,
+        avatar: result.url,
+        avatarPosition: positionStr,
+      }))
+      setShowPositionModal(false)
+      setAvatarPreview(null)
+      setSelectedFile(null)
       setSaveMessage('Foto profil berhasil diperbarui!')
     } catch (err) {
+      console.error('[Avatar] Upload failed:', err)
       setSaveMessage('Gagal mengunggah: ' + err.message)
     }
     setTimeout(() => setSaveMessage(''), 3000)
+  }
+
+  const handleCancelPosition = () => {
+    setShowPositionModal(false)
+    setAvatarPreview(null)
+    setSelectedFile(null)
   }
 
   const handleAvatarRemove = () => {
@@ -138,6 +209,7 @@ export default function EditProfile() {
                 src={formData.avatar || '/src/assets/images/profile-placeholder.svg'}
                 alt={formData.name}
                 className="edit-avatar-img"
+                style={{ objectPosition: formData.avatarPosition || '50% 50%' }}
                 onError={(e) => {
                   e.target.src = '/src/assets/images/profile-placeholder.svg'
                 }}
@@ -318,6 +390,50 @@ export default function EditProfile() {
         currentLocation={formData.location}
         onSaveLocation={(locStr) => handleChange('location', locStr)}
       />
+
+      {/* Avatar Positioning Modal */}
+      {showPositionModal && (
+        <div className="avatar-position-overlay">
+          <div className="avatar-position-card">
+            <div className="avatar-position-card-header">
+              <h3>Posisikan Foto</h3>
+              <button type="button" className="avatar-position-close" onClick={handleCancelPosition}>
+                &times;
+              </button>
+            </div>
+
+            <div
+              className="avatar-position-stage"
+              ref={positionContainerRef}
+              onMouseDown={handlePositionMouseDown}
+            >
+              <img
+                src={avatarPreview}
+                alt=""
+                draggable={false}
+                className="avatar-position-bg"
+                style={{ objectPosition: `${avatarPosition.x}% ${avatarPosition.y}%` }}
+              />
+              <div className="avatar-position-circle">
+                <img
+                  src={avatarPreview}
+                  alt="Preview"
+                  draggable={false}
+                  style={{ objectPosition: `${avatarPosition.x}% ${avatarPosition.y}%` }}
+                />
+              </div>
+              <div className="avatar-position-ring" />
+            </div>
+
+            <p className="avatar-position-hint">Geser untuk memposisikan foto</p>
+
+            <div className="avatar-position-actions">
+              <button type="button" className="btn-position-cancel" onClick={handleCancelPosition}>Batal</button>
+              <button type="button" className="btn-position-save" onClick={handleSaveAvatarPosition}>Simpan</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

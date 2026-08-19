@@ -189,14 +189,22 @@ export const authService = {
       .update({
         full_name: updates.name,
         username: updates.username,
-        email: updates.email || user.email,
+        email: updates.email,
         phone: updates.phone,
         birth_date: updates.birthDate || null,
         address: updates.location,
+        avatar_path: updates.avatar || null,
       })
       .eq('id', user.id);
 
     if (error) throw new Error(error.message);
+
+    // Save avatar position in user metadata
+    if (updates.avatarPosition) {
+      await supabase.auth.updateUser({
+        data: { avatar_position: updates.avatarPosition }
+      });
+    }
   },
 
   getUser: async () => {
@@ -225,9 +233,8 @@ export const authService = {
 
     if (uploadError) throw new Error(uploadError.message);
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('profile-photos')
-      .getPublicUrl(filePath);
+    const timestamp = Date.now();
+    const publicUrl = `${supabase.storage.from('profile-photos').getPublicUrl(filePath).data.publicUrl}?t=${timestamp}`;
 
     const { error: updateError } = await supabase
       .from('profiles')

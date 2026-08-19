@@ -467,25 +467,43 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 ### Fase 1 — Auth dan Profile ✅ SELESAI
 
 - Ganti AuthContext localStorage dengan Supabase Auth.
-- Buat `/auth` atau modal auth.
-- Hubungkan Navbar, Profile, edit profile, privacy, security, dan logout.
+- Login: email + username lookup via `profiles.email` (kolom baru di migration 0009).
+- Register: Supabase signUp + trigger `handle_new_user` simpan full_name, username, email.
+- Reset Password: Supabase `resetPasswordForEmail` + PKCE flow `exchangeCodeForSession`.
+- Edit Profile: save ke `profiles` table (nama, username, email, phone, birthDate, location).
+- Upload Avatar: upload ke `profile-photos` bucket (public, 2MB) + save `avatar_path` ke profiles.
+- Avatar Positioning: drag-to-position modal, `objectPosition` CSS.
+- Privacy Settings: load/save dari `profile_settings` table (4 toggles).
+- Change Password: re-auth + `auth.updateUser({ password })` + timestamp ke `profiles.password_last_updated`.
+- Change Email: re-auth + `auth.updateUser({ email })` + sync ke `profiles.email`.
+- Change WhatsApp: save ke `profiles.phone`.
+- Delete Account: hapus dari `profiles` (cascade ke `profile_settings`) + sign out.
 
 **Lulus jika:** dua akun dapat daftar/login/logout/edit profile/reset password dan tidak dapat melihat data private akun lain.
 
-### Fase 2 — Community dan Insight
+**Known Issue:** Avatar positioning — upload berhasil tapi preview有时 hilang setelah save. Perlu fix sync state antara `formData.avatar` dan `user.avatar` dari DB.
 
-- Pindahkan partner dan artikel hardcoded ke database.
-- Buat route komunitas dan insight ketika UI siap.
-- Tambahkan filter kategori/lokasi dan social links.
+### Fase 2 — Community dan Insight (SEBAGIAN)
+
+- ProfileOverview: fetch donasi dari `donations` table, fetch komunitas dari `communities` table.
+- Stats (Donasi/Tersalur/Simpan) di-compute dari `donations` table.
+- Komunitas Mitra: mapped dari `communities` table via slug → logo SVG.
+- Status donasi 5 step: pending → verified → pickup → shipping → received.
+
+**Belum:** Pindahkan artikel hardcoded ke database, filter kategori/lokasi.
 
 **Lulus jika:** guest dapat membaca data publik, manager/admin yang dapat mengubahnya.
 
-### Fase 3 — Form dan submit donasi
+### Fase 3 — Form dan submit donasi (SEBAGIAN)
 
-- Buat form bertahap: kebutuhan, kategori, foto, kondisi, quantity, data donor, jadwal.
-- Auto-fill dari profile, upload foto ke Storage, review, lalu panggil RPC.
+- DonationForm: submit ke `donations` table via `donationService.submitDonation()`.
+- Photo upload ke `item-photos` bucket (private) + save ke `donation_items` table.
+- Slug → UUID resolution untuk `community_id`.
+- Donasi page: fetch active donation + history dari database.
+- Active tracker: 5 step (Form → Konfirmasi → Pengambilan → Pengiriman → Diterima).
+- Status update via SQL manual (belum ada admin dashboard).
 
-**Lulus jika:** satu submit menghasilkan donation, code, foto, dan event `pending` secara konsisten.
+**Belum:** Auto-fill dari profile, review step, RPC submit_donation.
 
 ### Fase 4 — Admin, tracking, realtime
 
@@ -565,3 +583,38 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - Twilio Account SID & credentials (simpan di env, jangan commit)
 - Nomor yang sudah di-whitelist di Twilio trial
 - Flow OTP: signup, reset password, login
+
+---
+
+## 16. Migration Log
+
+| Migration | Isi | Status |
+|---|---|---|
+| 0001 | Extensions + helpers | ✅ Run |
+| 0002 | Profiles + profile_settings + triggers | ✅ Run |
+| 0003 | Communities + needs | ✅ Run (seed via 0001_communities.sql) |
+| 0004 | Donations + status_events + donation_items | ✅ Run |
+| 0005 | Notifications + activity_statistics + RPCs | ✅ Run |
+| 0006 | Articles + testimonials + newsletter | ✅ Run |
+| 0007 | Chat (rooms + messages) | ✅ Run |
+| 0008 | Storage buckets + realtime policies | ✅ Run |
+| 0009 | Add email column to profiles | ✅ Run |
+| 0010 | Add password_last_updated to profiles | ✅ Run |
+| 0011 | Storage policies for item-photos | ✅ Run |
+| 0012 | Add pickup & shipping donation statuses | ✅ Run |
+| 0013 | DELETE policy for profile-photos | ✅ Run |
+
+**Buckets yang dibuat manual di Dashboard:**
+- `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
+- `item-photos` — PUBLIC, 5MB, image/jpeg|png|webp
+
+---
+
+## 17. Known Issues
+
+- **Avatar positioning**: Upload foto berhasil, tapi `formData.avatar` ter-overwrite oleh `useEffect` sync dari DB. Workaround: sync cuma sekali per user ID. Perlu audit lebih lanjut.
+- **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
+- **Status donasi**: Update status masih manual via SQL. Belum ada admin dashboard atau RPC untuk transition.
+- **WhatsApp OTP**: Masih mock. Butuh Twilio trial untuk real SMS.
+- **Chat**: Migration ada tapi belum ada frontend integration.
+- **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.

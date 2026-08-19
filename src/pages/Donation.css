@@ -461,3 +461,45 @@
   .donation-impact { padding: 36px 20px 0 !important; }
   .donation-impact > div:nth-child(2) { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Empty state card */
+.donation-empty-card {
+  background: #f6f9f8;
+  border: 1px dashed #e2e8e7;
+  border-radius: 14px;
+  padding: 32px 24px;
+  text-align: center;
+  color: #8b9fa2;
+  font-size: 13px;
+}
+
+.donation-empty-card p {
+  margin: 0;
+}
+
+.donation-empty-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 18px;
+  background: #238b94;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.donation-empty-link:hover {
+  background: #1f5156;
+}
+
+/* Status badge variants */
+.donation-history-status-badge.status-selesai {
+  background-color: #DCF4ED;
+  color: #1f5156;
+}
+
+.donation-history-status-badge.status-dibatalkan {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

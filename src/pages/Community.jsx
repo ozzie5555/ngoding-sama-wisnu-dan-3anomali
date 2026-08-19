@@ -47,7 +47,7 @@ const initialCommunities = [
     ],
   },
   {
-    id: 'panti-al-jannah',
+    id: 'panti-asuhan-al-jannah',
     name: 'PANTI ASUHAN AL-JANNAH',
     category: 'Panti Asuhan',
     location: 'Tugu, Semarang',
@@ -59,7 +59,7 @@ const initialCommunities = [
     ],
   },
   {
-    id: 'panti-kristen-tanah-putih',
+    id: 'panti-asuhan-kristen-tanah-putih',
     name: 'Panti Asuhan Kristen Tanah Putih',
     category: 'Panti Asuhan',
     location: 'Candisari, Semarang',
@@ -90,7 +90,7 @@ const exploreList = [
     description: 'Mengumpulkan dan menyalurkan barang layak pakai untuk membantu masyarakat yang membutuhkan.',
   },
   {
-    id: 'panti-al-jannah',
+    id: 'panti-asuhan-al-jannah',
     name: 'PANTI ASUHAN AL-JANNAH',
     category: 'Panti Asuhan',
     location: 'Tugu, Semarang',
@@ -98,7 +98,7 @@ const exploreList = [
     description: "Panti Asuhan Al Jannah membina anak yatim, piatu, dan dhuafa melalui pendidikan, tahfidz Al-Qur'an, serta pemenuhan kebutuhan harian.",
   },
   {
-    id: 'panti-kristen-tanah-putih',
+    id: 'panti-asuhan-kristen-tanah-putih',
     name: 'Panti Asuhan Kristen Tanah Putih',
     category: 'Panti Asuhan',
     location: 'Candisari, Semarang',

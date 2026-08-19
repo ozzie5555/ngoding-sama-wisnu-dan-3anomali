@@ -247,6 +247,147 @@
   background: #173d41;
 }
 
+/* Avatar Positioning Modal */
+.avatar-position-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.avatar-position-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 92vw;
+  overflow: hidden;
+}
+
+.avatar-position-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+
+.avatar-position-card-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.avatar-position-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.avatar-position-stage {
+  width: 260px;
+  height: 260px;
+  margin: 20px auto;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+.avatar-position-bg {
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  object-fit: cover;
+  filter: blur(16px) brightness(0.4);
+  pointer-events: none;
+}
+
+.avatar-position-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.avatar-position-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.avatar-position-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.avatar-position-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+}
+
+.avatar-position-actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.btn-position-cancel {
+  flex: 1;
+  padding: 10px 0;
+  background: #ffffff;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-sora);
+}
+
+.btn-position-save {
+  flex: 1;
+  padding: 10px 0;
+  background: var(--color-teal);
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: var(--font-sora);
+}
+
+.btn-position-save:hover {
+  background: var(--color-dark-teal);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .form-fields-grid {
