@@ -8,10 +8,11 @@ import Insight from './pages/Insight'
 import Community from './pages/Community'
 import Login from './features/auth/pages/Login'
 import SignUp from './features/auth/pages/SignUp'
+import ResetPassword from './features/auth/pages/ResetPassword'
 
 export default function App() {
   const location = useLocation()
-  const isAuthPage = ['/login', '/sign-up'].includes(location.pathname)
+  const isAuthPage = ['/login', '/sign-up', '/reset-password'].includes(location.pathname)
 
   return (
     <AuthProvider>
@@ -24,8 +25,10 @@ export default function App() {
         <Route path="/komunitas" element={<Community />} />
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </AuthProvider>
   )
 }
+
 

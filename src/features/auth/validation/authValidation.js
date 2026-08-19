@@ -29,3 +29,24 @@ export const validatePassword = (password) => {
   }
   return null;
 };
+
+export const validatePhone = (phone) => {
+  if (!phone || !phone.trim()) {
+    return 'Nomor WhatsApp wajib diisi';
+  }
+  // Clean non-digits except +
+  const cleaned = phone.replace(/[\s-]/g, '');
+  if (!/^\+?[0-9]{9,15}$/.test(cleaned)) {
+    return 'Format nomor WhatsApp tidak valid';
+  }
+  return null;
+};
+
+export const validateOtp = (otp) => {
+  const otpStr = Array.isArray(otp) ? otp.join('') : (otp || '');
+  if (!otpStr || otpStr.length !== 4 || !/^\d{4}$/.test(otpStr)) {
+    return 'Masukkan 4 digit kode verifikasi.';
+  }
+  return null;
+};
+

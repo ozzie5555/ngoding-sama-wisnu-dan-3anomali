@@ -188,9 +188,9 @@ export default function Login() {
             ) : (
               <span />
             )}
-            <a href="#lupa-password" className="forgot-password-link">
+            <Link to="/reset-password" className="forgot-password-link">
               Lupa Password?
-            </a>
+            </Link>
           </div>
         </div>
 
