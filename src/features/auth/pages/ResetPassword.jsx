@@ -77,11 +77,22 @@ export default function ResetPassword() {
   const [otpError, setOtpError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [isRealtimeRecovery, setIsRealtimeRecovery] = useState(false);
 
   // Countdown Timers (in seconds)
   const [emailCountdown, setEmailCountdown] = useState(0);
   const [whatsappCountdown, setWhatsappCountdown] = useState(0);
+
+  const notifyRecoveryConfirmed = () => {
+    const payload = String(Date.now())
+    if (typeof BroadcastChannel !== 'undefined') {
+      const channel = new BroadcastChannel('kembali-password-recovery')
+      channel.postMessage({ type: 'confirmed', payload })
+      channel.close()
+    }
+    window.localStorage.setItem('kembali_password_recovery_confirmed', payload)
+  }
 
   // Check for Supabase Password Recovery session on mount
   useEffect(() => {
@@ -95,6 +106,7 @@ export default function ResetPassword() {
         sessionStorage.setItem('kembali_password_recovery_pending', 'true');
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
+          notifyRecoveryConfirmed();
           setStep('reset-confirmed');
         }
         // Clean up URL
@@ -108,6 +120,7 @@ export default function ResetPassword() {
         hash.includes('type=recovery')
       ) {
         sessionStorage.setItem('kembali_password_recovery_pending', 'true');
+        notifyRecoveryConfirmed();
         setStep('reset-confirmed');
         return;
       }
@@ -119,7 +132,37 @@ export default function ResetPassword() {
     };
 
     handleRecovery();
+
+    const handleRealtimeConfirmation = () => {
+      setIsRealtimeRecovery(true);
+      setStep('reset-confirmed');
+    };
+
+    let recoveryChannel;
+    if (typeof BroadcastChannel !== 'undefined') {
+      recoveryChannel = new BroadcastChannel('kembali-password-recovery');
+      recoveryChannel.onmessage = (event) => {
+        if (event.data?.type === 'confirmed') handleRealtimeConfirmation();
+      };
+    }
+    const handleStorage = (event) => {
+      if (event.key === 'kembali_password_recovery_confirmed' && event.newValue) {
+        handleRealtimeConfirmation();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      recoveryChannel?.close();
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isRealtimeRecovery || step !== 'reset-confirmed') return undefined;
+    const timer = window.setTimeout(() => setStep('new-password'), 1200);
+    return () => window.clearTimeout(timer);
+  }, [isRealtimeRecovery, step]);
 
   // Email Countdown Timer Effect
   useEffect(() => {
@@ -640,8 +683,9 @@ export default function ResetPassword() {
                 Reset Password Berhasil
               </h1>
               <p className="">
-                Email berhasil dikonfirmasi. Kembali ke halaman reset password,
-                lalu refresh halaman untuk membuat password baru.
+                {isRealtimeRecovery
+                  ? 'Konfirmasi diterima. Menyiapkan form password baru...'
+                  : 'Email berhasil dikonfirmasi. Kembali ke halaman reset password, lalu refresh halaman untuk membuat password baru.'}
               </p>
             </header>
             <div style={{ marginTop: '24px' }}>

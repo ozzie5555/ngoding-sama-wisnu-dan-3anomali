@@ -45,6 +45,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   // Field errors
   const [emailError, setEmailError] = useState('');
@@ -101,7 +102,9 @@ export default function Login() {
         body: { token: turnstileToken, action: 'login' },
       });
       if (verificationError || !verification?.success) {
-        throw new Error('Verifikasi keamanan gagal. Silakan coba lagi.');
+        setTurnstileToken('');
+        setTurnstileResetKey((key) => key + 1);
+        throw new Error('Verifikasi keamanan gagal. Silakan centang ulang.');
       }
 
       const response = await authService.login(emailOrUsername, password);
@@ -216,6 +219,7 @@ export default function Login() {
 
         {/* Cloudflare Turnstile: token is verified by the Supabase Edge Function. */}
         <TurnstileWidget
+          key={turnstileResetKey}
           onVerify={(token) => {
             setTurnstileToken(token);
             if (generalError) setGeneralError('');

@@ -19,20 +19,20 @@ export const authService = {
   },
 
   login: async (emailOrUsername, password) => {
-    let email = emailOrUsername;
+    const identifier = emailOrUsername.trim();
+    let email = identifier;
 
-    if (!emailOrUsername.includes('@')) {
-      const { data: profile, error: lookupError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('username', emailOrUsername)
-        .single();
+    if (!identifier.includes('@')) {
+      const { data: profileEmail, error: lookupError } = await supabase.rpc(
+        'lookup_email_by_username',
+        { p_username: identifier }
+      );
 
-      if (lookupError || !profile || !profile.email) {
+      if (lookupError || !profileEmail) {
         throw new Error('Username tidak ditemukan. Gunakan email untuk login.');
       }
 
-      email = profile.email;
+      email = profileEmail;
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -156,7 +156,17 @@ export const authService = {
   updateUserPassword: async (newPassword) => {
     const { data, error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw new Error(error.message);
-    return { success: true, user: data.user };
+
+    const passwordUpdatedAt = new Date().toISOString();
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ password_last_updated: passwordUpdatedAt })
+      .eq('id', data.user.id)
+      .select('id, password_last_updated')
+      .single();
+
+    if (profileError) throw new Error(profileError.message);
+    return { success: true, user: data.user, passwordUpdatedAt };
   },
 
   updateProfile: async (updates) => {
@@ -389,13 +399,17 @@ export const authService = {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw new Error(error.message);
 
-    // Save timestamp to profiles
-    await supabase
+    // Save timestamp to profiles and verify the row was updated.
+    const passwordUpdatedAt = new Date().toISOString();
+    const { error: profileError } = await supabase
       .from('profiles')
-      .update({ password_last_updated: new Date().toISOString() })
-      .eq('id', user.id);
+      .update({ password_last_updated: passwordUpdatedAt })
+      .eq('id', user.id)
+      .select('id, password_last_updated')
+      .single();
 
-    return { success: true };
+    if (profileError) throw new Error(profileError.message);
+    return { success: true, passwordUpdatedAt };
   },
 
   // ==========================================

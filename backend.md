@@ -460,7 +460,7 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 
 | Fitur | Status | Catatan |
 | --- | --- | --- |
-| Supabase Auth email/password | ✅ Selesai | Login, register, logout, session restore |
+| Supabase Auth email/password | ✅ Selesai | Login, register, logout, session restore; username memakai RPC `lookup_email_by_username` agar dapat dicari sebelum autentikasi |
 | Turnstile pada login | ✅ Selesai | Verifikasi melalui Edge Function verify-turnstile |
 | Reset password email | ✅ Selesai | Link email Supabase, recovery session, update password |
 | Profile edit | ✅ Selesai | Update nama, username, email profile, telepon, tanggal lahir, dan alamat |
@@ -696,6 +696,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0011 | Storage policies for item-photos | ✅ Run |
 | 0012 | Add pickup & shipping donation statuses | ✅ Run |
 | 0013 | DELETE policy for profile-photos | ✅ Run |
+| 0014 | Safe username lookup RPC for pre-auth login | ⚠️ File dibuat, jalankan di project Supabase |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp

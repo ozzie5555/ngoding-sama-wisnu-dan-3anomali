@@ -277,7 +277,7 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
           </div>
           <div>
             <h3 className="modal-title">Ubah Kata sandi</h3>
-            <p className="modal-subtitle">Terakhir diperbarui: {lastUpdated || '12 Agustus 2026'}</p>
+            <p className="modal-subtitle">Terakhir diperbarui: {lastUpdated || 'Belum pernah diperbarui'}</p>
           </div>
         </div>
 
