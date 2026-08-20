@@ -833,3 +833,19 @@
 .chat-input:disabled { cursor: not-allowed; opacity: .65; }
 
 .donator-empty-state { padding: 14px 4px; color: var(--color-text-muted, #8b9fa2); font-size: 11px; }
+
+.message-reply-preview { display: flex; flex-direction: column; gap: 2px; margin-bottom: 7px; padding: 6px 8px; border-left: 2px solid currentColor; border-radius: 3px; background: rgba(255,255,255,.18); font-size: 10px; opacity: .82; }
+.message-reply-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+
+.chat-edit-bar { border-left: 2px solid var(--color-teal, #238b94); }
+.message-edited-label { font-size: 9px; opacity: .7; }
+
+/* Keep the page layout fixed while only the message list scrolls. */
+.community-chat { height: 560px; min-height: 0; }
+.chat-messages { min-height: 0; overscroll-behavior: contain; }
+@media (max-width: 1023px) {
+  .community-chat { height: 430px; min-height: 0; }
+}
+@media (max-width: 767px) {
+  .community-chat { height: 420px; min-height: 0; }
+}

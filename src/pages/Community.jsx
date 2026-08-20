@@ -143,6 +143,7 @@ export default function Community() {
     return map
   })
   const [replyingTo, setReplyingTo]         = useState(null)
+  const [editingMessage, setEditingMessage] = useState(null)
   const [attachedImages, setAttachedImages] = useState([])
   const [roomIds, setRoomIds] = useState({})
   const [chatLoading, setChatLoading] = useState(false)
@@ -199,6 +200,7 @@ export default function Community() {
     setSelectedId(id)
     setMessageInput('')
     setReplyingTo(null)
+    setEditingMessage(null)
     setAttachedImages([])
   }
 
@@ -206,6 +208,7 @@ export default function Community() {
     setSelectedId('general')
     setMessageInput('')
     setReplyingTo(null)
+    setEditingMessage(null)
     setAttachedImages([])
   }
 
@@ -224,25 +227,49 @@ export default function Community() {
     }
     try {
       setChatError('')
-      const sent = await chatService.sendMessage(roomId, text || attachedImages.map((file) => file.name).join(', '), user.id)
-      if (sent) {
-        setAllMessages((prev) => {
-          const current = prev[selectedId] || []
-          return current.some((message) => message.id === sent.id)
-            ? prev
-            : { ...prev, [selectedId]: [...current, sent] }
-        })
+      if (editingMessage) {
+        const updated = await chatService.updateMessage(editingMessage.id, text, user.id)
+        setAllMessages((prev) => ({
+          ...prev,
+          [selectedId]: (prev[selectedId] || []).map((message) => message.id === updated.id ? updated : message),
+        }))
+      } else {
+        const sent = await chatService.sendMessage(roomId, text || attachedImages.map((file) => file.name).join(', '), user.id, replyingTo?.id || null)
+        if (sent) {
+          setAllMessages((prev) => {
+            const current = prev[selectedId] || []
+            return current.some((message) => message.id === sent.id)
+              ? prev
+              : { ...prev, [selectedId]: [...current, sent] }
+          })
+        }
       }
       setMessageInput('')
       setReplyingTo(null)
+      setEditingMessage(null)
       setAttachedImages([])
     } catch (error) {
       setChatError(error.message || 'Pesan gagal dikirim.')
     }
   }
 
-  function handleCopy(text) {
-    navigator.clipboard?.writeText(text).catch(() => {})
+  async function handleCopy(text) {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text)
+        return
+      }
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      textarea.remove()
+    } catch (error) {
+      console.error('[Community] Copy failed:', error)
+    }
   }
 
   function handleReply(msg) {
@@ -251,6 +278,17 @@ export default function Community() {
 
   function handleCancelReply() {
     setReplyingTo(null)
+  }
+
+  function handleEdit(msg) {
+    setEditingMessage(msg)
+    setReplyingTo(null)
+    setMessageInput(msg.text)
+  }
+
+  function handleCancelEdit() {
+    setEditingMessage(null)
+    setMessageInput('')
   }
 
   function handleAttachImages(e) {
@@ -334,10 +372,11 @@ export default function Community() {
                     <div className="message-bubble-group own">
                       <span className="message-sender-label own">You</span>
                       <div className="message-bubble own">
-                        <p>{msg.text}</p>
+                        {msg.replyTo && <div className="message-reply-preview"><strong>{msg.replyTo.sender}</strong><span>{msg.replyTo.text}</span></div>}
+                        <p>{msg.text} {msg.editedAt && <small className="message-edited-label">(diedit)</small>}</p>
                       </div>
                       <div className="message-actions own">
-                        <button type="button" className="msg-action-btn">
+                        <button type="button" className="msg-action-btn" onClick={() => handleEdit(msg)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -360,7 +399,8 @@ export default function Community() {
                     <div className="message-bubble-group other">
                       <span className="message-sender-label other">{msg.sender}</span>
                       <div className="message-bubble other">
-                        <p>{msg.text}</p>
+                        {msg.replyTo && <div className="message-reply-preview"><strong>{msg.replyTo.sender}</strong><span>{msg.replyTo.text}</span></div>}
+                        <p>{msg.text} {msg.editedAt && <small className="message-edited-label">(diedit)</small>}</p>
                       </div>
                       <div className="message-actions other">
                         <button type="button" className="msg-action-btn" onClick={() => handleReply(msg)}>
@@ -394,7 +434,18 @@ export default function Community() {
                 tabIndex={-1}
               />
               <div className={`chat-input-wrapper${replyingTo ? ' has-reply' : ''}${attachedImages.length > 0 ? ' has-attachments' : ''}`}>
-                {replyingTo && (
+                {editingMessage && (
+                  <div className="chat-reply-bar chat-edit-bar">
+                    <span className="reply-text">Mengedit pesan...</span>
+                    <button type="button" className="reply-close-btn" onClick={handleCancelEdit} aria-label="Batal edit">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                {replyingTo && !editingMessage && (
                   <div className="chat-reply-bar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="reply-icon" aria-hidden="true">
                       <path d="M9 14l-4-4 4-4" />

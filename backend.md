@@ -726,6 +726,8 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0015 | Align donation status transitions: pickup → shipping → received | ⚠️ File dibuat, jalankan di project Supabase |
 | 0016 | Chat room bootstrap RPC + Realtime publication | ⚠️ File dibuat, jalankan di project Supabase |
 | 0017 | Fix recursive chat RLS membership policy | ⚠️ File dibuat, jalankan di project Supabase |
+| 0018 | Chat reply relation | ⚠️ File dibuat, jalankan di project Supabase |
+| 0019 | Chat message edit + RLS own update | ⚠️ File dibuat, jalankan di project Supabase |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
