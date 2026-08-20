@@ -251,7 +251,7 @@ export default function ArticleDetailModal({ item, onClose }) {
                       <div className="circular-actions-grid">
                         {sec.cards.map((card) => (
                           <div key={card.id} className="circular-action-card">
-                            <div className="action-card-icon-wrap">
+                            <div className={`action-card-icon-wrap action-card-${card.id}`}>
                               <img src={card.icon} alt="" className="action-card-icon" />
                             </div>
                             <h3 className="action-card-title">{card.title}</h3>
