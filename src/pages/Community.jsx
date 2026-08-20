@@ -18,13 +18,6 @@ const GENERAL_COMMUNITY = {
 const mapChatCommunity = (community) => ({ ...community, image: community.logo })
 const fallbackChatCommunities = [GENERAL_COMMUNITY, ...FALLBACK_COMMUNITIES.map(mapChatCommunity)]
 
-const stats = [
-  { value: '12.400+',  label: 'Barang Tersirkulasi' },
-  { value: '2.000 kg', label: 'Sampah Dikurangi' },
-  { value: '4.680 kg', label: 'CO2 Dihemat' },
-  { value: '1.500+',   label: 'Pengguna Aktif' },
-]
-
 function AvatarImg({ src, alt, className }) {
   const [errored, setErrored] = useState(false)
   const initial = alt ? alt.charAt(0).toUpperCase() : '?'
@@ -497,36 +490,6 @@ export default function Community() {
         </div>
       </div>
 
-      <section className="community-impact" aria-labelledby="impact-heading">
-        <div className="impact-inner">
-          <div className="impact-text">
-            <h2 id="impact-heading">
-              Siap Memberikan Kehidupan<br />
-              Kedua untuk Barangmu?
-            </h2>
-            <p>
-              Salurkan barang layak pakai ke komunitas yang membutuhkan
-              hanya dalam beberapa langkah mudah.
-            </p>
-          </div>
-          <div className="impact-stats">
-            {stats.map((s) => (
-              <article key={s.value} className="impact-stat-card">
-                <strong>{s.value}</strong>
-                <span>{s.label}</span>
-              </article>
-            ))}
-          </div>
-          <div className="impact-illustration" aria-hidden="true">
-            <img
-              src="/assets/community/community-illustration.png"
-              alt=""
-              className="community-illustration"
-              onError={(e) => { e.currentTarget.style.display = 'none' }}
-            />
-          </div>
-        </div>
-      </section>
     </main>
 
     <Footer />

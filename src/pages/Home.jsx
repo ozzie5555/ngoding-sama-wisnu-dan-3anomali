@@ -205,9 +205,6 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="dark-band">
-          <section className="impact-banner"><div className="impact-card"><h2>Siap Memberikan Kehidupan<br />Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div className="mini-stats">{stats.map(([n, l]) => <article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
-        </div>
       </main>
       <Footer />
     </>

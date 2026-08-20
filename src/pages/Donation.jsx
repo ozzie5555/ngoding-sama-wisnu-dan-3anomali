@@ -18,13 +18,6 @@ const flow = [
   ['free-shipping.svg', 'Status Donasi', 'Pantau status donasi mulai dari verifikasi hingga barang diterima.', 'Cek Status Donasi', '#aktivitas'],
 ]
 
-const stats = [
-  ['12.400+', 'Barang Tersirkulasi'],
-  ['2.000 kg', 'Sampah Dikurangi'],
-  ['4.680 kg', 'CO2 Dihemat'],
-  ['1.500+', 'Pengguna Aktif'],
-]
-
 export default function Donation() {
   const { isAuthenticated, user } = useAuth()
   const location = useLocation()
@@ -342,28 +335,6 @@ export default function Donation() {
             </article>
           ))}
         </div>
-      </section>
-
-      {/* Impact Banner */}
-      <section className="donation-impact">
-        <div>
-          <h2>
-            Siap Memberikan Kehidupan<br />
-            Kedua untuk Barangmu?
-          </h2>
-          <p>
-            Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.
-          </p>
-        </div>
-        <div>
-          {stats.map(([n, l]) => (
-            <article key={l}>
-              <strong>{n}</strong>
-              <span>{l}</span>
-            </article>
-          ))}
-        </div>
-        <img src="/Donation Streamline Bruxelles.svg" alt="" />
       </section>
 
       </main>

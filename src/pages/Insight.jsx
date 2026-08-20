@@ -9,8 +9,6 @@ import ArticleDetailModal from '../components/insight/ArticleDetailModal'
 import {
   heroData,
   educationalVideosData,
-  impactStatsData,
-  insightImages,
 } from '../data/insightData'
 import { articleService, FALLBACK_ARTICLES, FALLBACK_NEWS } from '../features/insight/services/articleService'
 import './Insight.css'
@@ -177,7 +175,7 @@ export default function Insight() {
               className="carousel-track articles-track"
               onTransitionEnd={handleArticleTransitionEnd}
               style={{
-                transform: `translateX(-${articleIndex * 25}%)`,
+                '--carousel-index': articleIndex,
                 transition: isArticleAnim
                   ? 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
                   : 'none',
@@ -227,7 +225,7 @@ export default function Insight() {
               className="carousel-track news-track"
               onTransitionEnd={handleNewsTransitionEnd}
               style={{
-                transform: `translateX(-${newsIndex * 33.333}%)`,
+                '--carousel-index': newsIndex,
                 transition: isNewsAnim
                   ? 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
                   : 'none',
@@ -279,41 +277,6 @@ export default function Insight() {
         </div>
       </section>
 
-      {/* FOOTER CTA */}
-      <div className="insight-dark-band" id="footer-cta">
-        <section className="insight-impact-banner">
-          <div className="insight-container impact-inner">
-            <div className="impact-copy-col">
-              <h2 className="impact-heading">
-                Siap Memberikan Kehidupan
-                <br />
-                Kedua untuk Barangmu?
-              </h2>
-              <p className="impact-description">
-                Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.
-              </p>
-            </div>
-
-            <div className="impact-stats-grid">
-              {impactStatsData.map((stat, idx) => (
-                <div key={idx} className="stat-card-box">
-                  <strong className="stat-value">{stat.value}</strong>
-                  <span className="stat-label">{stat.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="impact-illustration-col">
-              <img
-                src={insightImages.impactIllustration}
-                alt=""
-                className="impact-bruxelles-art"
-                aria-hidden="true"
-              />
-            </div>
-          </div>
-        </section>
-      </div>
     </main>
 
       <Footer />

@@ -13,7 +13,6 @@
 .home .faq > * { max-width: 1280px; margin-inline: auto; }
 
 .home .final-cta,
-.home .impact-banner { max-width: none; margin-inline: 0; padding-inline: max(5vw, 24px); }
 .home h1, .home h2, .home h3, .home p { margin-top: 0; }
 .home em { color: var(--cyan); font-style: normal; }
 .outline-pill, .eyebrow { display: inline-flex; align-items: center; padding: 10px 24px; border: 1.5px solid var(--cyan); border-radius: 999px; color: #1f4749; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px; background: #fff; }
@@ -337,18 +336,6 @@
 .final-cta .outline-pill { background: var(--cream); color: #31595b; border: 1px solid #3fbec7; border-radius: 12px; font-size: 14px; margin-bottom: 0; }
 .final-cta .button { min-width: 200px; padding: 14px 22px; border-radius: 10px; font-size: 14px; }
 
-/* Impact Banner */
-.home .impact-banner { min-height: 363px; display: grid; grid-template-columns: 1.47fr 2fr .7fr; gap: 28px; align-items: start; overflow: hidden; padding: 48px max(5vw, 24px) 56px; background: transparent; color: inherit; max-width: none; margin-inline: 0; border-top: 1px solid rgba(255,255,255,0.08); }
-.impact-banner > div:first-child { margin-top: 0; }
-.impact-banner .mini-stats { margin-top: 0; }
-.impact-banner h2 { font-size: clamp(22px, 3.5vw, 28px); font-weight: 800; line-height: 1.2; margin: 0 0 14px; }
-.impact-banner p { max-width: 380px; font-size: 15px; line-height: 1.55; color: #d8e2e2; margin: 0; }
-.impact-banner > img { align-self: flex-end; width: 100%; height: 220px; object-fit: contain; object-position: center bottom; }
-.mini-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.mini-stats article { min-width: 0; min-height: 165px; display: flex; flex-direction: column; justify-content: center; padding: 22px 10px; border-radius: 20px; background: #fff; box-shadow: 0 4px 4px rgba(0, 0, 0, .28); color: #050505; text-align: center; }
-.mini-stats strong { display: block; font-size: 25px; font-weight: 800; margin-bottom: 8px; white-space: nowrap; }
-.mini-stats span { display: block; color: #789093; font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: .2px; }
-
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .hero h1 { font-size: 38px; }
@@ -363,11 +350,6 @@
   .step-grid article::after { display: none; }
   .home .final-cta { min-height: auto; grid-template-columns: 1fr; padding: 70px 24px; }
   .final-cta > img { display: none; }
-  .home .impact-banner { min-height: auto; grid-template-columns: 1fr; padding: 60px 24px 56px; text-align: center; gap: 36px; }
-  .impact-banner > div:first-child, .impact-banner .mini-stats { margin-top: 0; }
-  .impact-banner p { margin-inline: auto; }
-  .impact-banner > img { display: none; }
-  .mini-stats { grid-template-columns: repeat(2, 1fr); justify-content: center; }
   .article-window { flex-direction: column; }
   .article-window article.is-featured { flex-direction: column; text-align: center; }
   .article-window article.is-featured img { width: 100%; height: 180px; }
@@ -384,8 +366,6 @@
   .hero h1 { font-size: clamp(28px, 7vw, 36px); }
   .section-heading h2 { font-size: 28px; }
   .stat-grid, .service-grid, .item-grid, .partner-grid, .step-grid { grid-template-columns: 1fr; }
-  .mini-stats { grid-template-columns: 1fr 1fr; }
-  .mini-stats strong { font-size: 20px; }
   .review-track article { width: 280px; padding: 20px; }
   
   .faq { padding: 60px 0; }
@@ -410,7 +390,6 @@
 
 @media (max-width: 480px) {
   .stat-grid article strong { font-size: 36px; }
-  .mini-stats { grid-template-columns: 1fr; }
   .home section { padding-inline: 16px; }
   .steps { padding-inline: 16px; }
 }

@@ -6,9 +6,6 @@ export default function ArticleDetailModal({ item, onClose }) {
   const [hoveredBoxIdx, setHoveredBoxIdx] = useState(null)
 
   useEffect(() => {
-    // Scroll to top when modal opens
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose?.()
