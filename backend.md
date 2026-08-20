@@ -468,7 +468,7 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 | Picker lokasi | ✅ Selesai | Provinsi → kota/kabupaten → kecamatan → kelurahan |
 | Privacy settings | ✅ Selesai | Terhubung ke profile_settings |
 | Change password/email | ✅ Selesai | Re-authentication dan update Auth |
-| WhatsApp OTP | ⏳ Mock | Belum memakai provider WhatsApp/SMS |
+| OTP nomor telepon (Twilio) | ⏳ Terjadwal 21 Agustus 2026 | Saat ini masih mode demo; SMS real belum diaktifkan |
 | Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
 | Aktivitas donasi | ⏳ Sebagian | Beberapa bagian masih hardcode/design |
 | Admin, chat, realtime donasi | ⏳ Belum | Menunggu fase backend berikutnya |
@@ -660,22 +660,43 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 
 ---
 
-## 15. WhatsApp OTP — Status & Rencana
+## 15. OTP Nomor Telepon — Status & Rencana Twilio
 
-**Status saat ini:** Mock (simulasi success setelah delay 700ms)
+**Status saat ini:** Mock demo (kode `1234` hanya pada development). Belum ada SMS yang dikirim.
 
-**Rencana implementasi:** Twilio Trial
-- Daftar akun Twilio → dapat $15 trial credit (~2000 SMS)
-- Aktifkan **Phone Auth** di Supabase Dashboard → Providers → Phone
-- Isi credentials Twilio (Account SID, Auth Token, Messaging Service SID) di Supabase Dashboard
-- Ganti `authService.requestWhatsappOtp` dari mock jadi `supabase.auth.signInWithOtp({ phone })`
-- Ganti `authService.verifyOtp` dari mock jadi `supabase.auth.verifyOtp({ phone, token, type: 'sms' })`
-- Note: Trial Twilio hanya bisa kirim ke nomor yang sudah diverifikasi di dashboard
+**Target implementasi:** 21 Agustus 2026 (besok)
 
-**Yang perlu didokumentasi setelah implementasi:**
-- Twilio Account SID & credentials (simpan di env, jangan commit)
-- Nomor yang sudah di-whitelist di Twilio trial
-- Flow OTP: signup, reset password, login
+**Provider yang dipilih:** Twilio SMS melalui Supabase Phone Auth.
+
+### Batasan Twilio Trial
+
+- Trial menyediakan unit SMS terbatas, bukan saldo tanpa batas.
+- Akun trial hanya dapat mengirim ke nomor penerima yang sudah diverifikasi.
+- Trial memiliki masa berlaku dan batas jumlah penerima; cek angka terbaru di Console Twilio sebelum testing.
+- Jangan mengaktifkan pengiriman SMS real sebelum provider, sender, dan budget disetujui.
+
+### Rencana implementasi
+
+1. Buat dan verifikasi akun Twilio.
+2. Aktifkan Phone Auth di Supabase Dashboard → Authentication → Providers → Phone.
+3. Isi kredensial Twilio hanya di Dashboard/secret manager:
+   - Account SID
+   - Auth Token
+   - Messaging Service SID atau sender yang disetujui
+4. Ganti mock `authService.requestWhatsappOtp` dengan `supabase.auth.signInWithOtp({ phone })`.
+5. Ganti `authService.verifyOtp` dengan `supabase.auth.verifyOtp({ phone, token, type: 'sms' })`.
+6. Uji hanya memakai nomor yang sudah diverifikasi di Twilio Trial.
+7. Tambahkan rate limit, cooldown kirim ulang, expiry OTP, dan monitoring pemakaian sebelum demo.
+
+### Aturan keamanan dan biaya
+
+- Jangan commit atau mengirim `TWILIO_AUTH_TOKEN` ke chat, frontend, Git, atau `.env` yang dibagikan.
+- Kredensial Twilio harus disimpan sebagai secret Supabase/server-side.
+- Jangan mencetak token, OTP, nomor telepon, atau kredensial ke log.
+- Mode demo tetap dipakai sampai integrasi real selesai dan diuji.
+- Setelah testing, matikan provider atau batasi pengiriman agar unit trial tidak habis tanpa sengaja.
+
+**Yang perlu didokumentasikan setelah implementasi:** nomor penerima yang diverifikasi, konfigurasi sender, flow OTP untuk signup/reset/login, serta hasil pengujian dan sisa unit trial.
 
 ---
 
@@ -709,6 +730,6 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - **Avatar positioning**: ✅ Sudah diperbaiki. Upload, posisi avatar, refresh state, dan penghapusan avatar sudah terhubung ke Supabase Storage dan tabel profiles.
 - **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
 - **Status donasi**: Update status masih manual via SQL. Belum ada admin dashboard atau RPC untuk transition.
-- **WhatsApp OTP**: Masih mock. Butuh Twilio trial untuk real SMS.
+- **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
 - **Chat**: Migration ada tapi belum ada frontend integration.
 - **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.
