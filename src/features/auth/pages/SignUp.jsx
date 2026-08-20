@@ -4,7 +4,9 @@ import { useAuth } from '../../../context/useAuth';
 import AuthLayout from '../components/AuthLayout';
 import { authService } from '../services/authService';
 import { validateEmail, validatePassword } from '../validation/authValidation';
+import { supabase } from '../../../lib/supabase/client';
 import KembaliLogo from '../../../assets/images/Group 6.svg';
+import AnimatedCheckmark from '../components/AnimatedCheckmark';
 
 // Inline SVGs for design fidelity
 const MailIcon = () => (
@@ -35,9 +37,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const SuccessRosette = () => (
-  <img src="/ceklist.svg" alt="Sukses" className="success-ceklist-img" />
-);
+const SuccessRosette = () => <AnimatedCheckmark />;
 
 const CalendarIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -80,6 +80,7 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isHuman, setIsHuman] = useState(false);
 
   // Step 2 states (Whatsapp)
   const [whatsapp, setWhatsapp] = useState('');
@@ -92,7 +93,7 @@ export default function SignUp() {
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [domisili, setDomisili] = useState('Kota Semarang, Jawa Tengah');
+  const [domisili, setDomisili] = useState('');
 
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -230,7 +231,7 @@ export default function SignUp() {
     }
 
     // Design mockup requirement check for username error
-    if (username.trim() === '@wisnu_bersama_3_anomali') {
+    if (username.trim() === '@username_terpakai') {
       setProfileError('Username sudah digunakan.');
       return;
     }
@@ -401,7 +402,7 @@ export default function SignUp() {
             <button
               type="button"
               className="google-btn"
-              onClick={() => alert('Google registration is not configured.')}
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { prompt: 'select_account' } } })}
               disabled={loading}
             >
               <img src="/google-logo.svg" alt="" />
@@ -500,7 +501,7 @@ export default function SignUp() {
             <button
               type="button"
               className="google-btn"
-              onClick={() => alert('Google registration is not configured.')}
+              onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { prompt: 'select_account' } } })}
             >
               <img src="/google-logo.svg" alt="" />
               Lanjutkan dengan Google
@@ -612,6 +613,7 @@ export default function SignUp() {
                   value={domisili}
                   onChange={(e) => setDomisili(e.target.value)}
                 >
+                  <option value="" disabled hidden>Pilih Domisili</option>
                   <option value="Kota Semarang, Jawa Tengah">Kota Semarang, Jawa Tengah</option>
                   <option value="Kota Surabaya, Jawa Timur">Kota Surabaya, Jawa Timur</option>
                   <option value="Jakarta Selatan, DKI Jakarta">Jakarta Selatan, DKI Jakarta</option>

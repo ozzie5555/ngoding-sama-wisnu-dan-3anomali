@@ -1,22 +1,22 @@
 // Structured dummy data for easy replacement with backend API in the future
 
 export const DEFAULT_USER = {
-  name: 'Wisnu Megananda',
-  shortName: 'Wisnu',
-  username: '@wisnu_bersama_3_anomali',
-  email: 'wisnubrsm3anomali@gmail.com',
-  phone: 'contoh: +62 812-XXXX-XXXX',
-  birthDate: 'DD/MM/YYYY',
-  location: 'Kota Semarang, Jawa Tengah',
+  name: 'Pengguna',
+  shortName: 'Pengguna',
+  username: '@pengguna',
+  email: '',
+  phone: '',
+  birthDate: '',
+  location: '',
   status: 'Donatur Aktif',
-  avatar: '/src/assets/images/profile-placeholder.svg', // Replace with final Figma asset
+  avatar: '/src/assets/images/profile-placeholder.svg',
   stats: {
-    donations: 8,
-    distributed: 6,
-    saved: 4,
+    donations: 0,
+    distributed: 0,
+    saved: 0,
   },
-  passwordLastUpdated: '12 Agustus 2026',
-  whatsapp: 'Diperlukan untuk koordinasi donasi',
+  passwordLastUpdated: '',
+  whatsapp: '',
   privacy: {
     contributionVisibility: true,
     generalLocation: false,

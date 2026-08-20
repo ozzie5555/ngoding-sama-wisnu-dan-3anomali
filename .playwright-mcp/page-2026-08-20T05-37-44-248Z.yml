@@ -1,0 +1,27 @@
+- main [ref=e3]:
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - img "KEMBALI" [ref=e8]
+      - heading "Sign-in" [level=1] [ref=e9]
+      - paragraph [ref=e10]: Ayo bergabung dengan KEMBALI!
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: Email/Username
+        - textbox "Email/Username" [ref=e15]:
+          - /placeholder: ""
+      - generic [ref=e16]:
+        - generic [ref=e17]: Password
+        - generic [ref=e18]:
+          - textbox "Password" [ref=e19]:
+            - /placeholder: ""
+          - button "Show password" [ref=e20] [cursor=pointer]
+        - link "Lupa Password?" [ref=e25] [cursor=pointer]:
+          - /url: /reset-password
+      - generic "Verifikasi keamanan" [ref=e26]
+      - button "Sign-in" [ref=e28] [cursor=pointer]
+      - generic [ref=e29]: Or
+      - button "Lanjutkan dengan Google" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]:
+        - text: Belum punya akun?
+        - link "Sign-up" [ref=e32] [cursor=pointer]:
+          - /url: /sign-up

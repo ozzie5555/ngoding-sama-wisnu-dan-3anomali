@@ -1,6 +1,23 @@
 import { supabase } from '../../../lib/supabase/client';
 
 export const authService = {
+  // Reliable way to get current user (getUser may fail, fallback to session)
+  getAuthUser: async () => {
+    let { data: { user }, error } = await supabase.auth.getUser();
+    if (error) {
+      // Auth error (403/401) = invalid/stale token — clear session
+      if (error.status === 403 || error.status === 401 || error.message?.includes('JWT') || error.message?.includes('token')) {
+        console.warn('[authService] Stale session detected, signing out');
+        await supabase.auth.signOut();
+        return null;
+      }
+      // Network error — fallback to local session
+      const { data: { session } } = await supabase.auth.getSession();
+      user = session?.user;
+    }
+    return user;
+  },
+
   login: async (emailOrUsername, password) => {
     let email = emailOrUsername;
 
@@ -94,30 +111,12 @@ export const authService = {
    * Request Supabase password recovery email
    */
   requestEmailReset: async (email) => {
-    try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password',
+    });
 
-      if (error) {
-        // Fallback for development if local supabase offline
-        if (import.meta.env.DEV && (error.message.includes('fetch') || error.message.includes('network'))) {
-          console.warn('[authService] Local Supabase offline, using dev mock for email reset.');
-          await new Promise((res) => setTimeout(res, 600));
-          return { success: true, isMock: true };
-        }
-        throw new Error(error.message);
-      }
-
-      return { success: true, data };
-    } catch (err) {
-      if (import.meta.env.DEV && (err.message.includes('fetch') || err.message.includes('Failed to fetch'))) {
-        console.warn('[authService] Dev mock fallback for email reset.');
-        await new Promise((res) => setTimeout(res, 600));
-        return { success: true, isMock: true };
-      }
-      throw err;
-    }
+    if (error) throw new Error(error.message);
+    return { success: true, data };
   },
 
   /**
@@ -155,60 +154,50 @@ export const authService = {
    * Update password in Supabase for user in recovery/authenticated session
    */
   updateUserPassword: async (newPassword) => {
-    try {
-      const { data, error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        if (import.meta.env.DEV && (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Auth session missing'))) {
-          console.warn('[authService] Dev mock fallback for password update.');
-          await new Promise((res) => setTimeout(res, 600));
-          return { success: true, isMock: true };
-        }
-        throw new Error(error.message);
-      }
-
-      return { success: true, user: data.user };
-    } catch (err) {
-      if (import.meta.env.DEV && (err.message.includes('fetch') || err.message.includes('Failed to fetch') || err.message.includes('Auth session missing'))) {
-        console.warn('[authService] Dev mock fallback for password update.');
-        await new Promise((res) => setTimeout(res, 600));
-        return { success: true, isMock: true };
-      }
-      throw err;
-    }
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(error.message);
+    return { success: true, user: data.user };
   },
 
   updateProfile: async (updates) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
+
+    const profileUpdates = {
+      full_name: updates.name,
+      username: updates.username,
+      email: updates.email,
+      phone: updates.phone,
+      birth_date: updates.birthDate || null,
+      address: updates.location,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Jangan menghapus foto hanya karena caller lama tidak mengirim field avatar.
+    if (Object.prototype.hasOwnProperty.call(updates, 'avatar')) {
+      profileUpdates.avatar_path = updates.avatar || null;
+    }
 
     const { error } = await supabase
       .from('profiles')
-      .update({
-        full_name: updates.name,
-        username: updates.username,
-        email: updates.email,
-        phone: updates.phone,
-        birth_date: updates.birthDate || null,
-        address: updates.location,
-        avatar_path: updates.avatar || null,
-      })
-      .eq('id', user.id);
+      .update(profileUpdates)
+      .eq('id', user.id)
+      .select('id, full_name, username, email, phone, birth_date, address, avatar_path')
+      .single();
 
     if (error) throw new Error(error.message);
 
-    // Save avatar position in user metadata
+    // Save avatar position in user metadata when it changes.
     if (updates.avatarPosition) {
-      await supabase.auth.updateUser({
+      const { error: metadataError } = await supabase.auth.updateUser({
         data: { avatar_position: updates.avatarPosition }
       });
+      if (metadataError) throw new Error(metadataError.message);
     }
   },
 
   getUser: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     return user;
   },
 
@@ -220,8 +209,8 @@ export const authService = {
   // ==========================================
   // AVATAR UPLOAD
   // ==========================================
-  uploadAvatar: async (file) => {
-    const { data: { user } } = await supabase.auth.getUser();
+  uploadAvatar: async (file, avatarPosition) => {
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     const fileExt = file.name.split('.').pop();
@@ -238,19 +227,58 @@ export const authService = {
 
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ avatar_path: publicUrl })
-      .eq('id', user.id);
+      .update({
+        avatar_path: publicUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+      .select('id, avatar_path')
+      .single();
 
     if (updateError) throw new Error(updateError.message);
 
+    if (avatarPosition) {
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { avatar_position: avatarPosition }
+      });
+      if (metadataError) throw new Error(metadataError.message);
+    }
+
     return { success: true, url: publicUrl };
+  },
+
+  removeAvatar: async () => {
+    const user = await authService.getAuthUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const filePaths = ['avatar.jpg', 'avatar.jpeg', 'avatar.png', 'avatar.webp']
+      .map((name) => user.id + '/' + name);
+
+    const { error: removeError } = await supabase.storage
+      .from('profile-photos')
+      .remove(filePaths);
+
+    if (removeError) throw new Error(removeError.message);
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        avatar_path: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id)
+      .select('id, avatar_path')
+      .single();
+
+    if (updateError) throw new Error(updateError.message);
+    return { success: true };
   },
 
   // ==========================================
   // PRIVACY SETTINGS
   // ==========================================
   getPrivacySettings: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
@@ -276,7 +304,7 @@ export const authService = {
   },
 
   updatePrivacySettings: async (settings) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     const { error } = await supabase
@@ -297,7 +325,7 @@ export const authService = {
   // DELETE ACCOUNT
   // ==========================================
   deleteAccount: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     // Delete from profiles (cascades to profile_settings)
@@ -318,7 +346,7 @@ export const authService = {
   // CHANGE EMAIL (requires re-auth)
   // ==========================================
   changeEmail: async (newEmail, currentPassword) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     // Re-authenticate first
@@ -346,7 +374,7 @@ export const authService = {
   // CHANGE PASSWORD (requires current password)
   // ==========================================
   changePassword: async (currentPassword, newPassword) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     // Re-authenticate first
@@ -374,7 +402,7 @@ export const authService = {
   // UPDATE WHATSAPP
   // ==========================================
   updateWhatsapp: async (phone) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
     const { error } = await supabase

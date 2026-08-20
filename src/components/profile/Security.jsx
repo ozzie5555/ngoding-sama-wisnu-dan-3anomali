@@ -137,7 +137,7 @@ export default function Security() {
           <div className="security-item-info">
             <h3 className="security-item-title">Nomor WhatsApp</h3>
             <p className="security-item-value">
-              {user?.whatsapp || 'Diperlukan untuk koordinasi donasi'}
+              {user?.whatsapp || 'Belum diatur'}
             </p>
           </div>
           <button

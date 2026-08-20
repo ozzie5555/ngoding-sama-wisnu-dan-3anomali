@@ -9,6 +9,8 @@ export default function Navbar() {
   const dropdownRef = useRef(null)
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
+  const needsProfile = Boolean(user?.needsProfile)
+  const displayName = needsProfile ? 'Lengkapi Profil' : (user?.shortName || 'Pengguna')
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function Navbar() {
   const handleProfileClick = () => {
     setDropdownOpen(false)
     setOpen(false)
-    navigate('/profile')
+    navigate(needsProfile ? '/complete-profile' : '/profile')
   }
 
   return (
@@ -79,8 +81,8 @@ export default function Navbar() {
           {/* Mobile only authenticated quick links when menu is open */}
           {isAuthenticated && open && (
             <div className="mobile-user-links">
-              <Link to="/profile" className="mobile-profile-link" onClick={handleNavClick}>
-                Profil Saya ({user.shortName || user.name})
+              <Link to={needsProfile ? '/complete-profile' : '/profile'} className="mobile-profile-link" onClick={handleNavClick}>
+                {needsProfile ? 'Lengkapi Profil' : `Profil Saya (${user.shortName || user.name})`}
               </Link>
               <button type="button" className="mobile-logout-btn" onClick={handleLogout}>
                 Keluar
@@ -110,7 +112,7 @@ export default function Navbar() {
                   }}
                 />
               </div>
-              <span className="user-display-name">{user.shortName || 'Wisnu'}</span>
+              <span className="user-display-name">{displayName}</span>
               <svg
                 className={`chevron-icon ${dropdownOpen ? 'chevron-up' : ''}`}
                 viewBox="0 0 24 24"
@@ -128,8 +130,10 @@ export default function Navbar() {
             {dropdownOpen && (
               <div className="user-dropdown-menu" role="menu">
                 <div className="dropdown-user-header">
-                  <span className="dropdown-name">{user.name}</span>
-                  <span className="dropdown-username">{user.username}</span>
+                  <span className="dropdown-name">{needsProfile ? 'Profil belum lengkap' : user.name}</span>
+                  <span className="dropdown-username">
+                    {needsProfile ? 'Lengkapi data diri untuk melanjutkan' : user.username}
+                  </span>
                 </div>
                 <div className="dropdown-divider" />
                 <button
@@ -142,7 +146,7 @@ export default function Navbar() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
-                  <span>Profil</span>
+                  <span>{needsProfile ? 'Lengkapi Profil' : 'Profil'}</span>
                 </button>
                 <button
                   type="button"

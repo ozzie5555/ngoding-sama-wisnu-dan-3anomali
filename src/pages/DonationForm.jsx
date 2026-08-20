@@ -297,7 +297,6 @@ export default function DonationForm() {
                       type="text"
                       className="donation-field-input"
                       placeholder="Masukkan alamat lengkap penjemputan..."
-                      defaultValue="Jl. Peleburan Barat No. 12, Semarang Selatan"
                     />
                   </div>
                 )}

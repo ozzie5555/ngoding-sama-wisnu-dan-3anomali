@@ -613,3 +613,71 @@
   color: #9ca3af;
   cursor: not-allowed;
 }
+
+.location-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 13px 15px;
+  border: 1px solid #d9ece8;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f4fbf8, #eef8f7);
+}
+.location-summary-label {
+  color: #6c8587;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.location-summary strong {
+  color: var(--color-navy);
+  font-size: 14px;
+  font-weight: 700;
+}
+.location-summary small {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+.location-status {
+  margin: -8px 0 14px;
+  color: var(--color-teal);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.location-status.is-warning {
+  color: #9a6700;
+}
+.location-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.location-form .modal-form-group:last-of-type {
+  grid-column: 1 / -1;
+}
+.location-form .modal-buttons-row {
+  grid-column: 1 / -1;
+}
+.location-form .modal-form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.location-form .modal-form-group select,
+.location-form .modal-form-group input {
+  min-height: 44px;
+}
+@media (max-width: 520px) {
+  .location-modal {
+    padding: 20px;
+  }
+  .location-form {
+    grid-template-columns: 1fr;
+  }
+  .location-form .modal-form-group:last-of-type,
+  .location-form .modal-buttons-row {
+    grid-column: auto;
+  }
+}

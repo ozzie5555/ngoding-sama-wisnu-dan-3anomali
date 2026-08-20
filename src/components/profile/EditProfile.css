@@ -254,7 +254,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(4, 27, 36, 0.72);
+  backdrop-filter: blur(8px);
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,24 +265,34 @@
 
 .avatar-position-card {
   background: #ffffff;
-  border-radius: 16px;
-  width: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 20px;
+  width: 430px;
   max-width: 92vw;
   overflow: hidden;
+  box-shadow: 0 24px 80px rgba(2, 25, 33, 0.28);
 }
 
 .avatar-position-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px 0;
+  padding: 20px 24px 0;
 }
 
 .avatar-position-card-header h3 {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--color-navy);
   margin: 0;
+}
+
+
+.avatar-position-subtitle {
+  margin: 5px 0 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .avatar-position-close {
@@ -294,14 +306,16 @@
 }
 
 .avatar-position-stage {
-  width: 260px;
-  height: 260px;
-  margin: 20px auto;
+  width: 280px;
+  height: 280px;
+  margin: 22px auto 16px;
   position: relative;
   border-radius: 50%;
   overflow: hidden;
   cursor: grab;
   user-select: none;
+  touch-action: none;
+  box-shadow: 0 12px 30px rgba(5, 42, 51, 0.22);
 }
 
 .avatar-position-bg {
@@ -340,22 +354,25 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.78);
   z-index: 3;
   pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(4, 27, 36, 0.12);
 }
 
 .avatar-position-hint {
   text-align: center;
   font-size: 12px;
   color: var(--color-text-muted);
-  margin: 0 0 16px;
+  margin: 0 auto 18px;
+  max-width: 270px;
+  line-height: 1.5;
 }
 
 .avatar-position-actions {
   display: flex;
   gap: 10px;
-  padding: 0 20px 20px;
+  padding: 0 24px 24px;
 }
 
 .btn-position-cancel {
@@ -401,4 +418,22 @@
   .btn-form-save {
     width: 100%;
   }
+}
+
+.avatar-position-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.42;
+  background:
+    linear-gradient(90deg, transparent 32.8%, rgba(255,255,255,.8) 33%, transparent 33.2%, transparent 66.8%, rgba(255,255,255,.8) 67%, transparent 67.2%),
+    linear-gradient(0deg, transparent 32.8%, rgba(255,255,255,.8) 33%, transparent 33.2%, transparent 66.8%, rgba(255,255,255,.8) 67%, transparent 67.2%);
+}
+.avatar-position-stage:active { cursor: grabbing; }
+
+.btn-position-save:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }

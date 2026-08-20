@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { AuthContext } from './authContextDef'
 import { supabase } from '../lib/supabase/client'
 import { DEFAULT_USER } from '../data/profileData'
@@ -8,15 +8,19 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(DEFAULT_USER)
   const [initialized, setInitialized] = useState(false)
+  const [pendingProfileRedirect, setPendingProfileRedirect] = useState(false)
+  const profileRequestId = useRef(0)
 
   // Fetch profile from database
-  const fetchProfile = useCallback(async (userId, sessionEmail) => {
+  const fetchProfile = useCallback(async (userId, sessionEmail, userMetadata = {}) => {
+    const requestId = ++profileRequestId.current
     try {
+      console.log('[Auth] fetchProfile called for:', userId)
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
       const email = profile?.email || sessionEmail || ''
 
@@ -25,26 +29,46 @@ export function AuthProvider({ children }) {
       }
 
       if (profile) {
-        // Fetch privacy settings from profile_settings
+        // Check if profile is complete (for Google OAuth users)
+        const isComplete = !!profile.phone;
+        console.log('[Auth] Profile found - phone:', profile.phone, 'avatar:', profile.avatar_path, 'isComplete:', isComplete)
+
+        if (!isComplete) {
+          setIsAuthenticated(true)
+          setPendingProfileRedirect(true)
+          setUser((prev) => ({
+            ...prev,
+            id: userId,
+            email: email,
+            name: profile.full_name || email.split('@')[0],
+            shortName: (profile.full_name || email.split('@')[0]).split(' ')[0],
+            username: profile.username || '@' + email.split('@')[0],
+            needsProfile: true,
+          }))
+          return
+        }
+
+        // Profile complete — load full data
         const { data: settings } = await supabase
           .from('profile_settings')
           .select('*')
           .eq('user_id', userId)
           .single()
 
-        // Compute stats from donations table
         let stats = DEFAULT_USER.stats
         try {
           stats = await donationService.getUserStats()
-        } catch (e) {
-          // Keep default stats if query fails
-        }
+        } catch (e) {}
 
+        // Ignore an older request that finished after a newer profile refresh.
+        if (requestId !== profileRequestId.current) return
+
+        const fallbackName = profile.full_name || (email ? email.split('@')[0] : 'Pengguna');
         setUser({
           id: profile.id,
-          name: profile.full_name || DEFAULT_USER.name,
-          shortName: (profile.full_name || DEFAULT_USER.name).split(' ')[0],
-          username: profile.username || DEFAULT_USER.username,
+          name: fallbackName,
+          shortName: fallbackName.split(' ')[0],
+          username: profile.username || (email ? '@' + email.split('@')[0] : '@pengguna'),
           email: email,
           phone: profile.phone || '',
           birthDate: profile.birth_date || '',
@@ -54,6 +78,7 @@ export function AuthProvider({ children }) {
           stats: stats,
           passwordLastUpdated: profile.password_last_updated || '',
           whatsapp: profile.phone || '',
+          avatarPosition: userMetadata.avatar_position || '50% 50%',
           privacy: {
             contributionVisibility: settings?.contribution_visibility ?? DEFAULT_USER.privacy.contributionVisibility,
             generalLocation: settings?.general_location ?? DEFAULT_USER.privacy.generalLocation,
@@ -62,6 +87,7 @@ export function AuthProvider({ children }) {
           },
         })
       } else {
+        if (requestId !== profileRequestId.current) return
         console.warn('[Auth] No profile found for user:', userId)
         setUser((prev) => ({
           ...prev,
@@ -70,6 +96,7 @@ export function AuthProvider({ children }) {
           name: email.split('@')[0],
           shortName: email.split('@')[0],
           username: '@' + email.split('@')[0],
+          needsProfile: true,
         }))
       }
     } catch (err) {
@@ -81,7 +108,7 @@ export function AuthProvider({ children }) {
   const refreshProfile = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
-      await fetchProfile(session.user.id, session.user.email)
+      await fetchProfile(session.user.id, session.user.email, session.user.user_metadata)
     }
   }, [fetchProfile])
 
@@ -89,9 +116,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user) {
+        const recoveryPending = typeof window !== 'undefined'
+          && (sessionStorage.getItem('kembali_password_recovery_pending') === 'true'
+            || window.location.pathname === '/reset-password')
+
+        if (session?.user && !recoveryPending) {
           setIsAuthenticated(true)
-          await fetchProfile(session.user.id, session.user.email)
+          await fetchProfile(session.user.id, session.user.email, session.user.user_metadata)
         } else {
           setIsAuthenticated(false)
           setUser(DEFAULT_USER)
@@ -100,11 +131,27 @@ export function AuthProvider({ children }) {
       }
     )
 
-    // Check initial session
+    // Check initial session — validate with getUser() to detect stale tokens
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        setIsAuthenticated(true)
-        await fetchProfile(session.user.id, session.user.email)
+      const recoveryPending = typeof window !== 'undefined'
+        && (sessionStorage.getItem('kembali_password_recovery_pending') === 'true'
+          || window.location.pathname === '/reset-password')
+
+      if (session?.user && !recoveryPending) {
+        // Validate token actually works
+        const { data: { user: validUser }, error } = await supabase.auth.getUser();
+        if (error) {
+          console.warn('[Auth] Stale session detected, clearing:', error.message);
+          await supabase.auth.signOut();
+          setIsAuthenticated(false);
+          setUser(DEFAULT_USER);
+        } else if (validUser) {
+          setIsAuthenticated(true)
+          await fetchProfile(validUser.id, validUser.email, validUser.user_metadata)
+        }
+      } else {
+        setIsAuthenticated(false)
+        setUser(DEFAULT_USER)
       }
       setInitialized(true)
     })
@@ -164,6 +211,8 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         user,
         initialized,
+        pendingProfileRedirect,
+        clearPendingProfileRedirect: () => setPendingProfileRedirect(false),
         login,
         logout,
         updateProfile,

@@ -4,7 +4,10 @@ import { useAuth } from '../../../context/useAuth';
 import AuthLayout from '../components/AuthLayout';
 import { authService } from '../services/authService';
 import { validateEmail } from '../validation/authValidation';
+import { supabase } from '../../../lib/supabase/client';
 import KembaliLogo from '../../../assets/images/Group 6.svg';
+import AnimatedCheckmark from '../components/AnimatedCheckmark';
+import TurnstileWidget from '../components/TurnstileWidget';
 
 // Inline SVGs for design fidelity
 const MailIcon = () => (
@@ -35,14 +38,13 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const SuccessRosette = () => (
-  <img src="/ceklist.svg" alt="Sukses" className="success-ceklist-img" />
-);
+const SuccessRosette = () => <AnimatedCheckmark />;
 
 export default function Login() {
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // Field errors
   const [emailError, setEmailError] = useState('');
@@ -85,13 +87,26 @@ export default function Login() {
       hasError = true;
     }
 
+    if (!turnstileToken) {
+      setGeneralError('Selesaikan verifikasi keamanan terlebih dahulu.');
+      hasError = true;
+    }
+
     if (hasError) return;
 
     setLoading(true);
 
     try {
+      const { data: verification, error: verificationError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken, action: 'login' },
+      });
+      if (verificationError || !verification?.success) {
+        throw new Error('Verifikasi keamanan gagal. Silakan coba lagi.');
+      }
+
       const response = await authService.login(emailOrUsername, password);
       if (response.success) {
+        sessionStorage.removeItem('kembali_password_recovery_pending');
         setLoginSuccess(true);
         // Determine return destination
         const returnTo = location.state?.returnTo || (sessionStorage.getItem('pendingDonation') ? '/donasi/form' : '/');
@@ -199,6 +214,22 @@ export default function Login() {
           </div>
         </div>
 
+        {/* Cloudflare Turnstile: token is verified by the Supabase Edge Function. */}
+        <TurnstileWidget
+          onVerify={(token) => {
+            setTurnstileToken(token);
+            if (generalError) setGeneralError('');
+          }}
+          onExpire={() => {
+            setTurnstileToken('');
+            setGeneralError('Verifikasi keamanan kedaluwarsa. Silakan ulangi.');
+          }}
+          onError={() => {
+            setTurnstileToken('');
+            setGeneralError('Verifikasi keamanan gagal dimuat.');
+          }}
+        />
+
         {/* Sign In Button */}
         <button type="submit" className="auth-submit-btn" disabled={loading}>
           {loading ? <div className="spinner" /> : 'Sign-in'}
@@ -211,9 +242,7 @@ export default function Login() {
         <button
           type="button"
           className="google-btn"
-          onClick={() => {
-            alert('Google authentication is not configured in mock mode.');
-          }}
+          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { prompt: 'select_account' } } })}
           disabled={loading}
         >
           <img src="/google-logo.svg" alt="" />

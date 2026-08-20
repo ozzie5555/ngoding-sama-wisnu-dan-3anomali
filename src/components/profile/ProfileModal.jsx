@@ -547,15 +547,38 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
   const [selectedVillage, setSelectedVillage] = useState({ id: '', name: '' })
 
   const [detail, setDetail] = useState('')
-  const [isLocating, setIsLocating] = useState(false)
+  const [isLoadingRegions, setIsLoadingRegions] = useState(false)
+  const [regionError, setRegionError] = useState('')
 
-  // Fetch provinces on mount
+  const fallbackProvinces = [{ id: '33', name: 'JAWA TENGAH' }]
+  const fallbackCities = [{ id: '3374', name: 'KOTA SEMARANG' }]
+  const fallbackDistricts = [
+    { id: '3374020', name: 'SEMARANG BARAT' },
+    { id: '3374010', name: 'SEMARANG SELATAN' },
+    { id: '3374030', name: 'SEMARANG UTARA' },
+  ]
+  const fallbackVillages = [
+    { id: '3374020005', name: 'NGEMPLAK SIMONGAN' },
+    { id: '3374020006', name: 'BONGSARI' },
+    { id: '3374020007', name: 'GISIKDRONO' },
+  ]
+
   useEffect(() => {
+    if (!isOpen || provinces.length) return
+    setIsLoadingRegions(true)
+    setRegionError('')
     fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
-      .then(res => res.json())
-      .then(data => setProvinces(data))
-      .catch(err => console.error("Error fetching provinces:", err))
-  }, [])
+      .then((res) => {
+        if (!res.ok) throw new Error('Wilayah tidak dapat dimuat')
+        return res.json()
+      })
+      .then((data) => setProvinces(data))
+      .catch(() => {
+        setProvinces(fallbackProvinces)
+        setRegionError('Data wilayah online sedang tidak tersedia. Wilayah Jawa Tengah tetap tersedia.')
+      })
+      .finally(() => setIsLoadingRegions(false))
+  }, [isOpen, provinces.length])
 
   const handleProvinceChange = (e) => {
     const pId = e.target.value
@@ -572,7 +595,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pId}.json`)
         .then(res => res.json())
         .then(data => setCities(data))
-        .catch(err => console.error("Error fetching cities:", err))
+        .catch(() => { setCities(pId === '33' ? fallbackCities : []); setRegionError('Daftar kota sementara menggunakan data lokal.') })
     }
   }
 
@@ -589,7 +612,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cId}.json`)
         .then(res => res.json())
         .then(data => setDistricts(data))
-        .catch(err => console.error("Error fetching districts:", err))
+        .catch(() => setDistricts(cId === '3374' ? fallbackDistricts : []))
     }
   }
 
@@ -604,7 +627,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${dId}.json`)
         .then(res => res.json())
         .then(data => setVillages(data))
-        .catch(err => console.error("Error fetching villages:", err))
+        .catch(() => setVillages(dId === '3374020' ? fallbackVillages : []))
     }
   }
 
@@ -612,21 +635,6 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
     const vId = e.target.value
     const vName = e.target.options[e.target.selectedIndex].text
     setSelectedVillage({ id: vId, name: vName })
-  }
-
-  const handleDetectLocation = () => {
-    setIsLocating(true)
-    // Simulate API call for geolocation
-    setTimeout(() => {
-      // Mocking setting predefined values. In a real app we'd reverse-geocode coords to EMSIFA IDs.
-      // This is just a UI simulation.
-      setSelectedProvince({ id: '33', name: 'JAWA TENGAH' })
-      setSelectedCity({ id: '3374', name: 'KOTA SEMARANG' })
-      setSelectedDistrict({ id: '3374020', name: 'SEMARANG BARAT' })
-      setSelectedVillage({ id: '3374020005', name: 'NGEMPLAK SIMONGAN' })
-      setDetail('Jl. Simongan No. 69')
-      setIsLocating(false)
-    }, 1500)
   }
 
   const handleSubmit = (e) => {
@@ -667,14 +675,14 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
           </div>
         </div>
 
-        <button 
-          type="button" 
-          className="btn-detect-location" 
-          onClick={handleDetectLocation}
-          disabled={isLocating}
-        >
-          {isLocating ? 'Mendeteksi...' : '📍 Gunakan Lokasi Saat Ini'}
-        </button>
+
+        <div className="location-summary">
+          <span className="location-summary-label">Lokasi terpilih</span>
+          <strong>{selectedCity.name || currentLocation || 'Belum dipilih'}</strong>
+          <small>{selectedProvince.name || 'Pilih provinsi untuk memulai'}</small>
+        </div>
+        {isLoadingRegions && <p className="location-status">Memuat daftar wilayah...</p>}
+        {regionError && <p className="location-status is-warning">{regionError}</p>}
 
         <form onSubmit={handleSubmit} className="modal-form location-form">
           <div className="modal-form-group">

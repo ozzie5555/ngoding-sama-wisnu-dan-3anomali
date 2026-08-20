@@ -454,6 +454,101 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 
 ---
 
+## Status implementasi saat ini
+
+Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase project development:
+
+| Fitur | Status | Catatan |
+| --- | --- | --- |
+| Supabase Auth email/password | ✅ Selesai | Login, register, logout, session restore |
+| Turnstile pada login | ✅ Selesai | Verifikasi melalui Edge Function verify-turnstile |
+| Reset password email | ✅ Selesai | Link email Supabase, recovery session, update password |
+| Profile edit | ✅ Selesai | Update nama, username, email profile, telepon, tanggal lahir, dan alamat |
+| Avatar | ✅ Selesai | Upload, positioning, refresh state, dan hapus dari Storage |
+| Picker lokasi | ✅ Selesai | Provinsi → kota/kabupaten → kecamatan → kelurahan |
+| Privacy settings | ✅ Selesai | Terhubung ke profile_settings |
+| Change password/email | ✅ Selesai | Re-authentication dan update Auth |
+| WhatsApp OTP | ⏳ Mock | Belum memakai provider WhatsApp/SMS |
+| Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
+| Aktivitas donasi | ⏳ Sebagian | Beberapa bagian masih hardcode/design |
+| Admin, chat, realtime donasi | ⏳ Belum | Menunggu fase backend berikutnya |
+
+Status ini bukan pengganti pengujian backend. Setelah agent backend menjalankan migration/RLS, ulangi test dengan akun anon, user biasa, manager, dan admin.
+
+---
+
+## Handoff untuk anggota tim
+
+### Environment frontend
+
+Setiap anggota tim harus membuat file .env.local sendiri di root repository. File ini tidak boleh di-commit:
+
+~~~env
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<publishable-or-anon-key>
+VITE_TURNSTILE_SITE_KEY=<cloudflare-turnstile-site-key>
+~~~
+
+Nilai VITE_* diperlukan agar frontend dapat berjalan dan terhubung ke Supabase project development. Berikan nilai dari project development kepada anggota tim melalui password manager atau kanal privat, bukan commit Git/public chat.
+
+Nilai yang boleh berada di frontend:
+
+- VITE_SUPABASE_URL
+- VITE_SUPABASE_PUBLISHABLE_KEY atau anon key
+- VITE_TURNSTILE_SITE_KEY
+
+Nilai yang tidak boleh dibagikan atau dimasukkan ke .env.local frontend:
+
+- SUPABASE_SERVICE_ROLE_KEY
+- TURNSTILE_SECRET_KEY
+- password database
+- token provider email/WhatsApp
+- kredensial Twilio
+
+service_role dan secret provider hanya disimpan sebagai Supabase Edge Function secrets.
+
+### Menjalankan project dari clone baru
+
+~~~bash
+npm install
+cp .env.example .env.local
+# isi nilai VITE_* di .env.local
+npm run dev
+~~~
+
+Buka URL Vite yang ditampilkan terminal, biasanya:
+
+~~~text
+http://localhost:5173
+~~~
+
+Jika memakai Turnstile, hostname localhost harus terdaftar pada widget Cloudflare. Redirect URL Supabase juga harus memuat:
+
+~~~text
+http://localhost:5173/reset-password
+http://127.0.0.1:5173/reset-password
+~~~
+
+### Kapan perlu akses Supabase CLI
+
+Untuk sekadar menjalankan dan menguji frontend, anggota tim cukup memiliki .env.local.
+
+Supabase CLI/link diperlukan jika anggota tim akan:
+
+- menjalankan migration;
+- melihat atau mengubah RLS;
+- deploy Edge Function;
+- mengatur secrets;
+- menjalankan seed atau query administrasi.
+
+Jangan menaruh access token CLI, service role key, atau secret Edge Function di repository.
+
+### Catatan project bersama
+
+Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bukan data pribadi produksi. Jika pekerjaan mulai berisiko saling menimpa, buat project Supabase development terpisah untuk setiap anggota dan isi .env.local dengan project masing-masing.
+
+---
+
 ## 11. Roadmap implementasi
 
 ### Fase 0 — Fondasi ✅ SELESAI
@@ -481,7 +576,7 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 
 **Lulus jika:** dua akun dapat daftar/login/logout/edit profile/reset password dan tidak dapat melihat data private akun lain.
 
-**Known Issue:** Avatar positioning — upload berhasil tapi preview有时 hilang setelah save. Perlu fix sync state antara `formData.avatar` dan `user.avatar` dari DB.
+**Catatan verifikasi:** Avatar positioning sudah diperbaiki pada frontend: upload, positioning, refresh state, dan penghapusan avatar terhubung ke Supabase.
 
 ### Fase 2 — Community dan Insight (SEBAGIAN)
 
@@ -610,7 +705,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 
 ## 17. Known Issues
 
-- **Avatar positioning**: Upload foto berhasil, tapi `formData.avatar` ter-overwrite oleh `useEffect` sync dari DB. Workaround: sync cuma sekali per user ID. Perlu audit lebih lanjut.
+- **Avatar positioning**: ✅ Sudah diperbaiki. Upload, posisi avatar, refresh state, dan penghapusan avatar sudah terhubung ke Supabase Storage dan tabel profiles.
 - **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
 - **Status donasi**: Update status masih manual via SQL. Belum ada admin dashboard atau RPC untuk transition.
 - **WhatsApp OTP**: Masih mock. Butuh Twilio trial untuk real SMS.

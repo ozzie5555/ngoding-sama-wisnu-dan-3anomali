@@ -44,6 +44,9 @@ export default function EditProfile() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [isAvatarSaving, setIsAvatarSaving] = useState(false)
+  const [isAvatarDeleting, setIsAvatarDeleting] = useState(false)
 
   // Avatar positioning
   const [avatarPreview, setAvatarPreview] = useState(null)
@@ -79,6 +82,8 @@ export default function EditProfile() {
 
   const handleSave = async (e) => {
     e.preventDefault()
+    if (isSaving) return
+    setIsSaving(true)
     try {
       await authService.updateProfile({
         name: formData.name,
@@ -87,11 +92,15 @@ export default function EditProfile() {
         phone: formData.phone,
         birthDate: formData.birthDate,
         location: formData.location,
+        avatarPosition: formData.avatarPosition,
       })
       updateProfile(formData)
+      await refreshProfile()
       setSaveMessage('Profil berhasil disimpan!')
     } catch (err) {
       setSaveMessage('Gagal menyimpan: ' + err.message)
+    } finally {
+      setIsSaving(false)
     }
     setTimeout(() => setSaveMessage(''), 3000)
   }
@@ -142,26 +151,28 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (showPositionModal) {
-      window.addEventListener('mousemove', handlePositionMouseMove)
-      window.addEventListener('mouseup', handlePositionMouseUp)
+      window.addEventListener('pointermove', handlePositionMouseMove)
+      window.addEventListener('pointerup', handlePositionMouseUp)
       return () => {
-        window.removeEventListener('mousemove', handlePositionMouseMove)
-        window.removeEventListener('mouseup', handlePositionMouseUp)
+        window.removeEventListener('pointermove', handlePositionMouseMove)
+        window.removeEventListener('pointerup', handlePositionMouseUp)
       }
     }
   }, [showPositionModal, handlePositionMouseMove, handlePositionMouseUp])
 
   const handleSaveAvatarPosition = async () => {
-    if (!selectedFile) {
+    if (!selectedFile || isAvatarSaving) {
       console.error('[Avatar] No file selected')
       return
     }
     try {
+      setIsAvatarSaving(true)
       setSaveMessage('Mengunggah foto...')
+      setShowPositionModal(false)
       console.log('[Avatar] Uploading:', selectedFile.name, selectedFile.size)
-      const result = await authService.uploadAvatar(selectedFile)
+      const positionStr = (avatarPosition.x + '% ' + avatarPosition.y + '%')
+      const result = await authService.uploadAvatar(selectedFile, positionStr)
       console.log('[Avatar] Upload success, URL:', result.url)
-      const positionStr = `${avatarPosition.x}% ${avatarPosition.y}%`
 
       // Update local form state directly
       setFormData((prev) => ({
@@ -173,9 +184,15 @@ export default function EditProfile() {
       setAvatarPreview(null)
       setSelectedFile(null)
       setSaveMessage('Foto profil berhasil diperbarui!')
+      refreshProfile().catch((refreshError) => {
+        console.warn('[Avatar] Profile refresh failed:', refreshError)
+      })
     } catch (err) {
       console.error('[Avatar] Upload failed:', err)
+      setShowPositionModal(true)
       setSaveMessage('Gagal mengunggah: ' + err.message)
+    } finally {
+      setIsAvatarSaving(false)
     }
     setTimeout(() => setSaveMessage(''), 3000)
   }
@@ -186,8 +203,27 @@ export default function EditProfile() {
     setSelectedFile(null)
   }
 
-  const handleAvatarRemove = () => {
-    handleChange('avatar', '')
+  const handleAvatarRemove = async () => {
+    if (isAvatarDeleting || !formData.avatar) return
+
+    try {
+      setIsAvatarDeleting(true)
+      setSaveMessage('Menghapus foto...')
+      await authService.removeAvatar()
+      setFormData((prev) => ({
+        ...prev,
+        avatar: '',
+        avatarPosition: '50% 50%',
+      }))
+      updateProfile({ avatar: '', avatarPosition: '50% 50%' })
+      await refreshProfile()
+      setSaveMessage('Foto profil berhasil dihapus.')
+    } catch (err) {
+      setSaveMessage('Gagal menghapus foto: ' + err.message)
+    } finally {
+      setIsAvatarDeleting(false)
+    }
+    setTimeout(() => setSaveMessage(''), 3000)
   }
 
   return (
@@ -230,8 +266,9 @@ export default function EditProfile() {
                 type="button"
                 className="btn-avatar-delete"
                 onClick={handleAvatarRemove}
+                disabled={isAvatarDeleting || !formData.avatar}
               >
-                Hapus
+                {isAvatarDeleting ? 'Menghapus...' : 'Hapus'}
               </button>
             </div>
           </div>
@@ -248,7 +285,7 @@ export default function EditProfile() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="Wisnu Megananda"
+                placeholder="Nama Lengkap"
                 required
               />
             </div>
@@ -260,7 +297,7 @@ export default function EditProfile() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="wisnubrsm3anomali@gmail.com"
+                placeholder="email@contoh.com"
                 required
               />
             </div>
@@ -301,7 +338,7 @@ export default function EditProfile() {
                 type="text"
                 value={formData.username}
                 onChange={(e) => handleChange('username', e.target.value)}
-                placeholder="@wisnu_bersama_3_anomali"
+                placeholder="@username"
                 required
               />
             </div>
@@ -371,7 +408,7 @@ export default function EditProfile() {
             type="submit"
             className="btn-form-save"
           >
-            Simpan
+            {isSaving ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </form>
@@ -396,8 +433,8 @@ export default function EditProfile() {
         <div className="avatar-position-overlay">
           <div className="avatar-position-card">
             <div className="avatar-position-card-header">
-              <h3>Posisikan Foto</h3>
-              <button type="button" className="avatar-position-close" onClick={handleCancelPosition}>
+              <div><h3>Sesuaikan Foto Profil</h3><p className="avatar-position-subtitle">Geser foto sampai posisi wajah terlihat paling pas.</p></div>
+              <button type="button" className="avatar-position-close" aria-label="Tutup penyesuaian foto" onClick={handleCancelPosition}>
                 &times;
               </button>
             </div>
@@ -405,7 +442,7 @@ export default function EditProfile() {
             <div
               className="avatar-position-stage"
               ref={positionContainerRef}
-              onMouseDown={handlePositionMouseDown}
+              onPointerDown={handlePositionMouseDown}
             >
               <img
                 src={avatarPreview}
@@ -429,7 +466,7 @@ export default function EditProfile() {
 
             <div className="avatar-position-actions">
               <button type="button" className="btn-position-cancel" onClick={handleCancelPosition}>Batal</button>
-              <button type="button" className="btn-position-save" onClick={handleSaveAvatarPosition}>Simpan</button>
+              <button type="button" className="btn-position-save" onClick={handleSaveAvatarPosition} disabled={isAvatarSaving}>{isAvatarSaving ? 'Mengunggah...' : 'Simpan foto'}</button>
             </div>
           </div>
         </div>

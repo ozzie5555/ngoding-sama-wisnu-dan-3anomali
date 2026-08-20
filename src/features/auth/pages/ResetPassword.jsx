@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import AuthLayout from '../components/AuthLayout';
 import LoadingDots from '../components/LoadingDots';
 import { authService } from '../services/authService';
 import { validateEmail, validatePassword, validatePhone, validateOtp } from '../validation/authValidation';
 import { supabase } from '../../../lib/supabase/client';
 import KembaliLogo from '../../../assets/images/Group 6.svg';
+import AnimatedCheckmark from '../components/AnimatedCheckmark';
 
 // Custom SVG Icons matching exact visual identity
 const MailIcon = () => (
@@ -42,11 +43,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const SuccessCheckmark = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
+const SuccessCheckmark = () => <AnimatedCheckmark />;
 
 /**
  * ResetPassword Component
@@ -62,7 +59,6 @@ const SuccessCheckmark = () => (
 export default function ResetPassword() {
   const [step, setStep] = useState('email');
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Form Fields
   const [email, setEmail] = useState('');
@@ -96,9 +92,10 @@ export default function ResetPassword() {
 
       // PKCE flow: exchange authorization code for session
       if (code) {
+        sessionStorage.setItem('kembali_password_recovery_pending', 'true');
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
-          setStep('new-password');
+          setStep('reset-confirmed');
         }
         // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -110,22 +107,18 @@ export default function ResetPassword() {
         searchParams.get('type') === 'recovery' ||
         hash.includes('type=recovery')
       ) {
-        setStep('new-password');
+        sessionStorage.setItem('kembali_password_recovery_pending', 'true');
+        setStep('reset-confirmed');
+        return;
       }
+
+      // When the user refreshes the waiting page after confirming the email,
+      // the recovery session is already persisted by Supabase.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) setStep('new-password');
     };
 
     handleRecovery();
-
-    // Subscribe to Supabase auth state change for PASSWORD_RECOVERY
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setStep('new-password');
-      }
-    });
-
-    return () => {
-      subscription?.unsubscribe();
-    };
   }, []);
 
   // Email Countdown Timer Effect
@@ -159,16 +152,6 @@ export default function ResetPassword() {
       return () => clearTimeout(redirectTimer);
     }
   }, [step, navigate]);
-
-  // Auto transition for intermediate Screen 3 (Reset Password Berhasil)
-  useEffect(() => {
-    if (step === 'reset-confirmed') {
-      const transitionTimer = setTimeout(() => {
-        setStep('new-password');
-      }, 1400);
-      return () => clearTimeout(transitionTimer);
-    }
-  }, [step]);
 
   // Format seconds into MM:SS (e.g., 179 -> 02:59)
   const formatTime = (seconds) => {
@@ -309,6 +292,8 @@ export default function ResetPassword() {
     setLoading(true);
     try {
       await authService.updateUserPassword(newPassword);
+      sessionStorage.removeItem('kembali_password_recovery_pending');
+      await supabase.auth.signOut();
       setStep('success');
     } catch (err) {
       setPasswordError(err.message || 'Gagal menyimpan password baru.');
@@ -325,8 +310,10 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout>
-        {/* Logo always centered above header */}
-        <img src={KembaliLogo} alt="KEMBALI" className="auth-page-logo" />
+        {/* Logo centered above header (hidden on success screens) */}
+        {step !== 'success' && step !== 'reset-confirmed' && (
+          <img src={KembaliLogo} alt="KEMBALI" className="auth-page-logo" />
+        )}
 
         {/* ===================================================================
             SCREEN 1: EMAIL RESET (Initial)
@@ -440,18 +427,15 @@ export default function ResetPassword() {
                 Menunggu Konfirmasi
               </button>
 
-              {/* Development Mode Simulation Tool */}
-              {import.meta.env.DEV && (
-                <div style={{ marginTop: "14px", padding: "10px 14px", background: "#f0f7f5", border: "1px dashed #3FBEC7", borderRadius: "12px", textAlign: "center" }}>
-                  <p>Mode Development: Simulasikan klik link reset dari email</p>
-                  <button
-                    type="button"
-                    className="auth-submit-btn" style={{ marginTop: "8px", fontSize: "12px", height: "36px" }}
-                    onClick={() => setStep('reset-confirmed')}
-                  >
-                    Simulasikan Link Dikonfirmasi &rarr;
-                  </button>
-                </div>
+              {emailCountdown === 0 && (
+                <button
+                  type="button"
+                  className="google-btn"
+                  onClick={handleRequestEmailReset}
+                  disabled={loading}
+                >
+                  Kirim ulang email reset
+                </button>
               )}
 
               {/* OR Divider */}
@@ -656,11 +640,12 @@ export default function ResetPassword() {
                 Reset Password Berhasil
               </h1>
               <p className="">
-                Lakukan Pembuatan Ulang Password
+                Email berhasil dikonfirmasi. Kembali ke halaman reset password,
+                lalu refresh halaman untuk membuat password baru.
               </p>
             </header>
             <div style={{ marginTop: '24px' }}>
-              <LoadingDots size="normal" color="#3FBEC7" />
+              <SuccessCheckmark />
             </div>
           </div>
         )}
