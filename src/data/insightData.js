@@ -398,7 +398,7 @@ export const educationalVideosData = [
     date: '14 YEARS AGO',
     author: 'Ellen MacArthur Foundation',
     thumbnail: insightImages.video1, // TODO: Replace with final image
-    videoUrl: 'https://www.youtube.com',
+    videoUrl: 'https://youtu.be/zCRKvDyyHmI?si=nXAcfL6GGUnG3eZW',
   },
   {
     id: 'video-2',
@@ -408,7 +408,7 @@ export const educationalVideosData = [
     date: '24 SEP 2022',
     author: 'By Leslie Alexander',
     thumbnail: insightImages.video2, // TODO: Replace with final image
-    videoUrl: 'https://www.youtube.com',
+    videoUrl: 'https://youtu.be/7BQhVj9-dXU?si=IAg0NrZk08gXcB7x',
   },
   {
     id: 'video-3',
@@ -417,7 +417,7 @@ export const educationalVideosData = [
     date: '24 SEP 2022',
     author: 'By DOKPROJECT',
     thumbnail: insightImages.video3, // TODO: Replace with final image
-    videoUrl: 'https://www.youtube.com',
+    videoUrl: 'https://youtu.be/ZvfI-UsAxq0?si=L83DNuMiyH2BXAoC',
   },
 ]
 
