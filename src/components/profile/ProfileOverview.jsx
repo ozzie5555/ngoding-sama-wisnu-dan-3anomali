@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../../context/useAuth'
 import { donationService } from '../../features/donation/services/donationService'
+import DonationDetailModal from '../donation/DonationDetailModal'
+import PaginationBar from '../insight/PaginationBar'
+import { getStoredDonations, getDonationById } from '../../data/donationData'
 import './ProfileOverview.css'
 
 const STATUS_LABELS = {
@@ -11,6 +14,9 @@ const STATUS_LABELS = {
   shipping: 'Pengiriman',
   received: 'Diterima',
   cancelled: 'Dibatalkan',
+  completed: 'Selesai',
+  delivery: 'Dalam Perjalanan',
+  confirmation: 'Konfirmasi',
 }
 
 const CATEGORY_LABELS = {
@@ -28,57 +34,149 @@ const COMMUNITY_LOGOS = {
   'panti-asuhan-kristen-tanah-putih': '/Panti asuhan kristen tanah putih 1.svg',
 }
 
+const chunkArray = (arr, size = 2) => {
+  const res = []
+  for (let i = 0; i < arr.length; i += size) {
+    res.push(arr.slice(i, i + size))
+  }
+  return res.length > 0 ? res : [[]]
+}
+
 export default function ProfileOverview({ onNavigateToEdit }) {
   const { user } = useAuth()
   const [activities, setActivities] = useState([])
   const [partners, setPartners] = useState([])
-  const [selectedActivity, setSelectedActivity] = useState(null)
+  const [selectedDonation, setSelectedDonation] = useState(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const loadData = async () => {
+  // 1-indexed pagination state
+  const [donationPage, setDonationPage] = useState(1)
+  const [partnerPage, setPartnerPage] = useState(1)
+
+  const loadData = async () => {
+    try {
+      let donations = []
+      let communities = []
+
       try {
-        const [donations, communities] = await Promise.all([
+        const [donRes, commRes] = await Promise.all([
           donationService.getUserDonations(),
           donationService.getUserCommunities(),
         ])
+        donations = donRes || []
+        communities = commRes || []
+      } catch {
+        // Fallback to local store
+      }
 
-        // Map donations to activity cards
-        const acts = donations.map((d) => ({
+      // If no remote donations, use centralized local donations
+      if (donations.length === 0) {
+        const localDonations = getStoredDonations()
+        donations = localDonations.map((d) => ({
           id: d.id,
-          image: d.photoUrl || '/buku-pelajarn.svg',
-          title: d.item_name,
-          recipient: d.communities?.name || 'Komunitas',
-          description: `${d.item_name} (${d.quantity} barang). Diajukan pada ${new Date(d.submitted_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
-          tags: [
-            CATEGORY_LABELS[d.category] || d.category,
-            d.condition_note || 'Layak Pakai',
-            `${d.quantity} Barang`,
-            STATUS_LABELS[d.status] || d.status,
-          ],
-          actionText: 'Lihat Detail',
+          rawDonation: d,
+          item_name: d.title,
+          photoUrl: d.image,
+          communities: { name: d.destination },
+          category: d.categoryKey || d.category,
+          condition_note: d.conditionNote || 'Layak Pakai',
+          quantity: d.quantity || 1,
+          status: d.status,
+          submitted_at: d.submittedAt || new Date().toISOString(),
         }))
+      }
 
-        setActivities(acts)
+      // Map donations to activity cards
+      const acts = donations.map((d) => ({
+        id: d.id,
+        rawDonation: d.rawDonation || d,
+        image: d.photoUrl || d.image || '/buku-pelajarn.svg',
+        title: d.item_name || d.title,
+        recipient: d.communities?.name || d.destination || 'Komunitas Terverifikasi',
+        description: `${d.item_name || d.title} (${d.quantity || 1} barang). Diajukan pada ${new Date(d.submitted_at || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`,
+        tags: [
+          CATEGORY_LABELS[d.category] || d.category || 'Barang Bekas',
+          d.condition_note || 'Layak Pakai',
+          `${d.quantity || 1} Barang`,
+          STATUS_LABELS[d.status] || d.statusLabel || d.status,
+        ],
+        actionText: 'Lihat Detail',
+      }))
 
-        // Map communities to partner cards
+      setActivities(acts)
+
+      // Fallback partners if empty
+      if (communities.length === 0) {
+        setPartners([
+          {
+            id: 'p1',
+            image: '/sedekas semarang barat 1.svg',
+            title: 'Sedekas',
+            description: 'Komunitas di Semarang Barat yang menyalurkan barang layak pakai.',
+          },
+          {
+            id: 'p2',
+            image: '/Panji AL JANNAH 1.svg',
+            title: 'Panti Asuhan Al Jannah',
+            description: 'Membina anak yatim, piatu, dan dhuafa di Semarang.',
+          },
+          {
+            id: 'p3',
+            image: '/Panti asuhan kristen tanah putih 1.svg',
+            title: 'Panti Asuhan Kristen Tanah Putih',
+            description: 'Panti asuhan di Candisari, Semarang.',
+          },
+          {
+            id: 'p4',
+            image: '/dipo waste bank 1.svg',
+            title: 'Dipo Waste Bank',
+            description: 'Bank sampah TPST UNDIP Tembalang Semarang.',
+          },
+        ])
+      } else {
         const parts = communities.map((c) => ({
           id: c.id,
           image: COMMUNITY_LOGOS[c.slug] || c.logo_path || '/sedekas.svg',
           title: c.name,
           description: c.description || c.location || 'Komunitas verified',
         }))
-
         setPartners(parts)
-      } catch (err) {
-        console.error('[ProfileOverview] Failed to load data:', err)
-      } finally {
-        setLoading(false)
       }
+    } catch (err) {
+      console.error('[ProfileOverview] Failed to load data:', err)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     loadData()
   }, [])
+
+  const handleOpenDetail = (act) => {
+    const fullDonation = getDonationById(act.id) || act.rawDonation || {
+      id: act.id,
+      title: act.title,
+      image: act.image,
+      destination: act.recipient,
+      destinationFull: act.recipient,
+      category: act.tags[0],
+      status: 'delivery',
+      stepIndex: 4,
+      date: 'Agustus 2026',
+      description: act.description,
+      tags: act.tags,
+    }
+    setSelectedDonation(fullDonation)
+    setIsDetailModalOpen(true)
+  }
+
+  const donationChunks = chunkArray(activities, 2)
+  const partnerChunks = chunkArray(partners, 2)
+
+  const activeDonationPage = Math.min(donationPage, donationChunks.length)
+  const activePartnerPage = Math.min(partnerPage, partnerChunks.length)
 
   return (
     <div className="profile-overview-container">
@@ -143,12 +241,15 @@ export default function ProfileOverview({ onNavigateToEdit }) {
 
       {/* RIGHT COLUMN: Activities */}
       <section className="profile-right-col" aria-label="Aktivitas Pengguna">
-        <h2 className="profile-section-title">Aktifitas</h2>
+        <h2 className="profile-section-title">Aktivitas &amp; Riwayat</h2>
 
         {/* Group 1: Donasi saya */}
         <div className="activity-group">
           <div className="activity-group-header">
             <h3 className="activity-group-title">Donasi saya</h3>
+            <Link to="/profile/history" className="activity-see-all">
+              Lihat Semua &rarr;
+            </Link>
           </div>
 
           {loading ? (
@@ -175,47 +276,91 @@ export default function ProfileOverview({ onNavigateToEdit }) {
               </Link>
             </div>
           ) : (
-            <div className="activity-cards-slider">
-              <div className="activity-cards-row">
-                {activities.map((act) => (
-                  <article key={act.id} className="donation-card">
-                    <div className="donation-card-img-wrap">
-                      <img
-                        src={act.image}
-                        alt={act.title}
-                        className="donation-card-img"
-                        onError={(e) => {
-                          e.target.src = '/src/assets/images/donation-book.svg'
-                        }}
-                      />
-                    </div>
-                    <div className="donation-card-body">
-                      <h4 className="donation-card-title">{act.title}</h4>
-                      <p className="donation-card-recipient">{act.recipient}</p>
-                      <p className="donation-card-desc">{act.description}</p>
+            <div className="activity-carousel-wrapper">
+              <div className="activity-carousel-viewport">
+                <div
+                  className="activity-carousel-track"
+                  style={{ transform: `translateX(-${(activeDonationPage - 1) * 100}%)` }}
+                >
+                  {donationChunks.map((chunk, chunkIdx) => (
+                    <div key={chunkIdx} className="activity-cards-slide">
+                      {chunk.map((act, index) => (
+                        <article key={act.id} className={`donation-card card-variant-${index % 2}`}>
+                          <div className="donation-card-img-wrap">
+                            <img
+                              src={act.image}
+                              alt={act.title}
+                              className="donation-card-img"
+                              onError={(e) => {
+                                e.target.src = '/buku-pelajarn.svg'
+                              }}
+                            />
+                          </div>
+                          <div className="donation-card-body">
+                            <h4 className="donation-card-title">{act.title}</h4>
+                            <p className="donation-card-recipient">{act.recipient}</p>
+                            <p className="donation-card-desc">{act.description}</p>
 
-                      <div className="donation-tags-section">
-                        <span className="donation-tags-label">Detail Donasi</span>
-                        <div className="donation-tags-list">
-                          {act.tags.map((tag, idx) => (
-                            <span key={idx} className="donation-tag-chip">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                            <div className="donation-tags-section">
+                              <span className="donation-tags-label">Detail Donasi</span>
+                              <div className="donation-tags-list">
+                                {act.tags.map((tag, idx) => (
+                                  <span key={idx} className="donation-tag-chip">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
 
-                      <button
-                        type="button"
-                        className="donation-card-action-btn"
-                        onClick={() => setSelectedActivity(act)}
-                      >
-                        {act.actionText}
-                      </button>
+                            <button
+                              type="button"
+                              className="donation-card-action-btn"
+                              onClick={() => handleOpenDetail(act)}
+                            >
+                              {act.rawDonation?.status === 'delivery' ? 'Lacak Donasi' : act.actionText || 'Lihat Detail'}
+                            </button>
+                          </div>
+                        </article>
+                      ))}
                     </div>
-                  </article>
-                ))}
+                  ))}
+                </div>
               </div>
+
+              {/* Insight-style Pagination Indicator Bar */}
+              {donationChunks.length > 1 && (
+                <div className="activity-pagination-footer">
+                  <button
+                    type="button"
+                    className="activity-nav-chevron-btn"
+                    onClick={() => setDonationPage((p) => Math.max(1, p - 1))}
+                    disabled={activeDonationPage === 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+
+                  <PaginationBar
+                    totalPages={donationChunks.length}
+                    currentPage={activeDonationPage}
+                    onSelectPage={(p) => setDonationPage(p)}
+                  />
+
+                  <button
+                    type="button"
+                    className="activity-nav-chevron-btn"
+                    onClick={() => setDonationPage((p) => Math.min(donationChunks.length, p + 1))}
+                    disabled={activeDonationPage === donationChunks.length}
+                    aria-label="Halaman selanjutnya"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -224,6 +369,9 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         <div className="activity-group">
           <div className="activity-group-header">
             <h3 className="activity-group-title">Komunitas Mitra</h3>
+            <Link to="/profile/history" className="activity-see-all">
+              Lihat Semua &rarr;
+            </Link>
           </div>
 
           {loading ? (
@@ -253,63 +401,86 @@ export default function ProfileOverview({ onNavigateToEdit }) {
               </Link>
             </div>
           ) : (
-            <div className="activity-cards-slider">
-              <div className="activity-cards-row">
-                {partners.map((partner) => (
-                  <article key={partner.id} className="partner-card-profile">
-                    <div className="partner-card-img-wrap">
-                      <img
-                        src={partner.image}
-                        alt={partner.title}
-                        className="partner-card-img"
-                        onError={(e) => {
-                          e.target.src = '/src/assets/images/donation-charity.svg'
-                        }}
-                      />
+            <div className="activity-carousel-wrapper">
+              <div className="activity-carousel-viewport">
+                <div
+                  className="activity-carousel-track"
+                  style={{ transform: `translateX(-${(activePartnerPage - 1) * 100}%)` }}
+                >
+                  {partnerChunks.map((chunk, chunkIdx) => (
+                    <div key={chunkIdx} className="activity-cards-slide">
+                      {chunk.map((partner, index) => (
+                        <article key={partner.id} className={`partner-card-profile partner-variant-${index % 2}`}>
+                          <div className="partner-card-img-wrap">
+                            <img
+                              src={partner.image}
+                              alt={partner.title}
+                              className="partner-card-img"
+                              onError={(e) => {
+                                e.target.src = '/sedekas.svg'
+                              }}
+                            />
+                          </div>
+                          <div className="partner-card-body">
+                            <h4 className="partner-card-title">{partner.title}</h4>
+                            <p className="partner-card-desc">{partner.description}</p>
+                          </div>
+                        </article>
+                      ))}
                     </div>
-                    <div className="partner-card-body">
-                      <h4 className="partner-card-title">{partner.title}</h4>
-                      <p className="partner-card-desc">{partner.description}</p>
-                    </div>
-                  </article>
-                ))}
+                  ))}
+                </div>
               </div>
+
+              {/* Insight-style Pagination Indicator Bar */}
+              {partnerChunks.length > 1 && (
+                <div className="activity-pagination-footer">
+                  <button
+                    type="button"
+                    className="activity-nav-chevron-btn"
+                    onClick={() => setPartnerPage((p) => Math.max(1, p - 1))}
+                    disabled={activePartnerPage === 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+
+                  <PaginationBar
+                    totalPages={partnerChunks.length}
+                    currentPage={activePartnerPage}
+                    onSelectPage={(p) => setPartnerPage(p)}
+                  />
+
+                  <button
+                    type="button"
+                    className="activity-nav-chevron-btn"
+                    onClick={() => setPartnerPage((p) => Math.min(partnerChunks.length, p + 1))}
+                    disabled={activePartnerPage === partnerChunks.length}
+                    aria-label="Halaman selanjutnya"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </section>
 
-      {/* Optional Activity Detail Modal */}
-      {selectedActivity && (
-        <div className="activity-detail-backdrop" onClick={() => setSelectedActivity(null)}>
-          <div className="activity-detail-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="modal-close-btn"
-              onClick={() => setSelectedActivity(null)}
-              aria-label="Tutup"
-            >
-              &times;
-            </button>
-            <h3>{selectedActivity.title}</h3>
-            <p className="modal-sub">{selectedActivity.recipient}</p>
-            <p>{selectedActivity.description}</p>
-            <div className="donation-tags-list" style={{ marginTop: '16px' }}>
-              {selectedActivity.tags.map((t, i) => (
-                <span key={i} className="donation-tag-chip">{t}</span>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="profile-edit-btn"
-              style={{ marginTop: '20px', width: '100%' }}
-              onClick={() => setSelectedActivity(null)}
-            >
-              Tutup
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Donation Detail Modal */}
+      <DonationDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false)
+          setSelectedDonation(null)
+        }}
+        donation={selectedDonation}
+        onReviewSubmitted={loadData}
+      />
     </div>
   )
 }

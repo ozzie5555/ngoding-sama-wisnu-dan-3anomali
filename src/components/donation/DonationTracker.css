@@ -1,0 +1,168 @@
+/* ── Reusable Donation Tracker ── */
+.donation-tracker-wrapper {
+  position: relative;
+  width: 100%;
+  padding-block: 8px 12px;
+  box-sizing: border-box;
+}
+
+.donation-tracker-line-bg {
+  position: absolute;
+  top: 19px;
+  left: 8%;
+  right: 8%;
+  height: 3px;
+  background: #e2e8e8;
+  border-radius: 999px;
+  z-index: 1;
+}
+
+.donation-tracker-line-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #119dc5 0%, #3fbec7 100%);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.donation-tracker-line-fill.has-error {
+  background: linear-gradient(90deg, #119dc5 0%, #d9383a 100%);
+}
+
+.donation-tracker-steps {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tracker-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.tracker-step-dot-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 8px;
+}
+
+.tracker-step-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2px solid #c9d6d7;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+/* Completed State */
+.tracker-step-dot.completed {
+  background: #119dc5;
+  border-color: #119dc5;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(17, 157, 197, 0.25);
+}
+
+.tracker-icon-check {
+  width: 12px;
+  height: 12px;
+  stroke: #ffffff;
+}
+
+/* Active State */
+.tracker-step-dot.active {
+  background: #ffffff;
+  border-color: #119dc5;
+  border-width: 2.5px;
+  box-shadow: 0 0 0 3px rgba(17, 157, 197, 0.2);
+}
+
+.tracker-dot-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #119dc5;
+  animation: trackerPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes trackerPulse {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* Warning State */
+.tracker-step-dot.warning {
+  background: #ff9225;
+  border-color: #ff9225;
+  color: #ffffff;
+}
+
+/* Error State */
+.tracker-step-dot.error {
+  background: #d9383a;
+  border-color: #d9383a;
+  color: #ffffff;
+}
+
+.tracker-icon-symbol {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+}
+
+/* Upcoming State */
+.tracker-step-dot.upcoming {
+  background: #f4f7f7;
+  border-color: #d0dcdd;
+}
+
+.tracker-step-label {
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  color: #7b9294;
+  line-height: 1.3;
+  margin-top: 2px;
+  max-width: 85px;
+  word-break: break-word;
+  transition: color 0.2s ease;
+}
+
+.tracker-step-label.is-highlighted {
+  color: #062632;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .tracker-step-label {
+    font-size: 9.5px;
+    max-width: 60px;
+  }
+  .tracker-step-dot {
+    width: 18px;
+    height: 18px;
+  }
+  .donation-tracker-line-bg {
+    top: 17px;
+  }
+}

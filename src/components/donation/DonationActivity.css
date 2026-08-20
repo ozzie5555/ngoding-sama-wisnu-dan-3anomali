@@ -1,0 +1,212 @@
+/* ── Donation Activity Component Styles ── */
+.donation-activity-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.activity-banner-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.85fr) minmax(220px, 1.15fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.activity-illustration-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: transparent;
+  min-height: 140px;
+}
+
+.activity-illustration-img {
+  width: 100%;
+  max-height: 145px;
+  object-fit: contain;
+}
+
+.activity-status-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 20px;
+  border-radius: 18px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* Theme Variant 1: Delivery (Blue) */
+.activity-status-box.theme-delivery {
+  background: #3a9df3;
+  border: 1px solid #2186df;
+  color: #07111a;
+}
+.activity-status-box.theme-delivery .activity-status-heading {
+  color: #051a2e;
+}
+.activity-status-box.theme-delivery .activity-status-subtitle {
+  color: #083c5e;
+}
+
+/* Theme Variant 2: Completed (Green) */
+.activity-status-box.theme-completed {
+  background: #18c07a;
+  border: 1px solid #14a267;
+  color: #ffffff;
+}
+.activity-status-box.theme-completed .activity-status-heading {
+  color: #ffffff;
+}
+.activity-status-box.theme-completed .activity-status-subtitle {
+  color: #eafaf1;
+}
+
+/* Theme Variant 3: Confirmation / Info (Cyan / Turquoise) */
+.activity-status-box.theme-confirmation,
+.activity-status-box.theme-pickup {
+  background: #3fbec7;
+  border: 1px solid #2da6af;
+  color: #062632;
+}
+.activity-status-box.theme-confirmation .activity-status-heading,
+.activity-status-box.theme-pickup .activity-status-heading {
+  color: #062632;
+}
+.activity-status-box.theme-confirmation .activity-status-subtitle,
+.activity-status-box.theme-pickup .activity-status-subtitle {
+  color: #0f434a;
+}
+
+/* Theme Variant 4: Error / Cancelled (Subtle Red / Coral) */
+.activity-status-box.theme-error {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #7f1d1d;
+}
+.activity-status-box.theme-error .activity-status-heading {
+  color: #991b1b;
+}
+.activity-status-box.theme-error .activity-status-subtitle {
+  color: #7f1d1d;
+}
+
+.activity-status-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+}
+
+.activity-status-subtitle {
+  margin: 0;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* Tracking Body Card */
+.activity-tracking-body {
+  padding: 20px 24px;
+  border: 1.5px solid #a2b5ad;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #062632;
+  box-shadow: 0 3px 6px rgba(12, 33, 36, 0.08);
+}
+
+.activity-tracking-title {
+  margin: 0 0 12px;
+  color: #062632;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.activity-tracker-container {
+  margin-bottom: 20px;
+}
+
+.activity-info-details {
+  position: relative;
+  padding-right: 110px;
+  margin-top: 12px;
+}
+
+.activity-info-row {
+  margin-bottom: 8px;
+}
+
+.activity-info-label {
+  display: block;
+  color: #062632;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+}
+
+.activity-info-val {
+  margin: 2px 0 0;
+  color: #062632;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+}
+
+.activity-info-sub {
+  color: #8b9fa2;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.activity-detail-btn {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  min-width: 90px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #25383b;
+  color: #ffffff;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.activity-detail-btn:hover {
+  background: #152224;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .activity-banner-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .activity-illustration-wrap {
+    min-height: 110px;
+  }
+  .activity-illustration-img {
+    max-height: 120px;
+  }
+  .activity-info-details {
+    padding-right: 0;
+    padding-bottom: 46px;
+  }
+  .activity-detail-btn {
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+  }
+}

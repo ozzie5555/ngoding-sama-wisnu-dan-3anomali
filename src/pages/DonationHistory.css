@@ -1,0 +1,285 @@
+/* ── Donation History Page Styles ── */
+.donation-history-page {
+  padding-top: 24px;
+  color: #062632;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.donation-history-container {
+  max-width: 1300px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 32px;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.history-breadcrumb {
+  margin-bottom: 16px;
+}
+
+.history-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #238b94;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.history-back-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.history-back-link:hover {
+  color: #1a6d74;
+  transform: translateX(-2px);
+}
+
+.donation-history-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1.5px solid #edf2f2;
+  margin-bottom: 28px;
+}
+
+.history-page-title {
+  margin: 0 0 8px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: #062632;
+  line-height: 1.2;
+}
+
+.history-page-subtitle {
+  margin: 0;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 15px;
+  color: #5a7476;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+.history-new-donation-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  background: #31595b;
+  color: #ffffff;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.history-new-donation-btn:hover {
+  background: #223f40;
+  transform: translateY(-1px);
+}
+
+/* Toolbar */
+.donation-history-toolbar-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.history-filter-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f4f8f7;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.history-tab-btn {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a7476;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-tab-btn.is-active {
+  background: #ffffff;
+  color: #062632;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.history-search-wrap {
+  position: relative;
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+}
+
+.history-search-wrap .search-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: #8b9fa2;
+}
+
+.history-search-input {
+  width: 100%;
+  padding: 10px 38px 10px 42px;
+  border: 1.5px solid #d4e3e4;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13.5px;
+  color: #062632;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.history-search-input:focus {
+  border-color: #3fbec7;
+  box-shadow: 0 0 0 3px rgba(63, 190, 199, 0.15);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #8b9fa2;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.history-count-badge {
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  color: #789093;
+  margin-bottom: 18px;
+}
+
+.history-count-badge strong {
+  color: #062632;
+}
+
+/* Grid Layout */
+.donation-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+/* Empty State */
+.history-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background: #f8fbfa;
+  border: 1.5px dashed #cdd9d7;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.empty-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e5f4f4;
+  color: #238b94;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-icon-wrap svg {
+  width: 30px;
+  height: 30px;
+}
+
+.history-empty-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: #062632;
+}
+
+.history-empty-card p {
+  margin: 0 0 20px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  color: #658185;
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.empty-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: #31595b;
+  color: #ffffff;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.empty-action-btn:hover {
+  background: #203c3e;
+}
+
+@media (max-width: 900px) {
+  .donation-history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .donation-history-toolbar-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .history-search-wrap {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .donation-history-container {
+    padding-inline: 16px;
+  }
+  .history-page-title {
+    font-size: 26px;
+  }
+  .donation-history-grid {
+    grid-template-columns: 1fr;
+  }
+}
