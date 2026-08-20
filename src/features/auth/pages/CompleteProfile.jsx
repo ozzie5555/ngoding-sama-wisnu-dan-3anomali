@@ -5,6 +5,7 @@ import AuthLayout from '../components/AuthLayout';
 import { authService } from '../services/authService';
 import { supabase } from '../../../lib/supabase/client';
 import KembaliLogo from '../../../assets/images/Group 6.svg';
+import { LocationPickerModal } from '../../../components/profile/ProfileModal';
 
 const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -31,12 +32,15 @@ export default function CompleteProfile() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [phoneError, setPhoneError] = useState('');
   const [otpError, setOtpError] = useState('');
+  const [demoPopup, setDemoPopup] = useState({ open: false, status: 'loading' });
+  const [autoFillingOtp, setAutoFillingOtp] = useState(false);
 
   // Step 2: Profile completion
   const [fullName, setFullName] = useState(user?.name || '');
   const [username, setUsername] = useState(user?.username || '');
   const [birthDate, setBirthDate] = useState('');
   const [location, setLocation] = useState('');
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -61,12 +65,33 @@ export default function CompleteProfile() {
       return;
     }
     setPhoneError('');
+    setDemoPopup({ open: true, status: 'loading' });
+    setAutoFillingOtp(true);
+    setOtp(['', '', '', '']);
+
     try {
-      await authService.requestWhatsappOtp(phone);
+      const result = await authService.requestWhatsappOtp(phone);
       setIsVerifying(true);
       setCountdown(60);
+
+      const demoCode = result.demoCode;
+      if (demoCode) {
+        for (let index = 0; index < demoCode.length; index += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          setOtp((previous) => {
+            const next = [...previous];
+            next[index] = demoCode[index];
+            return next;
+          });
+        }
+      }
+
+      setAutoFillingOtp(false);
+      setDemoPopup({ open: true, status: 'ready' });
     } catch (err) {
-      setPhoneError(err.message || 'Gagal mengirim kode verifikasi');
+      setAutoFillingOtp(false);
+      setDemoPopup({ open: false, status: 'loading' });
+      setPhoneError(err.message || 'Gagal membuat kode verifikasi');
     }
   };
 
@@ -194,7 +219,7 @@ export default function CompleteProfile() {
               <div className="form-group">
                 <label>Kode Verifikasi</label>
                 <span style={{ fontSize: '9px', color: '#7b9489', marginBottom: '4px' }}>
-                  Kode verifikasi telah terkirim!
+                  Kode demo telah disiapkan otomatis.
                 </span>
                 <div className="otp-container">
                   {otp.map((digit, idx) => (
@@ -203,7 +228,7 @@ export default function CompleteProfile() {
                       ref={otpRefs[idx]}
                       type="text"
                       maxLength={1}
-                      className="otp-input"
+                      className={`otp-input ${digit ? 'otp-input-filled' : ''}`}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(idx, e)}
@@ -218,11 +243,33 @@ export default function CompleteProfile() {
             )}
 
             {isVerifying && (
-              <button type="submit" className="auth-submit-btn">
-                Selanjutnya
+              <button type="submit" className="auth-submit-btn" disabled={autoFillingOtp}>
+                {autoFillingOtp ? 'Menyiapkan kode...' : 'Selanjutnya'}
               </button>
             )}
           </form>
+
+          {demoPopup.open && (
+            <div className="demo-otp-overlay" role="dialog" aria-modal="true" aria-label="Mode demo OTP">
+              <div className="demo-otp-modal">
+                <div className={`demo-otp-icon ${demoPopup.status === 'ready' ? 'is-ready' : ''}`}>
+                  {demoPopup.status === 'ready' ? '✓' : <span className="demo-otp-spinner" />}
+                </div>
+                <span className="demo-otp-badge">MODE DEMO</span>
+                <h2>{demoPopup.status === 'ready' ? 'Kode Demo Siap' : 'Menyiapkan Kode'}</h2>
+                <p>
+                  {demoPopup.status === 'ready'
+                    ? 'Kode verifikasi sudah diisi otomatis. Tidak ada SMS yang dikirim.'
+                    : 'Menyiapkan simulasi verifikasi untuk presentasi...'}
+                </p>
+                {demoPopup.status === 'ready' && (
+                  <button type="button" className="demo-otp-close" onClick={() => setDemoPopup({ open: false, status: 'loading' })}>
+                    Lanjutkan
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
 
@@ -279,30 +326,38 @@ export default function CompleteProfile() {
 
             <div className="form-group">
               <label htmlFor="location">Domisili</label>
-              <div className="select-wrapper">
-                <select
-                  id="location"
-                  className="auth-input"
-                  style={{ paddingLeft: '14px', appearance: 'none', cursor: 'pointer' }}
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                >
-                  <option value="" disabled hidden>Pilih Domisili</option>
-                  <option value="Kota Semarang, Jawa Tengah">Kota Semarang, Jawa Tengah</option>
-                  <option value="Kota Surabaya, Jawa Timur">Kota Surabaya, Jawa Timur</option>
-                  <option value="Jakarta Selatan, DKI Jakarta">Jakarta Selatan, DKI Jakarta</option>
-                  <option value="Kota Bandung, Jawa Barat">Kota Bandung, Jawa Barat</option>
-                </select>
-                <span className="select-chevron">
-                  <ChevronDownIcon />
+              <button
+                type="button"
+                id="location"
+                className={`location-picker-trigger ${location ? 'has-value' : ''}`}
+                onClick={() => setIsLocationPickerOpen(true)}
+              >
+                <span className="location-picker-pin" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
                 </span>
-              </div>
+                <span className="location-picker-copy">
+                  <strong>{location || 'Pilih domisili Anda'}</strong>
+                  <small>{location ? 'Lokasi siap disimpan' : 'Provinsi, kota, kecamatan, dan kelurahan'}</small>
+                </span>
+                <ChevronDownIcon />
+              </button>
+              <span className="location-field-hint">Digunakan untuk mencocokkan Anda dengan komunitas terdekat.</span>
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
               {loading ? 'Menyimpan...' : 'Simpan & Lanjutkan'}
             </button>
           </form>
+
+          <LocationPickerModal
+            isOpen={isLocationPickerOpen}
+            onClose={() => setIsLocationPickerOpen(false)}
+            currentLocation={location}
+            onSaveLocation={setLocation}
+          />
         </>
       )}
     </AuthLayout>

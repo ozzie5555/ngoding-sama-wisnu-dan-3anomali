@@ -1481,3 +1481,155 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* Demo OTP status modal */
+.demo-otp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(24, 46, 42, 0.34);
+  backdrop-filter: blur(5px);
+  animation: demoOverlayIn 180ms ease-out;
+}
+
+.demo-otp-modal {
+  width: min(100%, 360px);
+  padding: 28px 24px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 22px 70px rgba(23, 63, 54, 0.22);
+  text-align: center;
+  animation: demoModalIn 220ms ease-out;
+}
+
+.demo-otp-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #5b8d7e;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.demo-otp-icon.is-ready {
+  background: #357665;
+  animation: demoCheckPop 320ms ease-out;
+}
+
+.demo-otp-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: demoSpin 760ms linear infinite;
+}
+
+.demo-otp-badge {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #52766b;
+  background: #e8f3ef;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.demo-otp-modal h2 {
+  margin: 14px 0 7px;
+  color: #24463e;
+  font-size: 20px;
+}
+
+.demo-otp-modal p {
+  margin: 0 auto 20px;
+  max-width: 280px;
+  color: #71847f;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.demo-otp-close {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: #457f70;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.demo-otp-close:hover {
+  background: #356b5d;
+  transform: translateY(-1px);
+}
+
+@keyframes demoOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes demoModalIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes demoSpin { to { transform: rotate(360deg); } }
+@keyframes demoCheckPop { 0% { transform: scale(0.7); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-otp-overlay,
+  .demo-otp-modal,
+  .demo-otp-icon.is-ready,
+  .demo-otp-spinner { animation: none; }
+}
+
+
+.otp-input-filled {
+  animation: demoOtpFill 220ms ease-out;
+  border-color: #5b8d7e;
+  background: #f0f8f5;
+}
+
+@keyframes demoOtpFill {
+  from { opacity: 0.35; transform: translateY(4px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+.location-picker-trigger {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 13px;
+  border: 1px solid #d6e3df;
+  border-radius: 12px;
+  color: #78908a;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.location-picker-trigger:hover,
+.location-picker-trigger:focus-visible {
+  border-color: #5b8d7e;
+  background: #fbfefd;
+  box-shadow: 0 0 0 3px rgba(91, 141, 126, 0.12);
+  outline: none;
+}
+
+.location-picker-trigger.has-value { color: #315e52; }
+.location-picker-trigger > svg { width: 17px; height: 17px; margin-left: auto; flex: 0 0 auto; }
+.location-picker-pin { width: 31px; height: 31px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; color: #4c8272; background: #eaf5f1; }
+.location-picker-pin svg { width: 17px; height: 17px; }
+.location-picker-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.location-picker-copy strong { overflow: hidden; color: currentColor; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.location-picker-copy small { color: #8a9e99; font-size: 10px; line-height: 1.35; }
+.location-field-hint { display: block; margin-top: 5px; color: #8a9e99; font-size: 10px; line-height: 1.4; }

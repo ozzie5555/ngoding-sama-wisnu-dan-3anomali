@@ -124,13 +124,16 @@ export const authService = {
    * Designed for direct integration with WhatsApp Business API / Twilio / custom provider
    */
   requestWhatsappOtp: async (phone) => {
-    // Service abstraction for WhatsApp OTP provider
-    // In dev / before backend integration, provides mock response
+    // Demo-only fallback until a real SMS/WhatsApp provider is configured.
+    if (!import.meta.env.DEV) {
+      throw new Error('Provider OTP belum dikonfigurasi.');
+    }
     await new Promise((res) => setTimeout(res, 700));
     return {
       success: true,
-      message: 'Kode verifikasi telah dikirim ke WhatsApp Anda.',
+      message: 'Kode demo berhasil dibuat.',
       isMock: true,
+      demoCode: '1234',
     };
   },
 
@@ -143,7 +146,12 @@ export const authService = {
     if (!otp || otp.length !== 4) {
       throw new Error('Kode verifikasi harus 4 digit.');
     }
-    // Accept valid 4 digit numeric OTP
+    if (import.meta.env.DEV && otp !== '1234') {
+      throw new Error('Kode demo salah. Gunakan 1234.');
+    }
+    if (!import.meta.env.DEV) {
+      throw new Error('Provider OTP belum dikonfigurasi.');
+    }
     return {
       success: true,
       message: 'Verifikasi berhasil.',
