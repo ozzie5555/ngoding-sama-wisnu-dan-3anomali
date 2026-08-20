@@ -24,7 +24,7 @@ export default function DonationActivity({
       case 'received':
         return {
           themeClass: 'theme-completed',
-          illustration: '/free-shipping-1--e-commerce-free-shipping.svg',
+          illustration: '/donasisampaitujuan.svg',
           illustrationAlt: 'Donasi Sampai Tujuan',
           title: (
             <>
@@ -92,7 +92,7 @@ export default function DonationActivity({
         }
         return {
           themeClass: 'theme-confirmation',
-          illustration: '/free-shipping-1--e-commerce-free-shipping.svg',
+          illustration: '/donasi dikonfirmasi.svg',
           illustrationAlt: 'Donasi Sedang Dikonfirmasi',
           title: (
             <>
