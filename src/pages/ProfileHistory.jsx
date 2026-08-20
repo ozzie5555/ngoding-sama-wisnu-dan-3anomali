@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { donationService } from '../features/donation/services/donationService'
@@ -95,30 +95,34 @@ export default function ProfileHistory() {
     loadDonations()
   }
 
-  // If user is not authenticated
+  // If user is not authenticated, show friendly prompt
   if (!isAuthenticated) {
     return (
-      <main className="profile-history-unauth">
-        <div className="unauth-box">
-          <div className="unauth-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
+      <>
+        <main className="profile-history-page">
+          <div className="profile-history-unauth">
+            <div className="unauth-box">
+              <div className="unauth-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h2>Akses Terbatas</h2>
+              <p>Silakan masuk ke akun Anda terlebih dahulu untuk melihat seluruh riwayat aktivitas donasi dan komunitas Anda.</p>
+              <div className="unauth-actions">
+                <button type="button" className="btn-unauth-login" onClick={() => navigate('/login')}>
+                  Masuk Sekarang
+                </button>
+                <button type="button" className="btn-unauth-home" onClick={() => navigate('/')}>
+                  Kembali ke Beranda
+                </button>
+              </div>
+            </div>
           </div>
-          <h2>Akses Terbatas</h2>
-          <p>Silakan masuk ke akun Anda terlebih dahulu untuk melihat seluruh riwayat aktivitas donasi dan komunitas Anda.</p>
-          <div className="unauth-actions">
-            <button type="button" className="btn-unauth-login" onClick={() => navigate('/login')}>
-              Masuk Sekarang
-            </button>
-            <button type="button" className="btn-unauth-home" onClick={() => navigate('/')}>
-              Kembali ke Beranda
-            </button>
-          </div>
-        </div>
+        </main>
         <Footer />
-      </main>
+      </>
     )
   }
 
@@ -126,40 +130,43 @@ export default function ProfileHistory() {
 
   if (!historyVisible) {
     return (
+      <>
+        <main className="profile-history-page">
+          <div className="profile-history-container">
+            <div className="profile-history-breadcrumb">
+              <Link to="/profile" className="profile-back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Kembali ke Profil
+              </Link>
+            </div>
+            <div className="privacy-history-hidden" role="status">
+              <div className="privacy-hidden-icon" aria-hidden="true">⌁</div>
+              <h1>Riwayat donasi disembunyikan</h1>
+              <p>Aktifkan “Riwayat donasi” di menu Privasi &amp; Data jika ingin melihat aktivitas dan dampak donasi pada profil.</p>
+              <Link to="/profile?tab=privacy" className="empty-sub-btn">Atur Privasi</Link>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  return (
+    <>
       <main className="profile-history-page">
         <div className="profile-history-container">
+          {/* Navigation Breadcrumb */}
           <div className="profile-history-breadcrumb">
             <Link to="/profile" className="profile-back-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
               Kembali ke Profil
             </Link>
           </div>
-          <div className="privacy-history-hidden" role="status">
-            <div className="privacy-hidden-icon" aria-hidden="true">⌁</div>
-            <h1>Riwayat donasi disembunyikan</h1>
-            <p>Aktifkan “Riwayat donasi” di menu Privasi &amp; Data jika ingin melihat aktivitas dan dampak donasi pada profil.</p>
-            <Link to="/profile?tab=privacy" className="empty-sub-btn">Atur Privasi</Link>
-          </div>
-        </div>
-        <Footer />
-      </main>
-    )
-  }
-
-  return (
-    <main className="profile-history-page">
-      <div className="profile-history-container">
-        {/* Navigation Breadcrumb */}
-        <div className="profile-history-breadcrumb">
-          <Link to="/profile" className="profile-back-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            Kembali ke Profil
-          </Link>
-        </div>
 
         {/* Header */}
         <header className="profile-history-header">
@@ -267,16 +274,17 @@ export default function ProfileHistory() {
           )}
         </div>
       </div>
-
-      {/* Donation Detail Modal */}
-      <DonationDetailModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        donation={selectedDonation}
-        onReviewSubmitted={handleReviewSubmitted}
-      />
-
-      <Footer />
     </main>
-  )
+
+    {/* Donation Detail Modal */}
+    <DonationDetailModal
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      donation={selectedDonation}
+      onReviewSubmitted={handleReviewSubmitted}
+    />
+
+    <Footer />
+  </>
+)
 }

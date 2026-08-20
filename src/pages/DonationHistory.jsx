@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { supabase } from '../lib/supabase/client'
@@ -106,18 +106,22 @@ export default function DonationHistory() {
 
   if (!initialized || !isAuthenticated) {
     return (
-      <main className="donation-history-page">
-        <div className="history-empty-card">
-          <h3>Masuk untuk Melihat Riwayat</h3>
-          <p>Riwayat donasi hanya dapat dilihat oleh pemilik akun.</p>
-          <Link to="/login" className="empty-action-btn">Masuk Sekarang</Link>
-        </div>
-      </main>
+      <>
+        <main className="donation-history-page">
+          <div className="history-empty-card">
+            <h3>Masuk untuk Melihat Riwayat</h3>
+            <p>Riwayat donasi hanya dapat dilihat oleh pemilik akun.</p>
+            <Link to="/login" className="empty-action-btn">Masuk Sekarang</Link>
+          </div>
+        </main>
+        <Footer />
+      </>
     )
   }
 
   return (
-    <main className="donation-history-page">
+    <>
+      <main className="donation-history-page">
       <div className="donation-history-container">
         {/* Navigation Breadcrumb / Back Link */}
         <div className="history-breadcrumb">
@@ -222,16 +226,17 @@ export default function DonationHistory() {
           )}
         </div>
       </div>
-
-      {/* Donation Detail Modal */}
-      <DonationDetailModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        donation={selectedDonation}
-        onReviewSubmitted={handleReviewSubmitted}
-      />
-
-      <Footer />
     </main>
-  )
+
+    {/* Donation Detail Modal */}
+    <DonationDetailModal
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      donation={selectedDonation}
+      onReviewSubmitted={handleReviewSubmitted}
+    />
+
+    <Footer />
+  </>
+)
 }

@@ -105,7 +105,8 @@ export default function Insight() {
   }
 
   return (
-    <main className="insight-page">
+    <>
+      <main className="insight-page">
       {/* HERO SECTION */}
       <section className="insight-hero-section">
         <div className="insight-container hero-container">
@@ -298,12 +299,13 @@ export default function Insight() {
             </div>
           </div>
         </section>
-
-        <Footer />
       </div>
+    </main>
+
+      <Footer />
 
       {/* DETAIL MODAL OVERLAY */}
       {selectedItem && <ArticleDetailModal item={selectedItem} onClose={handleCloseDetail} />}
-    </main>
+    </>
   )
 }

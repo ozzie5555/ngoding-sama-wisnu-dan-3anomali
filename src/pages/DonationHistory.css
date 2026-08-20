@@ -107,6 +107,13 @@
   background: #f4f8f7;
   padding: 4px;
   border-radius: 12px;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+
+.history-filter-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .history-tab-btn {
@@ -119,6 +126,7 @@
   font-weight: 600;
   color: #5a7476;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
@@ -130,7 +138,9 @@
 
 .history-search-wrap {
   position: relative;
-  min-width: 320px;
+  min-width: 0;
+  width: 100%;
+  max-width: 360px;
   display: flex;
   align-items: center;
 }

@@ -41,11 +41,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  width: 100%;
+  overflow-x: hidden;
   background: #ffffff;
   font-family: var(--font-sora);
   color: var(--color-text-main);

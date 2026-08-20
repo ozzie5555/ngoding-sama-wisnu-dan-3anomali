@@ -117,7 +117,8 @@ export default function Donation() {
   }
 
   return (
-    <main className="donation-page">
+    <>
+      <main className="donation-page">
       {/* Hero Section */}
       <section className="donation-hero">
         <div>
@@ -355,6 +356,8 @@ export default function Donation() {
         <img src="/Donation Streamline Bruxelles.svg" alt="" />
       </section>
 
+      </main>
+
       {/* Premium Cari Kebutuhan Modal Component */}
       <CariKebutuhanModal
         isOpen={isCariModalOpen}
@@ -374,8 +377,9 @@ export default function Donation() {
       />
 
       <Footer />
-    </main>
+    </>
   )
 }
+
 
 
