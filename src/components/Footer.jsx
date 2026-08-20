@@ -2,6 +2,13 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import './Footer.css'
 
+const impactStats = [
+  ['12.400+', 'Barang Tersirkulasi'],
+  ['2.000 kg', 'Sampah Dikurangi'],
+  ['4.680 kg', 'CO2 Dihemat'],
+  ['1.500+', 'Pengguna Aktif'],
+]
+
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
@@ -16,7 +23,24 @@ export default function Footer() {
   }
 
   return (
-    <footer className="site-footer">
+    <>
+      <section className="donation-impact" aria-labelledby="footer-impact-title">
+        <div>
+          <h2 id="footer-impact-title">Siap Memberikan Kehidupan<br />Kedua untuk Barangmu?</h2>
+          <p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p>
+        </div>
+        <div>
+          {impactStats.map(([value, label]) => (
+            <article key={label}>
+              <strong>{value}</strong>
+              <span>{label}</span>
+            </article>
+          ))}
+        </div>
+        <img src="/Donation Streamline Bruxelles.svg" alt="" aria-hidden="true" />
+      </section>
+
+      <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-grid">
           {/* Brand Section */}
@@ -139,6 +163,7 @@ export default function Footer() {
           </p>
         </div>
       </div>
-    </footer>
+      </footer>
+    </>
   )
 }

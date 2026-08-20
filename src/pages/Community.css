@@ -635,89 +635,6 @@
 .message-avatar.avatar-fallback    { width: 32px; height: 32px; margin-top: 18px; }
 .community-card-img.avatar-fallback { width: 100%; height: 100%; border-radius: 0; font-size: 18px; }
 
-/* Impact / CTA */
-.community-impact {
-  background: var(--color-navy, #08212b);
-  padding: 56px max(5vw, 24px) 60px;
-  margin-top: 16px;
-  overflow: hidden;
-}
-
-.impact-inner {
-  max-width: 1320px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 340px 1fr auto;
-  gap: 40px;
-  align-items: center;
-}
-
-.impact-text h2 {
-  margin: 0 0 16px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.25;
-  color: #ffffff;
-}
-
-.impact-text p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 310px;
-}
-
-.impact-stats {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.impact-stat-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 22px 20px;
-  min-width: 110px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.impact-stat-card strong {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--color-text-main, #062632);
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.impact-stat-card span {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--color-text-secondary, #658185);
-  line-height: 1.4;
-  text-align: center;
-}
-
-.impact-illustration {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  min-height: 120px;
-}
-
-.community-illustration {
-  max-height: 200px;
-  max-width: 220px;
-  width: auto;
-  object-fit: contain;
-  filter: brightness(0) invert(1) opacity(0.85);
-}
-
 /* Tablet */
 @media (max-width: 1023px) {
   .community-wrapper { padding-inline: 20px; }
@@ -743,11 +660,6 @@
   .community-card-meta,
   .community-card-desc { font-size: 9px; }
 
-  .impact-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .impact-text { grid-column: 1 / -1; }
 }
 
 /* Mobile */
@@ -793,21 +705,6 @@
     max-width: 56px;
   }
 
-  .community-impact { padding: 40px 20px; }
-
-  .impact-inner { grid-template-columns: 1fr; gap: 28px; }
-
-  .impact-text h2 { font-size: 22px; }
-  .impact-text p  { max-width: 100%; font-size: 14px; }
-
-  .impact-stats { gap: 10px; justify-content: center; }
-
-  .impact-stat-card { min-width: 90px; padding: 16px 14px; }
-  .impact-stat-card strong { font-size: 20px; }
-  .impact-stat-card span   { font-size: 11px; }
-
-  .impact-illustration { justify-content: center; min-height: auto; }
-  .community-illustration { max-height: 140px; max-width: 160px; }
 }
 
 @media (max-width: 419px) {
@@ -815,7 +712,6 @@
   .chat-header-left { flex: 1; min-width: 0; }
   .back-to-general-btn { width: 100%; justify-content: center; }
 
-  .impact-stats { display: grid; grid-template-columns: 1fr 1fr; }
 }
 .chat-status-message {
   margin: 10px 18px 0;
