@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../context/useAuth';
-import { COMMUNITIES_DATA, REGIONS_LIST } from '../../data/communityData';
+import { communityService, FALLBACK_COMMUNITIES } from '../../features/community/services/communityService';
 import AuthGateModal from './AuthGateModal';
 import './CariKebutuhanModal.css';
 
@@ -55,6 +55,9 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
   const [selectedNeeds, setSelectedNeeds] = useState([]);
   const [isAuthGateOpen, setIsAuthGateOpen] = useState(false);
   const [pendingContext, setPendingContext] = useState(null);
+  const [communities, setCommunities] = useState(FALLBACK_COMMUNITIES);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [dataError, setDataError] = useState('');
 
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,6 +67,21 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
 
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    let active = true;
+    communityService.getCommunities()
+      .then((rows) => {
+        if (active && rows.length) setCommunities(rows);
+      })
+      .catch((error) => {
+        console.error('[CariKebutuhan] Failed to load communities:', error);
+        if (active) setDataError('Data terbaru belum dapat dimuat. Menampilkan data cadangan.');
+      })
+      .finally(() => active && setDataLoading(false));
+    return () => { active = false; };
+  }, [isOpen]);
 
   // Sync initial props
   useEffect(() => {
@@ -116,12 +134,17 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
   // Active community data
   const community = useMemo(() => {
     if (!selectedCommunityId) return null;
-    return COMMUNITIES_DATA.find((c) => c.id === selectedCommunityId) || COMMUNITIES_DATA[0];
-  }, [selectedCommunityId]);
+    return communities.find((c) => c.id === selectedCommunityId) || communities[0];
+  }, [selectedCommunityId, communities]);
+
+  const regions = useMemo(() => [
+    'Semua Wilayah',
+    ...new Set(communities.map((item) => item.location).filter(Boolean)),
+  ], [communities]);
 
   // Filtered communities list
   const filteredCommunities = useMemo(() => {
-    return COMMUNITIES_DATA.filter((item) => {
+    return communities.filter((item) => {
       if (selectedRegion !== 'Semua Wilayah') {
         const matchesRegion =
           item.location.toLowerCase().includes(selectedRegion.toLowerCase()) ||
@@ -145,7 +168,7 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
 
       return true;
     });
-  }, [searchTerm, selectedRegion]);
+  }, [searchTerm, selectedRegion, communities]);
 
   if (!isOpen) return null;
 
@@ -175,6 +198,15 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
       communityId: community.id,
       communityName: community.name,
       selectedNeeds,
+      selectedNeedRecords: community.selectableNeeds.filter((need) => selectedNeeds.includes(need.title)),
+      community: {
+        id: community.id,
+        databaseId: community.databaseId,
+        name: community.name,
+        location: community.location,
+        address: community.address,
+        logo: community.logo,
+      },
     };
 
     if (isAuthenticated) {
@@ -267,7 +299,7 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
 
                     {isRegionOpen && (
                       <div className="cari-modal-region-panel" role="listbox">
-                        {REGIONS_LIST.map((region) => (
+                        {regions.map((region) => (
                           <button
                             key={region}
                             type="button"
@@ -293,6 +325,9 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
                     {filteredCommunities.length} komunitas ditemukan
                   </span>
                 </div>
+
+                {dataLoading && <div className="cari-data-status" role="status">Memuat kebutuhan terbaru...</div>}
+                {dataError && <div className="cari-data-status is-warning" role="alert">{dataError}</div>}
 
                 {/* 3-Column Cards Grid */}
                 {filteredCommunities.length > 0 ? (

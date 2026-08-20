@@ -21,12 +21,19 @@ const SHORT_STATUS_LABELS = {
   received: 'Diterima',
   cancelled: 'Dibatalkan',
 }
+const EMPTY_ARTICLE = {
+  title: '', slug: '', excerpt: '', content: '', cover_path: '', category: 'artikel_edukasi',
+  tags: [], content_type: 'article', author_name: 'KEMBALI', is_featured: false,
+  cta_text: '', cta_link: '', is_published: false, published_at: null,
+}
+const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 const ICONS = {
   overview: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
   box: <><path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></>,
   users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></>,
   reviews: <><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></>,
+  articles: <><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></>,
   logout: <><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></>,
   clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
   shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>,
@@ -52,6 +59,8 @@ export default function Admin() {
   const [activities, setActivities] = useState([])
   const [users, setUsers] = useState([])
   const [testimonials, setTestimonials] = useState([])
+  const [articles, setArticles] = useState([])
+  const [articleEditor, setArticleEditor] = useState(null)
   const [selected, setSelected] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
   const [actionNote, setActionNote] = useState('')
@@ -60,6 +69,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true)
   const [usersLoading, setUsersLoading] = useState(false)
   const [testimonialsLoading, setTestimonialsLoading] = useState(false)
+  const [articlesLoading, setArticlesLoading] = useState(false)
   const [testimonialActionId, setTestimonialActionId] = useState(null)
   const [testimonialFilter, setTestimonialFilter] = useState('all')
   const [actionLoading, setActionLoading] = useState(false)
@@ -108,6 +118,18 @@ export default function Admin() {
       setError(loadError.message || 'Ulasan gagal dimuat.')
     } finally {
       setTestimonialsLoading(false)
+    }
+  }
+
+  const loadArticles = async () => {
+    setArticlesLoading(true)
+    try {
+      setError('')
+      setArticles(await adminService.getArticles())
+    } catch (loadError) {
+      setError(loadError.message || 'Artikel gagal dimuat.')
+    } finally {
+      setArticlesLoading(false)
     }
   }
 
@@ -182,6 +204,36 @@ export default function Admin() {
     setMenuOpen(false)
     if (nextSection === 'users' && users.length === 0) loadUsers()
     if (nextSection === 'testimonials' && testimonials.length === 0) loadTestimonials()
+    if (nextSection === 'articles' && articles.length === 0) loadArticles()
+  }
+
+  const handleSaveArticle = async (event) => {
+    event.preventDefault()
+    if (!articleEditor?.title.trim() || !articleEditor?.slug.trim() || !articleEditor?.content.trim()) return
+    setActionLoading(true)
+    try {
+      setError('')
+      await adminService.saveArticle(articleEditor)
+      setArticleEditor(null)
+      await loadArticles()
+      showToast('Artikel berhasil disimpan.')
+    } catch (saveError) {
+      setError(saveError.message || 'Artikel gagal disimpan.')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleDeleteArticle = async (article) => {
+    if (!window.confirm(`Hapus artikel “${article.title}”?`)) return
+    try {
+      setError('')
+      await adminService.deleteArticle(article.id)
+      setArticles((current) => current.filter((item) => item.id !== article.id))
+      showToast('Artikel berhasil dihapus.')
+    } catch (deleteError) {
+      setError(deleteError.message || 'Artikel gagal dihapus.')
+    }
   }
 
   const handleTestimonialVisibility = async (testimonial) => {
@@ -246,14 +298,16 @@ export default function Admin() {
     return <main className="admin-gate"><div className="admin-gate-card"><h1>Akses terbatas</h1><p>Akun ini belum memiliki role admin atau manager.</p><Link to="/">Kembali ke Beranda</Link></div></main>
   }
 
-  const pageTitle = section === 'overview' ? 'Monitoring' : section === 'donations' ? 'Manajemen Donasi' : section === 'testimonials' ? 'Moderasi Ulasan' : 'Pengguna & Role'
+  const pageTitle = section === 'overview' ? 'Monitoring' : section === 'donations' ? 'Manajemen Donasi' : section === 'testimonials' ? 'Moderasi Ulasan' : section === 'articles' ? 'Kelola Insight' : 'Pengguna & Role'
   const pageDescription = section === 'overview'
     ? 'Pantau antrean, keterlambatan, dan aktivitas operasional KEMBALI.'
     : section === 'donations'
       ? 'Periksa dan lanjutkan pengajuan berdasarkan tahap prosesnya.'
       : section === 'testimonials'
         ? 'Pilih ulasan donatur yang layak ditampilkan pada halaman Beranda.'
-        : 'Kelola akun yang memiliki akses ke platform.'
+        : section === 'articles'
+          ? 'Tulis, simpan sebagai draft, dan terbitkan konten Insight.'
+          : 'Kelola akun yang memiliki akses ke platform.'
 
   return <main className="admin-page">
     <div className="admin-shell">
@@ -264,6 +318,7 @@ export default function Admin() {
           <button className={section === 'overview' ? 'is-active' : ''} onClick={() => openSection('overview')}><Icon name="overview"/>Monitoring</button>
           <button className={section === 'donations' ? 'is-active' : ''} onClick={() => openSection('donations')}><Icon name="box"/>Donasi</button>
           {user.status === 'Admin' && <button className={section === 'testimonials' ? 'is-active' : ''} onClick={() => openSection('testimonials')}><Icon name="reviews"/>Ulasan</button>}
+          {user.status === 'Admin' && <button className={section === 'articles' ? 'is-active' : ''} onClick={() => openSection('articles')}><Icon name="articles"/>Insight</button>}
           <button className={section === 'users' ? 'is-active' : ''} onClick={() => openSection('users')}><Icon name="users"/>Pengguna</button>
         </nav>
         <div className="admin-sidebar-footer"><span className="admin-role-label">{user.status}</span><button type="button" className="admin-logout-button" onClick={async () => { await logout(); navigate('/login') }}><Icon name="logout"/>Keluar Akun</button></div>
@@ -272,7 +327,7 @@ export default function Admin() {
       <section className="admin-content">
         <header className="admin-topbar"><button type="button" className="admin-mobile-menu" onClick={() => setMenuOpen(true)} aria-label="Buka menu admin" aria-expanded={menuOpen}><span/><span/><span/></button><div><p className="admin-eyebrow">KEMBALI OPERATIONS</p><h1>{pageTitle}</h1><p className="admin-muted">{pageDescription}</p></div><div className="admin-user-pill"><span className="admin-user-dot"/>{user.name}</div></header>
         {toast && <div className="admin-toast" role="status">{toast}</div>}
-        {error && <div className="admin-error" role="alert">{error}<button type="button" onClick={section === 'users' ? loadUsers : section === 'testimonials' ? loadTestimonials : () => loadDonations(selected?.id)}>Coba lagi</button></div>}
+        {error && <div className="admin-error" role="alert">{error}<button type="button" onClick={section === 'users' ? loadUsers : section === 'testimonials' ? loadTestimonials : section === 'articles' ? loadArticles : () => loadDonations(selected?.id)}>Coba lagi</button></div>}
 
         {section === 'overview' && <>
           <div className="admin-metric-grid">
@@ -306,9 +361,16 @@ export default function Admin() {
           {testimonialsLoading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat ulasan...</div> : filteredTestimonials.length === 0 ? <div className="admin-empty"><Icon name="reviews"/><strong>Belum ada ulasan pada filter ini</strong><span>Ulasan muncul setelah donasi diterima komunitas.</span></div> : <div className="admin-testimonial-list">{filteredTestimonials.map((testimonial) => <article className="admin-testimonial-card" key={testimonial.id}><img src={testimonial.avatar} alt={`Foto ${testimonial.authorName}`}/><div className="admin-testimonial-copy"><div><strong>{testimonial.authorName}</strong><span>{testimonial.donationCode} · {testimonial.itemName}</span></div><p>“{testimonial.content}”</p><small>{testimonial.dateLabel}</small></div><div className="admin-testimonial-control"><span className={testimonial.is_approved ? 'is-shown' : 'is-hidden'}>{testimonial.is_approved ? 'Ditampilkan' : 'Tidak ditampilkan'}</span><button type="button" className={testimonial.is_approved ? 'is-hide' : 'is-show'} onClick={() => handleTestimonialVisibility(testimonial)} disabled={testimonialActionId === testimonial.id}>{testimonialActionId === testimonial.id ? 'Menyimpan...' : testimonial.is_approved ? 'Sembunyikan' : 'Tampilkan di Beranda'}</button></div></article>)}</div>}
         </section>}
 
+        {section === 'articles' && <section className="admin-panel admin-articles-panel">
+          <div className="admin-panel-header"><div><h2>Artikel & Berita</h2><p>Konten published langsung tampil di Beranda dan halaman Insight.</p></div><button type="button" className="admin-primary-action" onClick={() => setArticleEditor({ ...EMPTY_ARTICLE })}>+ Artikel Baru</button></div>
+          {articlesLoading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat artikel...</div> : articles.length === 0 ? <div className="admin-empty"><Icon name="articles"/><strong>Belum ada artikel</strong></div> : <div className="admin-article-list">{articles.map((item) => <article key={item.id}><img src={item.cover_path || '/insight/article-01.svg'} alt=""/><div><strong>{item.title}</strong><span>/{item.slug}</span><small>{item.content_type} · {item.category}</small></div><span className={item.is_published ? 'is-published' : 'is-draft'}>{item.is_published ? 'Published' : 'Draft'}</span><div className="admin-article-actions"><button type="button" onClick={() => setArticleEditor({ ...item, tags: item.tags || [], cta_text: item.cta_text || '', cta_link: item.cta_link || '', cover_path: item.cover_path || '' })}>Edit</button><button type="button" className="is-danger" onClick={() => handleDeleteArticle(item)}>Hapus</button></div></article>)}</div>}
+        </section>}
+
         {section === 'users' && <section className="admin-panel"><div className="admin-panel-header"><div><h2>Daftar Pengguna</h2><p>Role dan identitas akun yang terdaftar.</p></div><button type="button" className="admin-refresh-btn" onClick={loadUsers}>↻ Refresh</button></div>{usersLoading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat pengguna...</div> : <div className="admin-users-list">{users.map((person) => <div className="admin-user-row" key={person.id}><div className="admin-user-avatar">{(person.full_name || person.username || 'P').charAt(0).toUpperCase()}</div><div className="admin-user-info"><strong>{person.full_name || 'Tanpa nama'}</strong><span>{person.username || person.email || 'Email tidak tersedia'}</span></div><span className={`admin-role-badge role-${person.role}`}>{person.role}</span><small>{person.phone || 'Telepon belum diatur'}</small></div>)}</div>}</section>}
       </section>
     </div>
+
+    {articleEditor && <div className="admin-confirm-backdrop" onClick={() => !actionLoading && setArticleEditor(null)}><form className="admin-article-editor" onSubmit={handleSaveArticle} onClick={(event) => event.stopPropagation()}><div className="admin-panel-header"><div><p className="admin-eyebrow">KONTEN INSIGHT</p><h2>{articleEditor.id ? 'Edit Artikel' : 'Artikel Baru'}</h2></div><button type="button" className="admin-editor-close" onClick={() => setArticleEditor(null)} aria-label="Tutup">×</button></div><div className="admin-editor-grid"><label className="is-wide"><span>Judul *</span><input required value={articleEditor.title} onChange={(event) => setArticleEditor((current) => ({ ...current, title: event.target.value, slug: current.id ? current.slug : slugify(event.target.value) }))}/></label><label><span>Slug *</span><input required value={articleEditor.slug} onChange={(event) => setArticleEditor((current) => ({ ...current, slug: slugify(event.target.value) }))}/></label><label><span>Jenis konten</span><select value={articleEditor.content_type} onChange={(event) => setArticleEditor((current) => ({ ...current, content_type: event.target.value }))}><option value="article">Artikel</option><option value="news">Berita</option><option value="promo">Promosi</option></select></label><label><span>Kategori</span><select value={articleEditor.category} onChange={(event) => setArticleEditor((current) => ({ ...current, category: event.target.value }))}><option value="artikel_edukasi">Artikel edukasi</option><option value="hasil_riset">Hasil riset</option><option value="recycle_upcycle">Recycle & upcycle</option><option value="berita_lingkungan">Berita lingkungan</option></select></label><label><span>Penulis</span><input value={articleEditor.author_name} onChange={(event) => setArticleEditor((current) => ({ ...current, author_name: event.target.value }))}/></label><label className="is-wide"><span>Tags, pisahkan dengan koma</span><input value={(articleEditor.tags || []).join(', ')} onChange={(event) => setArticleEditor((current) => ({ ...current, tags: event.target.value.split(',').map((tag) => tag.trim()).filter(Boolean) }))}/></label><label className="is-wide"><span>Cover path</span><input value={articleEditor.cover_path} placeholder="/insight/article-01.svg" onChange={(event) => setArticleEditor((current) => ({ ...current, cover_path: event.target.value }))}/></label><label className="is-wide"><span>Ringkasan</span><textarea value={articleEditor.excerpt} onChange={(event) => setArticleEditor((current) => ({ ...current, excerpt: event.target.value }))}/></label><label className="is-wide"><span>Isi artikel * (pisahkan paragraf dengan baris kosong)</span><textarea className="is-content" required value={articleEditor.content} onChange={(event) => setArticleEditor((current) => ({ ...current, content: event.target.value }))}/></label>{articleEditor.content_type === 'promo' && <><label><span>Teks tombol</span><input value={articleEditor.cta_text} onChange={(event) => setArticleEditor((current) => ({ ...current, cta_text: event.target.value }))}/></label><label><span>Tujuan tombol</span><input value={articleEditor.cta_link} placeholder="/donasi" onChange={(event) => setArticleEditor((current) => ({ ...current, cta_link: event.target.value }))}/></label></>}</div><label className="admin-publish-toggle"><input type="checkbox" checked={articleEditor.is_published} onChange={(event) => setArticleEditor((current) => ({ ...current, is_published: event.target.checked }))}/><span>Terbitkan artikel</span></label><div className="admin-confirm-actions"><button type="button" className="admin-confirm-secondary" onClick={() => setArticleEditor(null)} disabled={actionLoading}>Batal</button><button type="submit" disabled={actionLoading}>{actionLoading ? 'Menyimpan...' : 'Simpan Artikel'}</button></div></form></div>}
 
     {selected && <div className="admin-modal-backdrop" onClick={() => !actionLoading && setSelected(null)}><article className="admin-detail-modal" onClick={(event) => event.stopPropagation()}><button type="button" className="admin-modal-close" onClick={() => setSelected(null)} aria-label="Tutup detail">×</button><div className="admin-detail-head"><img src={selected.image} alt="Foto barang donasi"/><div><span className={`admin-status status-${selected.status}`}>{selected.statusLabel}</span><h2>{selected.item_name}</h2><p>{selected.donation_code} · {selected.dateLabel}</p></div></div><div className={`admin-assignment-banner ${selectedAssignedToOther ? 'is-locked' : selectedAssignedToMe ? 'is-mine' : ''}`}><Icon name="users"/><div><span>Penanggung jawab</span><strong>{selected.assigneeName || 'Belum ada admin yang menangani'}</strong></div></div><div className="admin-detail-grid"><div><span>Donatur</span><strong>{selected.donorName}</strong></div><div><span>Komunitas</span><strong>{selected.communityName}</strong></div><div><span>Jumlah</span><strong>{selected.quantity} barang</strong></div><div><span>Kondisi</span><strong>{selected.condition_note || '-'}</strong></div></div><div className="admin-detail-description"><span>Deskripsi</span><p>{selected.description || '-'}</p><span>Alamat pengambilan</span><p>{selected.pickup_address || '-'}</p></div>{STATUS_FLOW[selected.status] && <div className="admin-detail-actions">{!selected.assigned_to && <><p>Ambil tugas ini sebelum mengubah status agar tidak diproses admin lain.</p><button type="button" onClick={() => handleClaim(selected, true)} disabled={actionLoading}>{actionLoading ? 'Memproses...' : 'Ambil Tugas'}</button></>}{selectedAssignedToOther && <p className="admin-locked-message">Donasi sedang ditangani <strong>{selected.assigneeName}</strong>. Tombol perubahan status dikunci.</p>}{selectedAssignedToMe && <><p>Langkah berikutnya: <strong>{STATUS_LABELS[STATUS_FLOW[selected.status][0]]}</strong></p><button type="button" onClick={() => requestTransition(selected, STATUS_FLOW[selected.status][0])} disabled={actionLoading}>{STATUS_FLOW[selected.status][1]} →</button>{['pending', 'verified', 'pickup'].includes(selected.status) && <button type="button" className="admin-cancel-action" onClick={() => requestTransition(selected, 'cancelled')} disabled={actionLoading}>Batalkan Donasi</button>}<button type="button" className="admin-release-action" onClick={() => handleClaim(selected, false)} disabled={actionLoading}>Lepaskan Tugas</button></>}</div>}</article></div>}
 

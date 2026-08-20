@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { supabase } from '../lib/supabase/client'
 import { donationService } from '../features/donation/services/donationService'
+import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
 import CariKebutuhanModal from '../components/donation/CariKebutuhanModal'
 import DonationActivity from '../components/donation/DonationActivity'
 import DonationHistoryCard from '../components/donation/DonationHistoryCard'
@@ -15,13 +16,6 @@ const flow = [
   ['fingers-id.svg', 'Isi Form Donasi', 'Sudah tahu barang yang ingin didonasikan? Isi formulir donasi di sini.', 'Isi Form Donasi', '/donasi/form'],
   ['families.svg', 'Komunitas Penerima', 'Lihat komunitas terverifikasi yang menerima donasi sesuai kategori.', 'Lihat Komunitas', '#verified'],
   ['free-shipping.svg', 'Status Donasi', 'Pantau status donasi mulai dari verifikasi hingga barang diterima.', 'Cek Status Donasi', '#aktivitas'],
-]
-
-const partners = [
-  ['sedekas semarang barat 1.svg', 'Sedekas', 'Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.', 'Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148', '@sedekas', 'sedekas'],
-  ['dipo waste bank 1.svg', 'Dipo Waste Bank', 'Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.', 'Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang', '@dipowastebank', 'dipo-waste-bank'],
-  ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah', 'panti-asuhan-al-jannah'],
-  ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih', 'panti-asuhan-kristen-tanah-putih'],
 ]
 
 const stats = [
@@ -38,6 +32,7 @@ export default function Donation() {
   // Modal State
   const [isCariModalOpen, setIsCariModalOpen] = useState(false)
   const [modalCommunityId, setModalCommunityId] = useState(null)
+  const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
 
   // Donation State
   const [donations, setDonations] = useState([])
@@ -74,6 +69,14 @@ export default function Donation() {
       setDonationsLoading(false)
     }
   }, [isAuthenticated, user?.id])
+
+  useEffect(() => {
+    let active = true
+    communityService.getCommunities()
+      .then((rows) => { if (active && rows.length) setPartners(rows) })
+      .catch((error) => console.error('[Donation] Failed to load communities:', error))
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     loadDonations()
@@ -305,21 +308,21 @@ export default function Donation() {
       <section className="verified" id="verified">
         <h2>Komunitas Terverifikasi</h2>
         <div className="verified-grid">
-          {partners.map(([img, name, desc, address, handle, communityId]) => (
-            <article key={name}>
-              <img src={'/' + img} alt="" />
-              <h3>{name}</h3>
-              <p>{desc}</p>
+          {partners.map((partner) => (
+            <article key={partner.id}>
+              <img src={partner.logo} alt="" />
+              <h3>{partner.name}</h3>
+              <p>{partner.description}</p>
               <div className="verified-meta">
-                <address>{address}</address>
+                <address>{partner.address}</address>
                 <span>
                   <img src="/ri_instagram-fill.svg" alt="Instagram" className="verified-sosmed-icon" />
-                  {handle}
+                  {partner.handle}
                 </span>
                 <div style={{ marginTop: '12px' }}>
                   <button
                     type="button"
-                    onClick={() => handleOpenCariModal(communityId)}
+                    onClick={() => handleOpenCariModal(partner.id)}
                     style={{
                       display: 'inline-block',
                       padding: '8px 16px',

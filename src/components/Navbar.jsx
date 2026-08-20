@@ -1,40 +1,74 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import { notificationService } from '../features/notifications/services/notificationService'
 import './Navbar.css'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const [notificationOpen, setNotificationOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [notificationsLoading, setNotificationsLoading] = useState(false)
+  const [notificationError, setNotificationError] = useState('')
+  const actionsRef = useRef(null)
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
   const needsProfile = Boolean(user?.needsProfile)
   const displayName = needsProfile ? 'Lengkapi Profil' : (user?.shortName || 'Pengguna')
+  const unreadCount = notifications.filter((item) => !item.is_read).length
+
+  const loadNotifications = useCallback(async () => {
+    if (!isAuthenticated || !user?.id) return
+    setNotificationsLoading(true)
+    setNotificationError('')
+    try {
+      setNotifications(await notificationService.getNotifications())
+    } catch (error) {
+      setNotificationError(error.message || 'Notifikasi gagal dimuat.')
+    } finally {
+      setNotificationsLoading(false)
+    }
+  }, [isAuthenticated, user?.id])
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return undefined
+
+    const initialLoad = window.setTimeout(loadNotifications, 0)
+    const unsubscribe = notificationService.subscribe(user.id, loadNotifications)
+    return () => {
+      window.clearTimeout(initialLoad)
+      unsubscribe()
+    }
+  }, [isAuthenticated, user?.id, loadNotifications])
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
         setDropdownOpen(false)
+        setNotificationOpen(false)
       }
     }
-    if (dropdownOpen) {
+    if (dropdownOpen || notificationOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [dropdownOpen])
+  }, [dropdownOpen, notificationOpen])
 
   const handleNavClick = () => {
     setOpen(false)
     setDropdownOpen(false)
+    setNotificationOpen(false)
   }
 
   const handleLogout = () => {
     logout()
+    setNotifications([])
     setDropdownOpen(false)
+    setNotificationOpen(false)
     setOpen(false)
     navigate('/')
   }
@@ -43,6 +77,30 @@ export default function Navbar() {
     setDropdownOpen(false)
     setOpen(false)
     navigate(needsProfile ? '/complete-profile' : '/profile')
+  }
+
+  const handleNotificationClick = async (notification) => {
+    if (!notification.is_read) {
+      setNotifications((current) => current.map((item) => (
+        item.id === notification.id ? { ...item, is_read: true } : item
+      )))
+      try {
+        await notificationService.markRead(notification.id)
+      } catch {
+        loadNotifications()
+      }
+    }
+    setNotificationOpen(false)
+    if (notification.type === 'donation_update' && notification.reference_id) navigate('/donasi')
+  }
+
+  const handleMarkAllRead = async () => {
+    setNotifications((current) => current.map((item) => ({ ...item, is_read: true })))
+    try {
+      await notificationService.markAllRead()
+    } catch {
+      loadNotifications()
+    }
   }
 
   return (
@@ -112,11 +170,64 @@ export default function Navbar() {
         </div>
 
         {isAuthenticated ? (
-          <div className="user-menu-container" ref={dropdownRef}>
+          <div className="navbar-user-actions" ref={actionsRef}>
+            <div className="notification-menu-container">
+              <button
+                type="button"
+                className={`notification-button ${notificationOpen ? 'is-active' : ''}`}
+                onClick={() => {
+                  setNotificationOpen((current) => !current)
+                  setDropdownOpen(false)
+                }}
+                aria-expanded={notificationOpen}
+                aria-haspopup="true"
+                aria-label={unreadCount ? `${unreadCount} notifikasi belum dibaca` : 'Notifikasi'}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+                  <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                  <path d="M10 21h4" />
+                </svg>
+                {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+              </button>
+
+              {notificationOpen && (
+                <section className="notification-dropdown" aria-label="Daftar notifikasi">
+                  <header>
+                    <div><strong>Notifikasi</strong><span>{unreadCount ? `${unreadCount} belum dibaca` : 'Semua sudah dibaca'}</span></div>
+                    {unreadCount > 0 && <button type="button" onClick={handleMarkAllRead}>Tandai semua dibaca</button>}
+                  </header>
+                  <div className="notification-list">
+                    {notificationsLoading && notifications.length === 0 ? (
+                      <div className="notification-state"><span className="notification-spinner" />Memuat notifikasi...</div>
+                    ) : notificationError ? (
+                      <div className="notification-state is-error"><span>{notificationError}</span><button type="button" onClick={loadNotifications}>Coba lagi</button></div>
+                    ) : notifications.length === 0 ? (
+                      <div className="notification-state"><span className="notification-empty-icon">✓</span><strong>Belum ada notifikasi</strong><span>Perubahan donasi akan muncul di sini.</span></div>
+                    ) : notifications.map((notification) => (
+                      <button
+                        type="button"
+                        className={`notification-item ${notification.is_read ? '' : 'is-unread'}`}
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
+                        <span className="notification-item-icon">{notification.type === 'donation_update' ? '↗' : 'i'}</span>
+                        <span><strong>{notification.title}</strong><p>{notification.body}</p><time>{new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(notification.created_at))}</time></span>
+                        {!notification.is_read && <i aria-label="Belum dibaca" />}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            <div className="user-menu-container">
             <button
               type="button"
               className={`user-profile-btn ${dropdownOpen ? 'is-active' : ''}`}
-              onClick={() => setDropdownOpen((prev) => !prev)}
+              onClick={() => {
+                setDropdownOpen((prev) => !prev)
+                setNotificationOpen(false)
+              }}
               aria-expanded={dropdownOpen}
               aria-haspopup="true"
               aria-label="Menu Pengguna"
@@ -194,6 +305,7 @@ export default function Navbar() {
                 </button>
               </div>
             )}
+            </div>
           </div>
         ) : (
           <button className="login-button" type="button" onClick={() => navigate('/login')}>

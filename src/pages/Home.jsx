@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import Footer from '../components/Footer'
 import { supabase } from '../lib/supabase/client'
+import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
+import { articleService, FALLBACK_ARTICLES } from '../features/insight/services/articleService'
 import './Home.css'
 
 const services = [
@@ -15,12 +17,6 @@ const items = [
   ['shopping-2194208-0.svg', 'Pakaian Layak', 'blue'],
   ['student-studying.svg', 'Buku & ATK Bekas', 'cyan'],
   ['girl-doing-paiting-on-the-canvas-2194214-0.svg', 'Karya Hasil Daur Ulang', 'mint'],
-]
-const partners = [
-  ['sedekas semarang barat 1.svg', 'Sedekas', 'Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.', 'Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148', '@sedekas'],
-  ['dipo waste bank 1.svg', 'Dipo Waste Bank', 'Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.', 'Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang', '@dipowastebank'],
-  ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah'],
-  ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih'],
 ]
 const EMPTY_REVIEW = [{ id: 'empty', avatar: '/User 03C.svg', name: 'Belum ada ulasan', role: 'Donatur KEMBALI', text: 'Jadilah donatur pertama yang membagikan pengalaman setelah donasi diterima komunitas.' }]
 const stats = [['12.400+', 'Barang Tersirkulasi'], ['2.000 kg', 'Sampah Dikurangi'], ['4.680 kg', 'CO2 Dihemat'], ['1.500+', 'Pengguna Aktif']]
@@ -48,8 +44,8 @@ function Heading({ eyebrow, title, accent, sub, preAccent }) {
   return <header className="section-heading">{eyebrow && <span className="eyebrow">{eyebrow}</span>}<h2>{preAccent && <em>{preAccent} </em>}{title}{accent && <em> {accent}</em>}</h2>{sub && <p>{sub}</p>}</header>
 }
 
-function PartnerGrid() {
-  return <div className="partner-grid">{partners.map(([image, name, desc, address, handle]) => <article className="partner-card" key={name}><img src={'/' + image} alt="" /><h3>{name}</h3><p>{desc}</p><div className="partner-meta"><address>{address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="partner-sosmed-icon" />{handle}</span></div></article>)}</div>
+function PartnerGrid({ partners }) {
+  return <div className="partner-grid">{partners.map((partner) => <article className="partner-card" key={partner.id}><img src={partner.logo} alt="" /><h3>{partner.name}</h3><p>{partner.description}</p><div className="partner-meta"><address>{partner.address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="partner-sosmed-icon" />{partner.handle}</span></div></article>)}</div>
 }
 
 function AnimatedStat({ value }) {
@@ -85,6 +81,27 @@ export default function Home() {
   const [article, setArticle] = useState(0)
   const [openFaq, setOpenFaq] = useState(null)
   const [reviews, setReviews] = useState([])
+  const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
+  const [articles, setArticles] = useState(FALLBACK_ARTICLES.slice(0, 3))
+
+  useEffect(() => {
+    let active = true
+    communityService.getCommunities()
+      .then((rows) => { if (active && rows.length) setPartners(rows) })
+      .catch((error) => console.error('[Home] Failed to load communities:', error))
+    return () => { active = false }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    articleService.getPublished()
+      .then((rows) => {
+        const publishedArticles = rows.filter((item) => item.contentType === 'article').slice(0, 3)
+        if (active && publishedArticles.length) setArticles(publishedArticles)
+      })
+      .catch((error) => console.error('[Home] Failed to load articles:', error))
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     let ignore = false
@@ -119,11 +136,6 @@ export default function Home() {
     }
   }, [])
 
-  const articles = [
-    { title: 'Kebaikan Kecil untuk Bumi', date: 'Semarang, 18 Juni 2026', image: '/ecology.svg' },
-    { title: 'Ide Daur Ulang Sampah', date: 'Semarang, 24 Juli 2026', image: '/recycle.svg' },
-    { title: 'Berita Ekonomi Sirkular', date: 'Jakarta, 29 April 2026', image: '/ecology.svg' },
-  ]
   const visibleArticles = [0, 1, 2].map(offset => articles[(article + offset) % articles.length])
   const reviewSource = reviews.length ? reviews : EMPTY_REVIEW
   const reviewSequence = Array.from(
@@ -146,7 +158,7 @@ export default function Home() {
 
         <section className="impact"><div className="stat-grid">{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</div><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
 
-        <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />By - Anonymous</p><a href="#artikel">Visit Now</a></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
+        <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />{item.author}</p><Link to={`/insight/${item.slug}`}>Visit Now</Link></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
 
         <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
 
@@ -156,7 +168,7 @@ export default function Home() {
 
         <section className="donatable"><Heading eyebrow="Beri Kehidupan Kedua untuk Barangmu!" preAccent="Barang" title={<>yang Bisa<br />Anda Donasikan</>} sub="Barang apa saja yang bisa didonasikan melalui KEMBALI?" /><div className="item-grid">{items.map(([img, title, color]) => <article key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3></article>)}</div></section>
 
-        <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas." /><PartnerGrid /></section>
+        <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas." /><PartnerGrid partners={partners} /></section>
 
         <div className="dark-band">
           <section className="final-cta"><img src="/jumping-2194230-0.svg" alt="" /><div><span className="outline-pill">Melakukan Kebaikan untuk Bumi & Sesama</span><h2>Mari Berdonasi & Jelajahi<br />Komunitas Kami!</h2><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan <strong>penerima manfaat</strong>, menyelamatkan barang layak pakai dari tempat sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang →</Link><a className="button dark-outline" href="#steps">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/order-delivered.svg" alt="" /></section>

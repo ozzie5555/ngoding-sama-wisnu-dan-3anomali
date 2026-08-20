@@ -1,108 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/useAuth'
 import { chatService } from '../features/community/services/chatService'
+import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
 import Footer from '../components/Footer'
 import './Community.css'
 
 const donators = []
 
-const initialCommunities = [
-  {
-    id: 'general',
-    name: 'General',
-    category: 'Temukan Teman dan Jelajahi Komunitas',
-    location: '',
-    image: '/assets/community/general.png',
-    messages: [
-      { id: 1, sender: 'You',   avatar: '/assets/community/avatars/wisnu.png', text: 'Hai guyssss!', isOwn: true },
-      { id: 2, sender: 'Eloj',  avatar: '/assets/community/avatars/eloj.png',  text: 'Mas/mbak, udah pernah coba donasi ke Sedekas?', isOwn: false },
-      { id: 3, sender: 'Hnyin', avatar: '/assets/community/avatars/hnyin.png', text: 'Halo gesssss yahahahahah', isOwn: false },
-    ],
-  },
-  {
-    id: 'dipo-waste-bank',
-    name: 'Dipo Waste Bank',
-    category: 'Bank Sampah',
-    location: 'Tembalang, Semarang',
-    image: '/dipo waste bank 1.svg',
-    messages: [
-      { id: 1, sender: 'You',             avatar: '/assets/community/avatars/wisnu.png', text: 'Hai guyssss!', isOwn: true },
-      { id: 2, sender: 'Dipo Waste Bank', avatar: '/dipo waste bank 1.svg',              text: 'Selamat bergabung di Komunitas ini melalui platform KEMBALI!', isOwn: false },
-      { id: 3, sender: 'Hnyin',           avatar: '/assets/community/avatars/hnyin.png', text: 'hai', isOwn: false },
-    ],
-  },
-  {
-    id: 'sedekas',
-    name: 'SEDEKAS',
-    category: 'Komunitas Barang Layak Pakai',
-    location: 'Semarang Barat',
-    image: '/sedekas semarang barat 1.svg',
-    messages: [
-      { id: 1, sender: 'You',     avatar: '/assets/community/avatars/wisnu.png', text: 'Hai guyssss!', isOwn: true },
-      { id: 2, sender: 'Sedekas', avatar: '/sedekas semarang barat 1.svg',       text: 'Selamat bergabung di Komunitas ini melalui platform KEMBALI!', isOwn: false },
-      { id: 3, sender: 'Hnyin',   avatar: '/assets/community/avatars/hnyin.png', text: 'hai', isOwn: false },
-    ],
-  },
-  {
-    id: 'panti-asuhan-al-jannah',
-    name: 'PANTI ASUHAN AL-JANNAH',
-    category: 'Panti Asuhan',
-    location: 'Tugu, Semarang',
-    image: '/Panji AL JANNAH 1.svg',
-    messages: [
-      { id: 1, sender: 'You',                    avatar: '/assets/community/avatars/wisnu.png', text: 'Hai guyssss!', isOwn: true },
-      { id: 2, sender: 'Panti Asuhan Al-Jannah', avatar: '/Panji AL JANNAH 1.svg',              text: 'Selamat bergabung di Komunitas ini melalui platform KEMBALI!', isOwn: false },
-      { id: 3, sender: 'Hnyin',                  avatar: '/assets/community/avatars/hnyin.png', text: 'hai', isOwn: false },
-    ],
-  },
-  {
-    id: 'panti-asuhan-kristen-tanah-putih',
-    name: 'Panti Asuhan Kristen Tanah Putih',
-    category: 'Panti Asuhan',
-    location: 'Candisari, Semarang',
-    image: '/Panti asuhan kristen tanah putih 1.svg',
-    messages: [
-      { id: 1, sender: 'You',                              avatar: '/assets/community/avatars/wisnu.png',      text: 'Hai guyssss!', isOwn: true },
-      { id: 2, sender: 'Panti Asuhan Kristen Tanah Putih', avatar: '/Panti asuhan kristen tanah putih 1.svg', text: 'Selamat bergabung di Komunitas ini melalui platform KEMBALI!', isOwn: false },
-      { id: 3, sender: 'Hnyin',                            avatar: '/assets/community/avatars/hnyin.png',      text: 'hai', isOwn: false },
-    ],
-  },
-]
+const GENERAL_COMMUNITY = {
+  id: 'general',
+  name: 'General',
+  category: 'Temukan Teman dan Jelajahi Komunitas',
+  location: '',
+  image: '/assets/community/general.png',
+}
 
-const exploreList = [
-  {
-    id: 'dipo-waste-bank',
-    name: 'Dipo Waste Bank',
-    category: 'Bank Sampah',
-    location: 'Tembalang, Semarang',
-    image: '/dipo waste bank 1.svg',
-    description: 'Dipo Waste Bank menerima sampah anorganik terpilah dari warga/civitas UNDIP untuk dikelola secara berkelanjutan melalui program bank sampah.',
-  },
-  {
-    id: 'sedekas',
-    name: 'SEDEKAS',
-    category: 'Komunitas Barang Layak Pakai',
-    location: 'Semarang Barat',
-    image: '/sedekas semarang barat 1.svg',
-    description: 'Mengumpulkan dan menyalurkan barang layak pakai untuk membantu masyarakat yang membutuhkan.',
-  },
-  {
-    id: 'panti-asuhan-al-jannah',
-    name: 'PANTI ASUHAN AL-JANNAH',
-    category: 'Panti Asuhan',
-    location: 'Tugu, Semarang',
-    image: '/Panji AL JANNAH 1.svg',
-    description: "Panti Asuhan Al Jannah membina anak yatim, piatu, dan dhuafa melalui pendidikan, tahfidz Al-Qur'an, serta pemenuhan kebutuhan harian.",
-  },
-  {
-    id: 'panti-asuhan-kristen-tanah-putih',
-    name: 'Panti Asuhan Kristen Tanah Putih',
-    category: 'Panti Asuhan',
-    location: 'Candisari, Semarang',
-    image: '/Panti asuhan kristen tanah putih 1.svg',
-    description: 'Panti Asuhan Kristen Tanah Putih membina dan merawat anak-anak melalui pendidikan, pembinaan, serta pemenuhan kebutuhan sehari-hari.',
-  },
-]
+const mapChatCommunity = (community) => ({ ...community, image: community.logo })
+const fallbackChatCommunities = [GENERAL_COMMUNITY, ...FALLBACK_COMMUNITIES.map(mapChatCommunity)]
 
 const stats = [
   { value: '12.400+',  label: 'Barang Tersirkulasi' },
@@ -135,11 +49,12 @@ export default function Community() {
   const { isAuthenticated, user } = useAuth()
   const [topDonors, setTopDonors] = useState([])
   const [topDonorsLoading, setTopDonorsLoading] = useState(true)
+  const [communities, setCommunities] = useState(fallbackChatCommunities)
   const [selectedId, setSelectedId]     = useState('general')
   const [messageInput, setMessageInput] = useState('')
   const [allMessages, setAllMessages]   = useState(() => {
     const map = {}
-    initialCommunities.forEach((c) => { map[c.id] = [] })
+    fallbackChatCommunities.forEach((c) => { map[c.id] = [] })
     return map
   })
   const [replyingTo, setReplyingTo]         = useState(null)
@@ -150,8 +65,19 @@ export default function Community() {
   const [chatError, setChatError] = useState('')
   const fileInputRef = useRef(null)
   const chatMessagesRef = useRef(null)
-  const selected = initialCommunities.find((c) => c.id === selectedId) || initialCommunities[0]
+  const selected = communities.find((c) => c.id === selectedId) || GENERAL_COMMUNITY
+  const exploreList = communities.filter((community) => community.id !== 'general')
   const messages = allMessages[selectedId] || []
+
+  useEffect(() => {
+    let active = true
+    communityService.getCommunities()
+      .then((rows) => {
+        if (active && rows.length) setCommunities([GENERAL_COMMUNITY, ...rows.map(mapChatCommunity)])
+      })
+      .catch((error) => console.error('[Community] Failed to load communities:', error))
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     const messagesContainer = chatMessagesRef.current

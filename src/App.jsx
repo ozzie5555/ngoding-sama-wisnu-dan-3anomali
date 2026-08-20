@@ -81,6 +81,7 @@ export default function App() {
         <Route path="/cari-kebutuhan" element={<CariKebutuhan />} />
         <Route path="/cari-kebutuhan/:communityId" element={<CariKebutuhan />} />
         <Route path="/insight" element={<Insight />} />
+        <Route path="/insight/:slug" element={<Insight />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/history" element={<ProfileHistory />} />
         <Route path="/komunitas" element={<Community />} />
@@ -94,6 +95,5 @@ export default function App() {
     </AuthProvider>
   )
 }
-
 
 

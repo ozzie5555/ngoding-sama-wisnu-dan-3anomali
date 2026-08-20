@@ -85,8 +85,13 @@ export default function DonationForm() {
   }, [isAuthenticated, initialized, navigate, contextData]);
 
   // Find community object
-  const community = COMMUNITIES_DATA.find((c) => c.id === contextData?.communityId) || COMMUNITIES_DATA[0];
+  const community = contextData?.community
+    || COMMUNITIES_DATA.find((c) => c.id === contextData?.communityId)
+    || COMMUNITIES_DATA[0];
   const selectedNeeds = contextData?.selectedNeeds || ['Pakaian Layak Pakai', 'Buku & Alat Tulis'];
+  const selectedNeed = contextData?.selectedNeedRecords?.length === 1
+    ? contextData.selectedNeedRecords[0]
+    : null;
 
   if (!initialized || !isAuthenticated) {
     return (
@@ -111,7 +116,8 @@ export default function DonationForm() {
     try {
       const result = await donationService.submitDonation({
         communityId: contextData?.communityId,
-        category: 'barang_bekas',
+        needId: selectedNeed?.id,
+        category: selectedNeed?.category || 'barang_bekas',
         itemName: itemName.trim(),
         conditionNote: itemCondition,
         quantity: parseInt(itemQuantity, 10) || 1,

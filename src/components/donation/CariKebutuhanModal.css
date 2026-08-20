@@ -270,6 +270,19 @@
   flex-shrink: 0;
 }
 
+.cari-data-status {
+  margin: -10px 0 16px;
+  color: #5f7778;
+  font-size: 12px;
+}
+
+.cari-data-status.is-warning {
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: #fff8e7;
+  color: #8a6816;
+}
+
 .cari-modal-results-title {
   font-size: 16px;
   font-weight: 700;

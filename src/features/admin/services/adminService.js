@@ -104,6 +104,44 @@ export const adminService = {
     return data || []
   },
 
+  async getArticles() {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('id, title, slug, excerpt, content, cover_path, category, tags, content_type, author_name, is_featured, cta_text, cta_link, is_published, published_at, updated_at')
+      .order('updated_at', { ascending: false })
+    if (error) throw new Error(error.message)
+    return data || []
+  },
+
+  async saveArticle(article) {
+    const payload = {
+      title: article.title.trim(),
+      slug: article.slug.trim(),
+      excerpt: article.excerpt.trim(),
+      content: article.content.trim(),
+      cover_path: article.cover_path.trim() || null,
+      category: article.category,
+      tags: article.tags,
+      content_type: article.content_type,
+      author_name: article.author_name.trim() || 'KEMBALI',
+      is_featured: article.content_type === 'promo' ? article.is_featured : false,
+      cta_text: article.cta_text.trim() || null,
+      cta_link: article.cta_link.trim() || null,
+      is_published: article.is_published,
+      published_at: article.is_published ? (article.published_at || new Date().toISOString()) : null,
+    }
+    if (article.id) payload.id = article.id
+
+    const { data, error } = await supabase.from('articles').upsert(payload).select().single()
+    if (error) throw new Error(error.message)
+    return data
+  },
+
+  async deleteArticle(articleId) {
+    const { error } = await supabase.from('articles').delete().eq('id', articleId)
+    if (error) throw new Error(error.message)
+  },
+
   async getTestimonials() {
     const { data, error } = await supabase
       .from('testimonials')

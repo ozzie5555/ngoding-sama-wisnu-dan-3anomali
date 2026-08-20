@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import Footer from '../components/Footer'
 import ArticleCard from '../components/insight/ArticleCard'
 import NewsCard from '../components/insight/NewsCard'
@@ -8,16 +8,20 @@ import PaginationBar from '../components/insight/PaginationBar'
 import ArticleDetailModal from '../components/insight/ArticleDetailModal'
 import {
   heroData,
-  articlesData,
-  newsData,
   educationalVideosData,
   impactStatsData,
   insightImages,
 } from '../data/insightData'
+import { articleService, FALLBACK_ARTICLES, FALLBACK_NEWS } from '../features/insight/services/articleService'
 import './Insight.css'
 
 export default function Insight() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { slug } = useParams()
+  const navigate = useNavigate()
+  const [articlesData, setArticlesData] = useState(FALLBACK_ARTICLES)
+  const [newsData, setNewsData] = useState(FALLBACK_NEWS)
+  const [contentLoading, setContentLoading] = useState(true)
+  const [contentError, setContentError] = useState('')
 
   // ── Article Carousel States (Infinite Seamless Loop) ──
   const [articleIndex, setArticleIndex] = useState(0)
@@ -29,21 +33,32 @@ export default function Insight() {
   const [isNewsAnim, setIsNewsAnim] = useState(true)
   const [isNewsPaused, setIsNewsPaused] = useState(false)
 
-  const totalArticlePages = articlesData.length
-  const totalNewsPages = newsData.length
+  const totalArticlePages = Math.max(articlesData.length, 1)
+  const totalNewsPages = Math.max(newsData.length, 1)
 
   // Duplikasi data untuk efek infinite seamless transition
   const doubledArticles = [...articlesData, ...articlesData]
   const doubledNews = [...newsData, ...newsData]
 
-  // Search params detail modal
-  const articleId = searchParams.get('article')
-  const newsId = searchParams.get('news')
-  const selectedItem = articleId
-    ? articlesData.find((a) => a.id === articleId) || null
-    : newsId
-    ? newsData.find((n) => n.id === newsId) || null
+  const selectedItem = slug && !contentLoading
+    ? [...articlesData, ...newsData].find((item) => item.slug === slug) || null
     : null
+
+  useEffect(() => {
+    let active = true
+    articleService.getPublished()
+      .then((rows) => {
+        if (!active || !rows.length) return
+        setArticlesData(rows.filter((item) => item.contentType === 'article'))
+        setNewsData(rows.filter((item) => item.contentType === 'news' || item.contentType === 'promo'))
+      })
+      .catch((error) => {
+        console.error('[Insight] Failed to load articles:', error)
+        if (active) setContentError('Konten terbaru belum dapat dimuat. Menampilkan data cadangan.')
+      })
+      .finally(() => active && setContentLoading(false))
+    return () => { active = false }
+  }, [])
 
   // Auto-slide Articles
   useEffect(() => {
@@ -86,15 +101,12 @@ export default function Insight() {
   }
 
   const handleOpenDetail = (item) => {
-    if (item.id.startsWith('article')) {
-      setSearchParams({ article: item.id })
-    } else if (item.id.startsWith('news')) {
-      setSearchParams({ news: item.id })
-    }
+    if (item.contentType === 'promo' && item.ctaLink) return navigate(item.ctaLink)
+    navigate(`/insight/${item.slug}`)
   }
 
   const handleCloseDetail = () => {
-    setSearchParams({})
+    navigate('/insight')
   }
 
   const scrollToArticles = () => {
@@ -153,6 +165,8 @@ export default function Insight() {
               View all
             </button>
           </div>
+          {contentLoading && <p className="insight-content-status" role="status">Memuat artikel terbaru...</p>}
+          {contentError && <p className="insight-content-status is-warning" role="alert">{contentError}</p>}
 
           <div
             className="carousel-viewport"

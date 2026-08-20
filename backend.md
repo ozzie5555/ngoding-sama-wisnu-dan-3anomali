@@ -475,11 +475,14 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 | Delete account | ✅ Selesai | Edge Function delete-account terdeploy; menghapus data user, foto Storage, profil, dan Auth user secara permanen |
 | Change password/email | ✅ Selesai | Re-authentication dan update Auth |
 | OTP nomor telepon (Twilio) | ⏳ Terjadwal 21 Agustus 2026 | Saat ini masih mode demo; SMS real belum diaktifkan |
-| Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
+| Artikel dan statistik Beranda | ⏳ Sebagian | Artikel dan berita sudah live dari Supabase; statistik Beranda masih berasal dari frontend |
 | Aktivitas dan riwayat donasi | ⚠️ FE wired | Menggunakan `donationService`; query remote sudah aktif, pembaruan Realtime masih perlu diuji lintas akun |
 | Chat komunitas | ✅ FE wired | Room/membership RPC, baca/kirim/edit/reply pesan, dan Realtime `chat_messages` |
 | Admin dashboard | ⚠️ FE wired | `/admin` memiliki monitoring, antrean prioritas, tab status, pencarian, detail foto, ambil/lepas tugas, konfirmasi transisi, dan audit aktivitas; jalankan migration 0021 |
 | Admin, chat, realtime donasi | ⏳ Sebagian | Dashboard admin dan chat komunitas sudah tersedia; live support/thread admin masih perlu diuji |
+| Notifikasi pengguna | ✅ Selesai | Dropdown navbar, jumlah belum dibaca, tandai satu/semua, dan Realtime per `user_id`; migration 0026 sudah diterapkan |
+| Komunitas dan kebutuhan | ✅ Selesai | Beranda, Donasi, Cari Kebutuhan, Form Donasi, dan Komunitas memakai query Supabase; fallback lokal hanya saat request gagal |
+| Artikel dan Insight | ✅ Selesai | Beranda dan Insight membaca artikel published dari Supabase, detail memakai `/insight/:slug`, dan admin memiliki CRUD draft/publish |
 
 Status ini bukan pengganti pengujian backend. Setelah agent backend menjalankan migration/RLS, ulangi test dengan akun anon, user biasa, manager, dan admin.
 
@@ -591,9 +594,11 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 - ProfileOverview: fetch donasi dari `donations` table, fetch komunitas dari `communities` table.
 - Stats (Donasi/Tersalur/Simpan) di-compute dari `donations` table.
 - Komunitas Mitra: mapped dari `communities` table via slug → logo SVG.
+- Cari Kebutuhan mengambil komunitas terverifikasi dan kebutuhan berstatus `open` dari Supabase; pencarian dan filter wilayah memakai hasil query yang sama.
+- Form donasi membawa UUID kebutuhan jika hanya satu kebutuhan dipilih agar `need_id` tersimpan dengan benar.
 - Status donasi 5 step: pending → verified → pickup → shipping → received.
 
-**Belum:** Pindahkan artikel hardcoded ke database, filter kategori/lokasi.
+Artikel, berita, dan kartu promosi sudah berasal dari tabel `articles`. CRUD komunitas/kebutuhan untuk admin/manager dikerjakan pada tahap dashboard konten berikutnya.
 
 **Lulus jika:** guest dapat membaca data publik, manager/admin yang dapat mengubahnya.
 
@@ -611,6 +616,7 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 - Dashboard admin, transition status, assignment petugas, audit aktivitas, dan timeline `/donasi/:donationCode` sudah tersedia.
 - Jalankan migration 0021 dan uji konflik assignment memakai dua akun admin/manager.
 - Hubungkan notifications dan Realtime dengan filter ownership agar perubahan status terlihat tanpa refresh.
+- Notifikasi pengguna sudah terhubung ke dropdown navbar dan Realtime terfilter `user_id` melalui migration 0026.
 
 **Lulus jika:** admin mengubah status dan pemilik melihat timeline/notifikasi tanpa refresh.
 
@@ -739,6 +745,9 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0023 | Realtime publication untuk donations dan status events | ✅ Run |
 | 0024 | Auto-publish testimonial tervalidasi + Realtime Beranda | ✅ Run |
 | 0025 | Moderasi testimonial admin + Realtime Broadcast Beranda | ✅ Run |
+| 0026 | Secure notifications policy + Realtime publication | ✅ Run |
+| 0027 | Live communities, display metadata, dan canonical needs | ✅ Run |
+| 0028 | Live Insight articles, draft security, dan canonical content | ✅ Run |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
@@ -754,4 +763,4 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - **Realtime status donasi**: Listener frontend dan publication database sudah aktif melalui migration 0023. Tetap uji lintas browser memakai akun admin dan donatur yang berbeda.
 - **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
 - **Chat**: Frontend dan migration sudah terhubung; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
-- **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.
+- **Insight articles**: ✅ Daftar published, detail slug, dan editor admin sudah memakai tabel `articles`. Upload cover ke bucket `article-media` masih mengikuti tahap Storage media.

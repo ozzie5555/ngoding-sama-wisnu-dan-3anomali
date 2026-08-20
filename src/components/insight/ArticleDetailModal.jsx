@@ -20,7 +20,7 @@ export default function ArticleDetailModal({ item, onClose }) {
 
   if (!item) return null
 
-  const isNews = Boolean(item.id?.startsWith('news'))
+  const isNews = !item.isDatabaseArticle && Boolean(item.id?.startsWith('news'))
 
   const toggleAccordion = (id) => {
     setOpenAccordionId((prev) => (prev === id ? null : id))
@@ -41,6 +41,31 @@ export default function ArticleDetailModal({ item, onClose }) {
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
+
+        {item.isDatabaseArticle && (
+          <article className="article-detail-view news-detail-view">
+            {item.image && item.contentType !== 'promo' && (
+              <div className="detail-banner-wrapper">
+                <img src={item.image} alt={item.title} className="detail-banner-img" />
+              </div>
+            )}
+            <div className="detail-editorial-body">
+              <div className="detail-tags">
+                {item.categories?.map((category) => <span key={category} className="category-tag">{category}</span>)}
+                <span className="category-tag tag-dots">•••</span>
+              </div>
+              <h1 className="detail-title">{item.title}</h1>
+              <div className="detail-meta">
+                <span>{item.detailDate || item.date}</span><span>•</span><span>{item.author}</span>
+              </div>
+              {item.excerpt && <p className="detail-intro">{item.excerpt}</p>}
+              <div className="editorial-paragraphs-flow">
+                {item.paragraphs?.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+              </div>
+              {item.ctaLink && <Link to={item.ctaLink} className="btn-action-card">{item.ctaText || 'Selengkapnya'} →</Link>}
+            </div>
+          </article>
+        )}
 
         {/* ── ARTICLE 1: Ide Daur Ulang Sampah (Accordions) ── */}
         {item.id === 'article-1' && (
