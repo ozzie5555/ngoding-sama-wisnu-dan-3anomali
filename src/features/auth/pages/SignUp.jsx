@@ -309,7 +309,7 @@ export default function SignUp() {
                   id="email"
                   type="text"
                   className={`auth-input ${emailError ? 'input-error' : ''}`}
-                  placeholder="cth: email@contoh.com"
+                  placeholder=""
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -437,7 +437,7 @@ export default function SignUp() {
                   id="whatsapp"
                   type="text"
                   className={`auth-input ${whatsappError ? 'input-error' : ''}`}
-                  placeholder="cth: +62 812-XXXX-XXXX"
+                  placeholder=""
                   value={whatsapp}
                   onChange={(e) => {
                     setWhatsapp(e.target.value);
@@ -566,7 +566,7 @@ export default function SignUp() {
                 type="text"
                 className={`auth-input ${profileError.includes('Username') ? 'input-error' : ''}`}
                 style={{ paddingLeft: '14px' }}
-                placeholder="cth: @username_anda"
+                placeholder=""
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);

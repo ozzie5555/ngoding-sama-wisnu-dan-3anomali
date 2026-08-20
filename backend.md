@@ -499,11 +499,9 @@ Secret provider WhatsApp/email dan `service_role` disimpan sebagai Supabase Edge
 - DonationForm: submit ke `donations` table via `donationService.submitDonation()`.
 - Photo upload ke `item-photos` bucket (private) + save ke `donation_items` table.
 - Slug → UUID resolution untuk `community_id`.
-- Donasi page: fetch active donation + history dari database.
-- Active tracker: 5 step (Form → Konfirmasi → Pengambilan → Pengiriman → Diterima).
+- Status donasi 5 step: pending → verified → pickup → shipping → received.
 - Status update via SQL manual (belum ada admin dashboard).
-
-**Belum:** Auto-fill dari profile, review step, RPC submit_donation.
+- **Donation page (`/donasi`)**: Aktivitas Donasi & Riwayat masih **hardcode/design** — BE belum di-wire. Menunggu design final.
 
 ### Fase 4 — Admin, tracking, realtime
 

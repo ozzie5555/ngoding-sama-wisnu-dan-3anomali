@@ -142,7 +142,7 @@ export default function Login() {
               id="email"
               type="text"
               className={`auth-input ${emailError ? 'input-error' : ''}`}
-              placeholder="cth: email@contoh.com"
+              placeholder=""
               value={emailOrUsername}
               onChange={(e) => {
                 setEmailOrUsername(e.target.value);

@@ -1,0 +1,185 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - navigation "Navigasi utama" [ref=e4]:
+      - link "KEMBALI" [ref=e5] [cursor=pointer]:
+        - /url: /
+      - button "Buka menu" [ref=e7] [cursor=pointer]
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - heading [level=1] [ref=e14]:
+          - text: Donasikan Barang,Berikan Manfaat,
+          - emphasis [ref=e15]: Kembalikan Nilai.
+        - paragraph [ref=e16]: Barang layak pakai milikmu dapat membantu orang lain sekaligus mengurangi limbah. Bersama KEMBALI, wujudkan masa depan yang lebih hijau dan berkelanjutan.
+        - generic [ref=e17]:
+          - button "Mulai Donasi Sekarang →" [ref=e18] [cursor=pointer]
+          - link "▶ Pelajari Lebih Lanjut" [ref=e19] [cursor=pointer]:
+            - /url: "#alur"
+      - img "Ilustrasi berbagi ide dan barang" [ref=e20]
+    - generic [ref=e21]:
+      - heading "Alur Donasi di KEMBALI" [level=2] [ref=e22]
+      - generic [ref=e23]:
+        - article [ref=e24]:
+          - generic [ref=e25]: "1"
+          - generic [ref=e26]:
+            - heading "Cari Kebutuhan" [level=3] [ref=e27]
+            - paragraph [ref=e28]: Temukan barang yang sedang dibutuhkan oleh komunitas.
+        - article [ref=e29]:
+          - generic [ref=e30]: "2"
+          - generic [ref=e31]:
+            - heading "Isi Form Donasi" [level=3] [ref=e32]
+            - paragraph [ref=e33]: Lengkapi informasi barang dan data diri dengan mudah.
+        - article [ref=e34]:
+          - generic [ref=e35]: "3"
+          - generic [ref=e36]:
+            - heading "Konfirmasi" [level=3] [ref=e37]
+            - paragraph [ref=e38]: Periksa kembali detail donasi dan konfirmasi pengajuan.
+        - article [ref=e39]:
+          - generic [ref=e40]: "4"
+          - generic [ref=e41]:
+            - heading "Tracking Donasi" [level=3] [ref=e42]
+            - paragraph [ref=e43]: Pantau proses donasi hingga sampai ke penerima.
+    - generic [ref=e44]:
+      - article [ref=e45]:
+        - generic [ref=e51]:
+          - heading "1. Cari Kebutuhan Donasi" [level=3] [ref=e52]
+          - paragraph [ref=e53]: Cari barang yang sedang dibutuhkan oleh komunitas di sekitarmu.
+        - button "Cari Kebutuhan →" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: Cari Kebutuhan
+          - generic [ref=e56]: →
+      - article [ref=e57]:
+        - generic [ref=e64]:
+          - heading "2. Isi Form Donasi" [level=3] [ref=e65]
+          - paragraph [ref=e66]: Sudah tahu barang yang ingin didonasikan? Isi formulir donasi di sini.
+        - link "Isi Form Donasi →" [ref=e67] [cursor=pointer]:
+          - /url: /donasi/form
+      - article [ref=e68]:
+        - generic [ref=e76]:
+          - heading "3. Komunitas Penerima" [level=3] [ref=e77]
+          - paragraph [ref=e78]: Lihat komunitas terverifikasi yang menerima donasi sesuai kategori.
+        - link "Lihat Komunitas →" [ref=e79] [cursor=pointer]:
+          - /url: "#verified"
+      - article [ref=e80]:
+        - generic [ref=e88]:
+          - heading "4. Status Donasi" [level=3] [ref=e89]
+          - paragraph [ref=e90]: Pantau status donasi mulai dari verifikasi hingga barang diterima.
+        - link "Cek Status Donasi →" [ref=e91] [cursor=pointer]:
+          - /url: "#aktivitas"
+    - generic [ref=e92]:
+      - heading "Mengapa Berdonasi di KEMBALI?" [level=2] [ref=e93]
+      - generic [ref=e94]:
+        - article [ref=e95]:
+          - generic [ref=e96]:
+            - heading "Tersalurkan Tepat Sasaran" [level=3] [ref=e97]
+            - paragraph [ref=e98]: Donasimu akan disalurkan kepada penerima yang benar-benar membutuhkan.
+        - article [ref=e99]:
+          - generic [ref=e100]:
+            - heading "Dukung Ekonomi Sirkular" [level=3] [ref=e101]
+            - paragraph [ref=e102]: Mengurangi limbah dengan memanfaatkan kembali barang agar bernilai.
+        - article [ref=e103]:
+          - generic [ref=e104]:
+            - heading "Transparan & Terpercaya" [level=3] [ref=e105]
+            - paragraph [ref=e106]: Proses donasi transparan dan dapat dipantau setiap saat.
+        - article [ref=e107]:
+          - generic [ref=e108]:
+            - heading "Bersama Komunitas" [level=3] [ref=e109]
+            - paragraph [ref=e110]: Berkolaborasi dengan komunitas, relawan, dan bank sampah.
+    - generic [ref=e111]:
+      - heading "Komunitas Terverifikasi" [level=2] [ref=e112]
+      - generic [ref=e113]:
+        - article [ref=e114]:
+          - heading "Sedekas" [level=3] [ref=e115]
+          - paragraph [ref=e116]: Komunitas di Semarang Barat yang mengumpulkan dan menyalurkan barang bekas layak pakai untuk membantu yang membutuhkan.
+          - generic [ref=e117]:
+            - generic [ref=e118]: Jl. Simongan No. 69, Ngemplak Simongan, Semarang Barat, Kota Semarang, 50148
+            - generic [ref=e119]:
+              - img "Instagram" [ref=e120]
+              - text: "@sedekas"
+            - button "Lihat Kebutuhan →" [ref=e122] [cursor=pointer]
+        - article [ref=e123]:
+          - heading "Dipo Waste Bank" [level=3] [ref=e124]
+          - paragraph [ref=e125]: Bank sampah di lingkungan kampus UNDIP yang menampung sampah terpilah untuk dikelola menjadi tabungan nasabah.
+          - generic [ref=e126]:
+            - generic [ref=e127]: Tempat Pengelolaan Sampah Terpadu (TPST) UNDIP, Universitas Diponegoro, Tembalang, Semarang
+            - generic [ref=e128]:
+              - img "Instagram" [ref=e129]
+              - text: "@dipowastebank"
+            - button "Lihat Kebutuhan →" [ref=e131] [cursor=pointer]
+        - article [ref=e132]:
+          - heading "Panti Asuhan Al Jannah" [level=3] [ref=e133]
+          - paragraph [ref=e134]: Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.
+          - generic [ref=e135]:
+            - generic [ref=e136]: Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah
+            - generic [ref=e137]:
+              - img "Instagram" [ref=e138]
+              - text: "@pantialjannah"
+            - button "Lihat Kebutuhan →" [ref=e140] [cursor=pointer]
+        - article [ref=e141]:
+          - heading "Panti Asuhan Kristen Tanah Putih" [level=3] [ref=e142]
+          - paragraph [ref=e143]: Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.
+          - generic [ref=e144]:
+            - generic [ref=e145]: Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia
+            - generic [ref=e146]:
+              - img "Instagram" [ref=e147]
+              - text: "@pantiasuhankristentanahputih"
+            - button "Lihat Kebutuhan →" [ref=e149] [cursor=pointer]
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - heading "Siap Memberikan Kehidupan Kedua untuk Barangmu?" [level=2] [ref=e152]: Siap Memberikan KehidupanKedua untuk Barangmu?
+        - paragraph [ref=e153]: Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.
+      - generic [ref=e154]:
+        - article [ref=e155]:
+          - strong [ref=e156]: 12.400+
+          - generic [ref=e157]: Barang Tersirkulasi
+        - article [ref=e158]:
+          - strong [ref=e159]: 2.000 kg
+          - generic [ref=e160]: Sampah Dikurangi
+        - article [ref=e161]:
+          - strong [ref=e162]: 4.680 kg
+          - generic [ref=e163]: CO2 Dihemat
+        - article [ref=e164]:
+          - strong [ref=e165]: 1.500+
+          - generic [ref=e166]: Pengguna Aktif
+    - generic [ref=e167]:
+      - generic [ref=e168]:
+        - generic [ref=e169]:
+          - link "KEMBALI" [ref=e170] [cursor=pointer]:
+            - /url: /
+          - paragraph [ref=e171]: Platform donasi barang layak pakai untuk mengurangi limbah dan memberikan dampak sosial berkelanjutan.
+          - generic [ref=e172]:
+            - link "Instagram" [ref=e173] [cursor=pointer]:
+              - /url: "#instagram"
+            - link "TikTok" [ref=e174] [cursor=pointer]:
+              - /url: "#tiktok"
+            - link "X" [ref=e175] [cursor=pointer]:
+              - /url: "#x"
+            - link "YouTube" [ref=e176] [cursor=pointer]:
+              - /url: "#youtube"
+        - generic [ref=e177]:
+          - heading "Navigasi Utama" [level=3] [ref=e178]
+          - link "Beranda" [ref=e179] [cursor=pointer]:
+            - /url: /
+          - link "Donasi" [ref=e180] [cursor=pointer]:
+            - /url: /donasi
+          - link "Insight" [ref=e181] [cursor=pointer]:
+            - /url: /insight
+          - link "Komunitas" [ref=e182] [cursor=pointer]:
+            - /url: /komunitas
+        - generic [ref=e183]:
+          - heading "Bantuan & Legal" [level=3] [ref=e184]
+          - link "Pusat Bantuan / FAQ" [ref=e185] [cursor=pointer]:
+            - /url: "#faq"
+          - link "Syarat & Ketentuan" [ref=e186] [cursor=pointer]:
+            - /url: "#terms"
+          - link "Kebijakan Privasi" [ref=e187] [cursor=pointer]:
+            - /url: "#privacy"
+          - link "Panduan Keamanan Donasi" [ref=e188] [cursor=pointer]:
+            - /url: "#guide"
+        - generic [ref=e189]:
+          - heading "Newsletter" [level=3] [ref=e190]
+          - paragraph [ref=e191]: Dapatkan update kegiatan dan informasi terbaru dari KEMBALI.
+          - generic [ref=e192]:
+            - textbox "Email" [ref=e193]:
+              - /placeholder: Masukkan email kamu
+            - button "Berlangganan" [ref=e194]
+      - paragraph [ref=e195]: © 2026 KEMBALI. Seluruh hak cipta dilindungi.
