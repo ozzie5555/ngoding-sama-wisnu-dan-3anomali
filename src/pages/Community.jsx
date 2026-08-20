@@ -149,8 +149,19 @@ export default function Community() {
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState('')
   const fileInputRef = useRef(null)
+  const chatMessagesRef = useRef(null)
   const selected = initialCommunities.find((c) => c.id === selectedId) || initialCommunities[0]
   const messages = allMessages[selectedId] || []
+
+  useEffect(() => {
+    const messagesContainer = chatMessagesRef.current
+    if (!messagesContainer) return
+
+    messagesContainer.scrollTo({
+      top: messagesContainer.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [selectedId, messages.length])
 
   useEffect(() => {
     let active = true
@@ -366,7 +377,13 @@ export default function Community() {
 
             {chatLoading && <div className="chat-status-message" role="status">Menghubungkan ke chat...</div>}
             {chatError && <div className="chat-status-message is-error" role="alert">{chatError}</div>}
-            <div className="chat-messages" role="log" aria-live="polite" aria-label="Pesan komunitas">
+            <div
+              ref={chatMessagesRef}
+              className="chat-messages"
+              role="log"
+              aria-live="polite"
+              aria-label="Pesan komunitas"
+            >
               {messages.map((msg) =>
                 msg.isOwn ? (
                   <div key={msg.id} className="message-row message-own">
