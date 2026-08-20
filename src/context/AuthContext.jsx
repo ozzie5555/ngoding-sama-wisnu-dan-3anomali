@@ -49,16 +49,15 @@ export function AuthProvider({ children }) {
         }
 
         // Profile complete — load full data
-        const { data: settings } = await supabase
-          .from('profile_settings')
-          .select('*')
-          .eq('user_id', userId)
-          .single()
-
-        let stats = DEFAULT_USER.stats
-        try {
-          stats = await donationService.getUserStats()
-        } catch (e) {}
+        const [{ data: settings }, stats] = await Promise.all([
+          supabase
+            .from('profile_settings')
+            .select('*')
+            .eq('user_id', userId)
+            .single()
+            .then(({ data }) => ({ data })),
+          donationService.getUserStats().catch(() => DEFAULT_USER.stats),
+        ])
 
         // Ignore an older request that finished after a newer profile refresh.
         if (requestId !== profileRequestId.current) return
@@ -119,6 +118,10 @@ export function AuthProvider({ children }) {
         const recoveryPending = typeof window !== 'undefined'
           && (sessionStorage.getItem('kembali_password_recovery_pending') === 'true'
             || window.location.pathname === '/reset-password')
+
+        // INITIAL_SESSION is handled by the validated getSession() flow below.
+        // Skipping it here prevents duplicate profile requests during refresh.
+        if (event === 'INITIAL_SESSION') return
 
         if (session?.user && !recoveryPending) {
           setIsAuthenticated(true)
