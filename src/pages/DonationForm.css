@@ -438,20 +438,6 @@
   flex-wrap: wrap;
 }
 
-.donation-form-page > .site-footer {
-  flex: 0 0 auto;
-  width: 100%;
-}
-
-.donation-form-page > .site-footer .footer-brand {
-  transform: none;
-}
-
-.donation-form-page > .site-footer .copyright {
-  position: static;
-  margin: 30px 0 0;
-  text-align: center;
-}
 
 @media (max-width: 768px) {
   .donation-form-container { padding-bottom: 48px; }

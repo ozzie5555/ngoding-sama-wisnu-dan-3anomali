@@ -96,68 +96,72 @@ export default function Home() {
   ]
   const visibleArticles = [0, 1, 2].map(offset => articles[(article + offset) % articles.length])
 
-  return <main className="home">
-    <section className="hero">
-      <div className="hero-inner">
-        <div className="hero-copy"><span className="outline-pill">Donasikan Barang Bekas & Karya Daur Ulangmu!</span><h1><em>Jangan Buang!</em> Beri Kesempatan<span className="desktop-break"><br /></span> Kedua untuk Barangmu!</h1><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br /></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br /></span> sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link><a className="button secondary" href="#layanan">Hubungi Kami</a></div></div>
-        <img className="hero-art" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
-      </div>
-      <img className="hero-grass" src="/rumput.svg" alt="" aria-hidden="true" />
-      <div className="landscape" aria-hidden="true"><i /><i /><i /><i /></div>
-    </section>
+  return (
+    <>
+      <main className="home">
+        <section className="hero">
+          <div className="hero-inner">
+            <div className="hero-copy"><span className="outline-pill">Donasikan Barang Bekas & Karya Daur Ulangmu!</span><h1><em>Jangan Buang!</em> Beri Kesempatan<span className="desktop-break"><br /></span> Kedua untuk Barangmu!</h1><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br /></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br /></span> sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link><a className="button secondary" href="#layanan">Hubungi Kami</a></div></div>
+            <img className="hero-art" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
+          </div>
+          <img className="hero-grass" src="/rumput.svg" alt="" aria-hidden="true" />
+          <div className="landscape" aria-hidden="true"><i /><i /><i /><i /></div>
+        </section>
 
-    <section className="impact"><div className="stat-grid">{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</div><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
+        <section className="impact"><div className="stat-grid">{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</div><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
 
-    <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />By - Anonymous</p><a href="#artikel">Visit Now</a></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
+        <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />By - Anonymous</p><a href="#artikel">Visit Now</a></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
 
-    <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
+        <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
 
-    <section className="testimonials"><Heading eyebrow="Segala Masukan Sangat Berarti untuk Kami" title="Ulasan" accent="Pengguna" sub="Bersama Menciptakan Perubahan" /><div className="review-board"><div className="review-track review-row-one">{[...reviews, ...reviews].map(([avatar, name, role, text], i) => <article key={`first-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div><div className="review-track review-row-two">{[...reviews, ...reviews].reverse().map(([avatar, name, role, text], i) => <article key={`second-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div></div></section>
+        <section className="testimonials"><Heading eyebrow="Segala Masukan Sangat Berarti untuk Kami" title="Ulasan" accent="Pengguna" sub="Bersama Menciptakan Perubahan" /><div className="review-board"><div className="review-track review-row-one">{[...reviews, ...reviews].map(([avatar, name, role, text], i) => <article key={`first-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div><div className="review-track review-row-two">{[...reviews, ...reviews].reverse().map(([avatar, name, role, text], i) => <article key={`second-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div></div></section>
 
-    <section className="steps" id="steps"><h2>Bagaimana Cara<br /><em>Berdonasi?</em></h2><p className="steps-intro">Ikuti langkah-langkah berikut untuk melakukan donasi online melalui KEMBALI.</p><div className="step-grid">{[['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'], ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'], ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'], ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.']].map(([t, d], i) => <article key={t}><b>{i + 1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
+        <section className="steps" id="steps"><h2>Bagaimana Cara<br /><em>Berdonasi?</em></h2><p className="steps-intro">Ikuti langkah-langkah berikut untuk melakukan donasi online melalui KEMBALI.</p><div className="step-grid">{[['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'], ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'], ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'], ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.']].map(([t, d], i) => <article key={t}><b>{i + 1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
 
-    <section className="donatable"><Heading eyebrow="Beri Kehidupan Kedua untuk Barangmu!" preAccent="Barang" title={<>yang Bisa<br />Anda Donasikan</>} sub="Barang apa saja yang bisa didonasikan melalui KEMBALI?" /><div className="item-grid">{items.map(([img, title, color]) => <article key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3></article>)}</div></section>
+        <section className="donatable"><Heading eyebrow="Beri Kehidupan Kedua untuk Barangmu!" preAccent="Barang" title={<>yang Bisa<br />Anda Donasikan</>} sub="Barang apa saja yang bisa didonasikan melalui KEMBALI?" /><div className="item-grid">{items.map(([img, title, color]) => <article key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3></article>)}</div></section>
 
-    <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas." /><PartnerGrid /></section>
+        <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas." /><PartnerGrid /></section>
 
-    <div className="dark-band">
-      <section className="final-cta"><img src="/jumping-2194230-0.svg" alt="" /><div><span className="outline-pill">Melakukan Kebaikan untuk Bumi & Sesama</span><h2>Mari Berdonasi & Jelajahi<br />Komunitas Kami!</h2><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan <strong>penerima manfaat</strong>, menyelamatkan barang layak pakai dari tempat sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang →</Link><a className="button dark-outline" href="#steps">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/order-delivered.svg" alt="" /></section>
-    </div>
+        <div className="dark-band">
+          <section className="final-cta"><img src="/jumping-2194230-0.svg" alt="" /><div><span className="outline-pill">Melakukan Kebaikan untuk Bumi & Sesama</span><h2>Mari Berdonasi & Jelajahi<br />Komunitas Kami!</h2><p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan <strong>penerima manfaat</strong>, menyelamatkan barang layak pakai dari tempat sampah dan memberikan dampak nyata bagi lingkungan.</p><div className="actions"><Link className="button primary" to="/donasi">Mulai Donasi Sekarang →</Link><a className="button dark-outline" href="#steps">▶ &nbsp; Pelajari Lebih Lanjut</a></div></div><img src="/order-delivered.svg" alt="" /></section>
+        </div>
 
-    <section className="faq" id="faq">
-      <Heading title="Frequently Asked Questions" sub="Pertanyaan yang sering ditanyakan" />
-      <div className="faq-list">
-        {faqs.map(([q, a], index) => {
-          const isOpen = openFaq === index
-          return (
-            <article
-              key={q}
-              className={`faq-item ${isOpen ? 'is-open' : ''}`}
-              onClick={() => setOpenFaq(isOpen ? null : index)}
-            >
-              <div className="faq-header">
-                <h3>{q}</h3>
-                <span className={`faq-icon ${isOpen ? 'is-active' : ''}`} aria-hidden="true">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </span>
-              </div>
-              <div className="faq-answer-wrapper">
-                <div className="faq-answer-inner">
-                  <p className="faq-answer">{a}</p>
-                </div>
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    </section>
+        <section className="faq" id="faq">
+          <Heading title="Frequently Asked Questions" sub="Pertanyaan yang sering ditanyakan" />
+          <div className="faq-list">
+            {faqs.map(([q, a], index) => {
+              const isOpen = openFaq === index
+              return (
+                <article
+                  key={q}
+                  className={`faq-item ${isOpen ? 'is-open' : ''}`}
+                  onClick={() => setOpenFaq(isOpen ? null : index)}
+                >
+                  <div className="faq-header">
+                    <h3>{q}</h3>
+                    <span className={`faq-icon ${isOpen ? 'is-active' : ''}`} aria-hidden="true">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    </span>
+                  </div>
+                  <div className="faq-answer-wrapper">
+                    <div className="faq-answer-inner">
+                      <p className="faq-answer">{a}</p>
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        </section>
 
-    <div className="dark-band">
-      <section className="impact-banner"><div className="impact-card"><h2>Siap Memberikan Kehidupan<br />Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div className="mini-stats">{stats.map(([n, l]) => <article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
+        <div className="dark-band">
+          <section className="impact-banner"><div className="impact-card"><h2>Siap Memberikan Kehidupan<br />Kedua untuk Barangmu?</h2><p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p></div><div className="mini-stats">{stats.map(([n, l]) => <article key={l}><strong>{n}</strong><span>{l}</span></article>)}</div><img src="/Donation Streamline Bruxelles.svg" alt="" /></section>
+        </div>
+      </main>
       <Footer />
-    </div>
-  </main>
+    </>
+  )
 }

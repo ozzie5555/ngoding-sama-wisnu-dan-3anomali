@@ -307,7 +307,8 @@ export default function Community() {
   const memberAvatars = (topDonors.length > 0 ? topDonors : donators).slice(0, 4)
 
   return (
-    <main className="community-page">
+    <>
+      <main className="community-page">
       <div className="community-wrapper">
         <div className="community-layout">
 
@@ -583,8 +584,9 @@ export default function Community() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
-  )
+
+    <Footer />
+  </>
+)
 }

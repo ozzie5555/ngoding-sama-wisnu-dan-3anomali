@@ -89,6 +89,26 @@ export default function Navbar() {
               </button>
             </div>
           )}
+
+          {/* Mobile only unauthenticated quick login link when menu is open */}
+          {!isAuthenticated && open && (
+            <div className="mobile-auth-links">
+              <button
+                type="button"
+                className="mobile-login-btn"
+                onClick={() => {
+                  handleNavClick()
+                  navigate('/login')
+                }}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6" />
+                </svg>
+                Masuk / Daftar
+              </button>
+            </div>
+          )}
         </div>
 
         {isAuthenticated ? (

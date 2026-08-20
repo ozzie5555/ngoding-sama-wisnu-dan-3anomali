@@ -26,7 +26,7 @@ export default function DonationForm() {
   const location = useLocation();
 
   // Retrieve selected community & needs from router state or sessionStorage
-  const [contextData, setContextData] = useState(() => {
+  const [contextData] = useState(() => {
     if (location.state?.communityId) {
       return location.state;
     }
@@ -131,8 +131,9 @@ export default function DonationForm() {
   };
 
   return (
-    <main className="donation-form-page">
-      <div className="donation-form-container">
+    <>
+      <main className="donation-form-page">
+        <div className="donation-form-container">
         {!isSubmitted ? (
           <>
             <header className="donation-form-header">
@@ -396,8 +397,9 @@ export default function DonationForm() {
           </div>
         )}
       </div>
-
-      <Footer />
     </main>
-  );
+
+    <Footer />
+  </>
+);
 }

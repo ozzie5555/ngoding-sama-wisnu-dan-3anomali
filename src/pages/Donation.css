@@ -286,16 +286,19 @@
   grid-template-columns: 1.1fr 2fr 0.75fr;
   gap: 28px;
   align-items: center;
-  margin-top: 36px !important;
-  padding: 48px max(5vw, 24px) 0 !important;
+  margin-top: 48px !important;
+  margin-bottom: 48px !important;
+  padding: 48px 48px 0 !important;
   background: #002b3a;
   color: #fff;
-  max-width: none;
-  border-radius: 0;
+  max-width: 1400px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
-.donation-impact h2 { font-size: 28px; font-weight: 800; line-height: 1.2; margin: 0 0 14px; }
+.donation-impact h2 { font-size: clamp(24px, 3.5vw, 28px); font-weight: 800; line-height: 1.2; margin: 0 0 14px; }
 .donation-impact p { font-size: 15px; line-height: 1.55; color: #d8e2e2; margin: 0; }
-.donation-impact > div:nth-child(2) { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.donation-impact > div:nth-child(2) { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .donation-impact article {
   min-height: 165px;
   padding: 22px 10px;
@@ -308,14 +311,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
-.donation-impact strong { display: block; font-size: 25px; font-weight: 800; margin-bottom: 8px; white-space: nowrap; }
+.donation-impact strong { display: block; font-size: clamp(20px, 2.5vw, 25px); font-weight: 800; margin-bottom: 8px; white-space: nowrap; }
 .donation-impact span { display: block; color: #789093; font-size: 10px; font-weight: 500; letter-spacing: 0.2px; }
 .donation-impact > img { height: 220px; object-fit: contain; align-self: flex-end; }
 
 /* ── Responsive ─────────────────────────── */
 @media (max-width: 1300px) {
-  .donation-page section { padding-inline: 32px; }
+  .donation-page section { padding-inline: 24px; }
   .donation-hero { padding-inline: 32px !important; }
 }
 @media (max-width: 1000px) {
@@ -324,22 +328,36 @@
   .flow-row, .why > div { grid-template-columns: repeat(2, 1fr); }
   .flow-row article::after { display: none; }
   .donation-options, .verified-grid { grid-template-columns: repeat(2, 1fr); }
-  .donation-impact { grid-template-columns: 1fr; }
+  .donation-impact {
+    grid-template-columns: 1fr;
+    padding: 40px 28px 36px !important;
+    text-align: center;
+  }
+  .donation-impact p { margin-inline: auto; }
   .donation-impact > img { display: none; }
+  .donation-impact > div:nth-child(2) { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 650px) {
   .donation-page { padding-top: 8px; }
   .donation-page section { padding-inline: 16px; }
-  .donation-hero { grid-template-columns: 1fr; padding: 32px 20px !important; }
-  .donation-hero h1 { font-size: 30px; }
-  .donation-hero p { font-size: 15px; }
-  .donation-hero img { height: 240px; }
-  .donation-actions button, .donation-actions a { min-width: 0; }
+  .donation-hero { grid-template-columns: 1fr; padding: 32px 20px !important; text-align: center; }
+  .donation-hero h1 { font-size: clamp(26px, 6vw, 32px); }
+  .donation-hero p { font-size: 15px; margin-inline: auto; }
+  .donation-hero img { height: 220px; }
+  .donation-actions { width: 100%; max-width: 320px; margin-inline: auto; }
+  .donation-actions button, .donation-actions a { min-width: 0; width: 100%; }
   .donation-flow { padding: 22px 18px !important; }
   .flow-row, .why > div, .donation-options, .verified-grid { grid-template-columns: 1fr; }
-  .donation-options article { min-height: 300px; }
-  .donation-impact { padding: 36px 20px 0 !important; }
-  .donation-impact > div:nth-child(2) { grid-template-columns: repeat(2, 1fr); }
+  .donation-options article { min-height: 280px; height: auto; }
+  .verified-grid article { min-height: 440px; height: auto; }
+  .donation-impact { padding: 32px 18px 28px !important; border-radius: 20px; margin-bottom: 32px !important; }
+  .donation-impact > div:nth-child(2) { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .donation-impact article { min-height: 120px; padding: 14px 8px; border-radius: 14px; }
+  .donation-impact strong { font-size: 18px; }
+  .donation-impact span { font-size: 9px; }
+}
+@media (max-width: 380px) {
+  .donation-impact > div:nth-child(2) { grid-template-columns: 1fr; }
 }
 
 /* Empty state card */

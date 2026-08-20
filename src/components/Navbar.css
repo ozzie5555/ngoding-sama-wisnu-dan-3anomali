@@ -264,14 +264,25 @@
   border-radius: 2px;
 }
 
-.mobile-user-links {
+.mobile-user-links,
+.mobile-auth-links {
   display: none;
 }
 
 @media (max-width: 840px) {
   .navbar {
-    min-height: 70px;
-    padding: 0 20px;
+    min-height: 64px;
+    padding: 0 16px;
+  }
+
+  .brand {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  .brand img {
+    width: 32px;
+    height: 32px;
   }
 
   .menu-toggle {
@@ -286,17 +297,18 @@
   .nav-menu {
     display: none;
     position: absolute;
-    top: 70px;
-    left: 16px;
-    right: 16px;
-    padding: 18px;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    padding: 16px;
     border: 1px solid var(--color-border);
     border-radius: 16px;
     background: #ffffff;
-    box-shadow: 0 12px 30px rgba(8, 33, 43, 0.12);
+    box-shadow: 0 12px 30px rgba(8, 33, 43, 0.14);
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     align-items: stretch;
+    z-index: 100;
   }
 
   .nav-menu.is-open {
@@ -305,9 +317,11 @@
 
   .nav-menu a {
     padding: 10px 12px;
+    font-size: 15px;
   }
 
-  .mobile-user-links {
+  .mobile-user-links,
+  .mobile-auth-links {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -329,9 +343,71 @@
     border: 0;
     padding: 10px 12px;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     font-family: var(--font-sora);
+  }
+
+  .mobile-login-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--color-dark-teal, #1f5156);
+    color: #ffffff;
+    border: 0;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sora);
+    transition: background 0.15s ease;
+  }
+
+  .mobile-login-btn:hover {
+    background: #173d41;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-display-name {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .user-avatar-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-profile-btn {
+    padding: 4px 8px 4px 4px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar {
+    padding: 0 12px;
+  }
+
+  .brand {
+    font-size: 16px;
+    gap: 8px;
+  }
+
+  .brand img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .user-display-name {
+    display: none;
   }
 }
