@@ -247,7 +247,7 @@ export default function Insight() {
               About Environment Edu, Recycle, and Circular Economy
             </h2>
             <a
-              href="https://www.youtube.com"
+              href="https://youtu.be/zCRKvDyyHmI?si=nXAcfL6GGUnG3eZW"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-view-all-pill is-light-pill"
