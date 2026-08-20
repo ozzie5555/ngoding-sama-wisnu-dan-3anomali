@@ -192,12 +192,12 @@
 
 /* Testimonials */
 .testimonials { padding: 100px 0; overflow: hidden; }
-.review-board { display: flex; flex-direction: column; gap: 32px; mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); }
+.testimonials .review-board { display: flex; flex-direction: column; gap: 32px; width: 100vw; max-width: none; margin-left: 50%; transform: translateX(-50%); mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent); }
 .review-track { display: flex; gap: 32px; width: max-content; will-change: transform; }
 .review-row-one { animation: scrollLeft 42s linear infinite; }
-.review-row-two { animation: scrollRight 48s linear infinite; margin-left: -200px; }
-@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+.review-row-two { animation: scrollRight 48s linear infinite; }
+@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-50% - 16px)); } }
+@keyframes scrollRight { 0% { transform: translateX(calc(-50% - 16px)); } 100% { transform: translateX(0); } }
 @keyframes testimonialFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 .review-track:hover { animation-play-state: paused; }
 .review-track article { width: 450px; padding: 40px; border: 1.5px solid #d4e3e4; border-radius: 24px; background: #fff; box-shadow: 0 10px 30px rgba(17, 59, 68, 0.04); animation: testimonialFloat 6s ease-in-out infinite; transition: transform 220ms ease, box-shadow 220ms ease; box-sizing: border-box; }
@@ -205,7 +205,7 @@
 .review-track article:nth-child(3n) { animation-delay: -4s; }
 .review-track article:hover { transform: translateY(-6px); box-shadow: 0 18px 34px rgba(17, 59, 68, 0.1); }
 .review-track header { display: flex; gap: 20px; align-items: center; margin-bottom: 24px; }
-.review-track img { width: 64px; height: 64px; border-radius: 50%; }
+.review-track img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: #edf3f2; }
 .review-track h3 { margin: 0 0 4px; color: #050505; font-size: 20px; font-weight: 700; }
 .review-track span { color: #5a7476; font-size: 15px; font-weight: 500; }
 .review-track p { margin: 0; color: #5a7476; font-size: 16px; line-height: 1.6; }
@@ -422,4 +422,3 @@
     animation: none;
   }
 }
-

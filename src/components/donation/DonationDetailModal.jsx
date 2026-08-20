@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import DonationTracker from './DonationTracker'
 import { donationService } from '../../features/donation/services/donationService'
 import './DonationDetailModal.css'
@@ -9,27 +9,24 @@ export default function DonationDetailModal({
   donation,
   onReviewSubmitted,
 }) {
-  const [reviewMessage, setReviewMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submittedReview, setSubmittedReview] = useState(false)
-  const [activeTab, setActiveTab] = useState('tracking') // 'tracking' | 'review'
-
-  useEffect(() => {
-    if (donation) {
-      setSubmittedReview(Boolean(donation.reviewSubmitted))
-      setReviewMessage(donation.reviewText || '')
-      // Default to review tab if completed, or tracking tab if in-progress
-      if (donation.status === 'completed') {
-        setActiveTab('review')
-      } else {
-        setActiveTab('tracking')
-      }
-    }
-  }, [donation])
-
   if (!isOpen || !donation) return null
 
+  return (
+    <DonationDetailModalContent
+      key={`${donation.id}:${donation.status}:${donation.reviewSubmitted}`}
+      onClose={onClose}
+      donation={donation}
+      onReviewSubmitted={onReviewSubmitted}
+    />
+  )
+}
+
+function DonationDetailModalContent({ onClose, donation, onReviewSubmitted }) {
   const isCompleted = donation.status === 'completed' || donation.status === 'received'
+  const [reviewMessage, setReviewMessage] = useState(donation.reviewText || '')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedReview, setSubmittedReview] = useState(Boolean(donation.reviewSubmitted))
+  const [activeTab, setActiveTab] = useState(isCompleted ? 'review' : 'tracking')
 
   const handleSendReview = async (e) => {
     e.preventDefault()
@@ -54,7 +51,7 @@ export default function DonationDetailModal({
 
   return (
     <div className="donation-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="donation-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className={`donation-modal-content ${isCompleted ? 'is-completed' : ''}`} onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           className="donation-modal-close-btn"
@@ -160,7 +157,7 @@ export default function DonationDetailModal({
                       &ldquo;{reviewMessage}&rdquo;
                     </p>
                     <span className="success-note">
-                      Terima kasih atas ulasan dan kontribusi kebaikanmu bersama KEMBALI.
+                      Terima kasih. Ulasan sedang ditinjau admin sebelum ditampilkan di Beranda.
                     </span>
                   </div>
                 ) : (

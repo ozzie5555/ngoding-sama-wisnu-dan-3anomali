@@ -78,6 +78,64 @@
   align-items: start;
 }
 
+/* Final state follows aktivitas-donasi/contohfinal.png. */
+.donation-modal-content.is-completed {
+  max-width: 900px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.donation-modal-content.is-completed .donation-modal-grid {
+  grid-template-columns: minmax(250px, 31%) 1fr;
+  gap: 0;
+  min-height: 510px;
+}
+
+.donation-modal-content.is-completed .modal-left-summary {
+  padding: 0;
+  border-right: 1px solid #aab6b7;
+}
+
+.donation-modal-content.is-completed .modal-media-box {
+  height: 205px;
+  margin: 0;
+  border-radius: 0;
+  padding: 14px;
+  background: #f5f8f7;
+  box-sizing: border-box;
+}
+
+.donation-modal-content.is-completed .modal-item-image {
+  padding: 0;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.donation-modal-content.is-completed .modal-item-meta {
+  padding: 28px 24px;
+}
+
+.donation-modal-content.is-completed .modal-right-interactive {
+  justify-content: center;
+  padding: 58px 62px 42px;
+  box-sizing: border-box;
+}
+
+.donation-modal-content.is-completed .modal-view-toggle,
+.donation-modal-content.is-completed .modal-help-link-row {
+  display: none;
+}
+
+.donation-modal-content.is-completed .donation-modal-close-btn {
+  top: 18px;
+  right: 20px;
+  background: transparent;
+  color: #111820;
+  font-size: 30px;
+}
+
 /* Left Column */
 .modal-left-summary {
   display: flex;
@@ -492,5 +550,25 @@
   }
   .donation-modal-content {
     padding: 24px 18px;
+  }
+
+  .donation-modal-content.is-completed {
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .donation-modal-content.is-completed .donation-modal-grid {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .donation-modal-content.is-completed .modal-left-summary {
+    border-right: 0;
+    border-bottom: 1px solid #dce4e5;
+    padding-bottom: 0;
+  }
+
+  .donation-modal-content.is-completed .modal-right-interactive {
+    padding: 42px 20px 28px;
   }
 }

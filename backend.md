@@ -82,9 +82,9 @@ stateDiagram-v2
   Verified --> Pickup: Admin jadwalkan pickup
   Pickup --> Shipping: Barang dikirim
   Shipping --> Received: Komunitas menerima
-  Received --> TestimonialPending: User kirim ulasan
-  TestimonialPending --> Published: Admin setujui
-  TestimonialPending --> Rejected: Admin tolak
+  Received --> TestimonialPending: User kirim ulasan tervalidasi
+  TestimonialPending --> Published: Admin tampilkan
+  Published --> TestimonialPending: Admin sembunyikan
 ```
 
 Aturan inti:
@@ -210,7 +210,7 @@ Saluran donasi alternatif komunitas: drop point, alamat resmi, rekening, atau ko
 | Tabel | Fungsi |
 | --- | --- |
 | `articles` | Insight: title, slug, content, cover, category, author, published_at |
-| `testimonials` | Ulasan setelah `received`, menunggu moderasi |
+| `testimonials` | Ulasan setelah `received`, admin memilih yang ditampilkan di Beranda |
 | `notifications` | Notifikasi per user dan `is_read` |
 | `activity_feed` | Aktivitas publik yang sudah disanitasi |
 | `impact_statistics` | Angka dampak di Beranda |
@@ -616,7 +616,7 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 
 ### Fase 5 — Testimoni, newsletter, dan penyempurnaan chat
 
-- Testimoni hanya setelah `received`, lalu moderasi admin.
+- Testimoni hanya setelah `received` dan divalidasi RPC. Admin menampilkan/menyembunyikan ulasan; Beranda diperbarui secara Realtime.
 - Newsletter dan WhatsApp memakai Edge Function jika provider diperlukan.
 - Chat dikerjakan setelah membership dan route komunitas siap.
 - Sempurnakan moderasi dan pengujian beban untuk chat serta monitoring admin.
@@ -734,7 +734,11 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0018 | Chat reply relation | ✅ Run |
 | 0019 | Chat message edit + RLS own update | ✅ Run |
 | 0020 | Align database donation status constraint | ✅ Run |
-| 0021 | Admin donation assignment, row locking, dan safe transition RPC | ⚠️ File dibuat, belum dijalankan di project Supabase |
+| 0021 | Admin donation assignment, row locking, dan safe transition RPC | ✅ Run |
+| 0022 | Staff read policies untuk foto barang donasi | ✅ Run |
+| 0023 | Realtime publication untuk donations dan status events | ✅ Run |
+| 0024 | Auto-publish testimonial tervalidasi + Realtime Beranda | ✅ Run |
+| 0025 | Moderasi testimonial admin + Realtime Broadcast Beranda | ✅ Run |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
@@ -745,8 +749,9 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 ## 17. Known Issues
 
 - **Avatar positioning**: ✅ Sudah diperbaiki. Upload, posisi avatar, refresh state, dan penghapusan avatar sudah terhubung ke Supabase Storage dan tabel profiles.
-- **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
-- **Monitoring admin**: Frontend dashboard dan RPC assignment sudah disiapkan. Migration 0021 belum dijalankan di project remote, sehingga fitur ambil/lepas tugas dan transition terbaru belum dapat diuji.
+- **Donation photo display**: Foto diambil dari `donation_items.storage_path` melalui signed URL. RLS admin/manager untuk metadata dan file foto barang sudah diterapkan melalui migration 0022.
+- **Monitoring admin**: Frontend dashboard dan RPC assignment sudah diterapkan. Tetap uji konflik assignment menggunakan dua akun admin/manager sebelum demo.
+- **Realtime status donasi**: Listener frontend dan publication database sudah aktif melalui migration 0023. Tetap uji lintas browser memakai akun admin dan donatur yang berbeda.
 - **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
 - **Chat**: Frontend dan migration sudah terhubung; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
 - **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.

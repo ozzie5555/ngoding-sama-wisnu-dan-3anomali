@@ -33,7 +33,11 @@ export default function DonationHistory() {
 
     setLoading(true)
     try {
-      setDonations(await donationService.getUserDonations())
+      const all = await donationService.getUserDonations()
+      setDonations(all)
+      setSelectedDonation((current) => (
+        current ? all.find((item) => item.id === current.id) || null : null
+      ))
     } catch (error) {
       console.error('[DonationHistory] Failed to load donations:', error)
       setDonations([])
@@ -57,7 +61,7 @@ export default function DonationHistory() {
       .subscribe()
 
     return () => {
-      channel.unsubscribe()
+      supabase.removeChannel(channel)
     }
   }, [isAuthenticated, user?.id])
 

@@ -216,3 +216,35 @@
 @media (prefers-reduced-motion: reduce) {
   .admin-status-tabs button, .admin-priority-list > button { transition: none; }
 }
+
+/* Testimonial moderation */
+.admin-testimonial-list { display: grid; gap: 12px; margin-top: 18px; }
+.admin-testimonial-card { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; align-items: start; gap: 16px; padding: 18px; border: 1px solid #dcebe7; border-radius: 14px; background: #fbfdfc; }
+.admin-testimonial-card > img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; background: #e8f2ef; }
+.admin-testimonial-copy { display: grid; gap: 10px; min-width: 0; }
+.admin-testimonial-copy > div { display: grid; gap: 4px; }
+.admin-testimonial-copy strong { color: #244d45; font-size: 13px; }
+.admin-testimonial-copy span, .admin-testimonial-copy small { color: #7b938d; font-size: 10px; }
+.admin-testimonial-copy p { max-width: 72ch; margin: 0; color: #52736c; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.admin-testimonial-control { display: grid; justify-items: end; gap: 10px; min-width: 160px; }
+.admin-testimonial-control > span { padding: 6px 9px; border-radius: 999px; font-size: 9px; font-weight: 800; }
+.admin-testimonial-control > span.is-shown { background: #e3f5ec; color: #27795f; }
+.admin-testimonial-control > span.is-hidden { background: #f2f4f3; color: #6d817c; }
+.admin-testimonial-control button { min-height: 44px; padding: 0 15px; border: 1px solid transparent; border-radius: 10px; font: 700 11px var(--font-sora, system-ui); cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.admin-testimonial-control button.is-show { border-color: #2b826c; background: #2b826c; color: #fff; }
+.admin-testimonial-control button.is-show:hover { background: #206c59; }
+.admin-testimonial-control button.is-hide { border-color: #e0c7c3; background: #fff8f7; color: #a04d45; }
+.admin-testimonial-control button.is-hide:hover { border-color: #c7837c; background: #fceae8; }
+.admin-testimonial-control button:disabled { opacity: .55; cursor: wait; }
+.admin-testimonial-control button:focus-visible { outline: 3px solid rgba(48, 151, 123, .3); outline-offset: 2px; }
+
+@media (max-width: 700px) {
+  .admin-testimonial-card { grid-template-columns: 46px minmax(0, 1fr); gap: 12px; padding: 14px; }
+  .admin-testimonial-card > img { width: 46px; height: 46px; }
+  .admin-testimonial-control { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; width: 100%; min-width: 0; }
+  .admin-testimonial-control button { min-height: 46px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-testimonial-control button { transition: none; }
+}

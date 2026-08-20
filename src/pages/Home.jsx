@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import Footer from '../components/Footer'
+import { supabase } from '../lib/supabase/client'
 import './Home.css'
 
 const services = [
@@ -21,12 +22,7 @@ const partners = [
   ['Panji AL JANNAH 1.svg', 'Panti Asuhan Al Jannah', 'Panti Asuhan Al Jannah adalah panti asuhan di Semarang yang membina anak yatim, piatu, dan dhuafa melalui pendidikan serta pembinaan tahfidz Al-Qur’an.', 'Jl. Tapak No. 53, Tugurejo, Tugu, Kota Semarang, Jawa Tengah', '@pantialjannah'],
   ['Panti asuhan kristen tanah putih 1.svg', 'Panti Asuhan Kristen Tanah Putih', 'Panti asuhan yang membina anak-anak yatim dan kurang mampu lewat pendidikan, ibadah, dan kegiatan sosial.', 'Jl. Dr. Wahidin No. 14, Jomblang, Kec. Candisari, Kota Semarang, Jawa Tengah 50256, Indonesia', '@pantiasuhankristentanahputih'],
 ]
-const reviews = [
-  ['User 03C.svg', 'Jennifer O.G', 'Donasi', 'Proses donasinya mudah dan transparan. Senang rasanya mengetahui barang yang sudah tidak saya gunakan bisa bermanfaat bagi orang lain.'],
-  ['User 05c.svg', 'Komunitas Hijau Semarang', 'Komunitas', 'KEMBALI berhasil menghubungkan banyak orang yang ingin berbagi. Semoga gerakan seperti ini terus berkembang.'],
-  ['User 03C.svg', 'Jennifer O.G', 'Donasi', 'Proses donasinya mudah dan transparan. Senang rasanya mengetahui barang yang sudah tidak saya gunakan bisa bermanfaat.'],
-  ['User 05c.svg', 'Andrew Young', 'Penerima Donasi', 'Saya mendapatkan perlengkapan sekolah yang masih sangat layak pakai. Terima kasih kepada KEMBALI dan para donatur.'],
-]
+const EMPTY_REVIEW = [{ id: 'empty', avatar: '/User 03C.svg', name: 'Belum ada ulasan', role: 'Donatur KEMBALI', text: 'Jadilah donatur pertama yang membagikan pengalaman setelah donasi diterima komunitas.' }]
 const stats = [['12.400+', 'Barang Tersirkulasi'], ['2.000 kg', 'Sampah Dikurangi'], ['4.680 kg', 'CO2 Dihemat'], ['1.500+', 'Pengguna Aktif']]
 
 const faqs = [
@@ -88,6 +84,40 @@ function AnimatedStat({ value }) {
 export default function Home() {
   const [article, setArticle] = useState(0)
   const [openFaq, setOpenFaq] = useState(null)
+  const [reviews, setReviews] = useState([])
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadReviews() {
+      const { data, error } = await supabase.rpc('get_home_testimonials', { p_limit: 12 })
+
+      if (error) {
+        console.error('[Home] Failed to load testimonials:', error.message)
+        return
+      }
+      if (ignore) return
+
+      setReviews((data || []).map((item) => ({
+        id: item.id,
+        avatar: item.avatar_path || '/User 03C.svg',
+        name: item.full_name || item.username || 'Donatur KEMBALI',
+        role: 'Donatur KEMBALI',
+        text: item.content,
+      })))
+    }
+
+    loadReviews()
+    const channel = supabase
+      .channel('home:testimonials')
+      .on('broadcast', { event: 'changed' }, loadReviews)
+      .subscribe()
+
+    return () => {
+      ignore = true
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const articles = [
     { title: 'Kebaikan Kecil untuk Bumi', date: 'Semarang, 18 Juni 2026', image: '/ecology.svg' },
@@ -95,6 +125,12 @@ export default function Home() {
     { title: 'Berita Ekonomi Sirkular', date: 'Jakarta, 29 April 2026', image: '/ecology.svg' },
   ]
   const visibleArticles = [0, 1, 2].map(offset => articles[(article + offset) % articles.length])
+  const reviewSource = reviews.length ? reviews : EMPTY_REVIEW
+  const reviewSequence = Array.from(
+    { length: Math.max(1, Math.ceil(4 / reviewSource.length)) },
+    () => reviewSource,
+  ).flat()
+  const marqueeReviews = [...reviewSequence, ...reviewSequence]
 
   return (
     <>
@@ -114,7 +150,7 @@ export default function Home() {
 
         <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
 
-        <section className="testimonials"><Heading eyebrow="Segala Masukan Sangat Berarti untuk Kami" title="Ulasan" accent="Pengguna" sub="Bersama Menciptakan Perubahan" /><div className="review-board"><div className="review-track review-row-one">{[...reviews, ...reviews].map(([avatar, name, role, text], i) => <article key={`first-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div><div className="review-track review-row-two">{[...reviews, ...reviews].reverse().map(([avatar, name, role, text], i) => <article key={`second-${i}`}><header><img src={'/' + avatar} alt="" /><div><h3>{name}</h3><span>{role}</span></div></header><p>“{text}”</p></article>)}</div></div></section>
+        <section className="testimonials"><Heading eyebrow="Segala Masukan Sangat Berarti untuk Kami" title="Ulasan" accent="Pengguna" sub="Bersama Menciptakan Perubahan" /><div className="review-board"><div className="review-track review-row-one">{marqueeReviews.map((review, i) => <article key={`first-${review.id}-${i}`}><header><img src={review.avatar} alt={`Foto ${review.name}`} /><div><h3>{review.name}</h3><span>{review.role}</span></div></header><p>“{review.text}”</p></article>)}</div><div className="review-track review-row-two">{[...marqueeReviews].reverse().map((review, i) => <article key={`second-${review.id}-${i}`}><header><img src={review.avatar} alt={`Foto ${review.name}`} /><div><h3>{review.name}</h3><span>{review.role}</span></div></header><p>“{review.text}”</p></article>)}</div></div></section>
 
         <section className="steps" id="steps"><h2>Bagaimana Cara<br /><em>Berdonasi?</em></h2><p className="steps-intro">Ikuti langkah-langkah berikut untuk melakukan donasi online melalui KEMBALI.</p><div className="step-grid">{[['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'], ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'], ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'], ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.']].map(([t, d], i) => <article key={t}><b>{i + 1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
 

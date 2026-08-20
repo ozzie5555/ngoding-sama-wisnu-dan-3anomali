@@ -26,6 +26,7 @@ const ICONS = {
   overview: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
   box: <><path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></>,
   users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></>,
+  reviews: <><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></>,
   logout: <><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></>,
   clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
   shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>,
@@ -50,6 +51,7 @@ export default function Admin() {
   const [donations, setDonations] = useState([])
   const [activities, setActivities] = useState([])
   const [users, setUsers] = useState([])
+  const [testimonials, setTestimonials] = useState([])
   const [selected, setSelected] = useState(null)
   const [pendingAction, setPendingAction] = useState(null)
   const [actionNote, setActionNote] = useState('')
@@ -57,6 +59,9 @@ export default function Admin() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [usersLoading, setUsersLoading] = useState(false)
+  const [testimonialsLoading, setTestimonialsLoading] = useState(false)
+  const [testimonialActionId, setTestimonialActionId] = useState(null)
+  const [testimonialFilter, setTestimonialFilter] = useState('all')
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState('')
   const [toast, setToast] = useState('')
@@ -91,6 +96,18 @@ export default function Admin() {
       setError(loadError.message || 'Data pengguna gagal dimuat.')
     } finally {
       setUsersLoading(false)
+    }
+  }
+
+  const loadTestimonials = async () => {
+    setTestimonialsLoading(true)
+    try {
+      setError('')
+      setTestimonials(await adminService.getTestimonials())
+    } catch (loadError) {
+      setError(loadError.message || 'Ulasan gagal dimuat.')
+    } finally {
+      setTestimonialsLoading(false)
     }
   }
 
@@ -136,6 +153,12 @@ export default function Admin() {
       .some((value) => String(value || '').toLowerCase().includes(query.toLowerCase())))
   )), [donations, filter, query])
 
+  const filteredTestimonials = useMemo(() => testimonials.filter((testimonial) => (
+    testimonialFilter === 'all'
+    || (testimonialFilter === 'shown' && testimonial.is_approved)
+    || (testimonialFilter === 'hidden' && !testimonial.is_approved)
+  )), [testimonials, testimonialFilter])
+
   const activeQueue = useMemo(() => donations
     .filter((donation) => ACTIVE_STATUSES.includes(donation.status))
     .slice(0, 5), [donations])
@@ -158,6 +181,24 @@ export default function Admin() {
     setSection(nextSection)
     setMenuOpen(false)
     if (nextSection === 'users' && users.length === 0) loadUsers()
+    if (nextSection === 'testimonials' && testimonials.length === 0) loadTestimonials()
+  }
+
+  const handleTestimonialVisibility = async (testimonial) => {
+    const approved = !testimonial.is_approved
+    setTestimonialActionId(testimonial.id)
+    try {
+      setError('')
+      await adminService.moderateTestimonial(testimonial.id, approved)
+      setTestimonials((current) => current.map((item) => (
+        item.id === testimonial.id ? { ...item, is_approved: approved } : item
+      )))
+      showToast(approved ? 'Ulasan ditampilkan di Beranda.' : 'Ulasan disembunyikan dari Beranda.')
+    } catch (moderationError) {
+      setError(moderationError.message || 'Status ulasan gagal diperbarui.')
+    } finally {
+      setTestimonialActionId(null)
+    }
   }
 
   const handleClaim = async (donation, claim) => {
@@ -205,12 +246,14 @@ export default function Admin() {
     return <main className="admin-gate"><div className="admin-gate-card"><h1>Akses terbatas</h1><p>Akun ini belum memiliki role admin atau manager.</p><Link to="/">Kembali ke Beranda</Link></div></main>
   }
 
-  const pageTitle = section === 'overview' ? 'Monitoring' : section === 'donations' ? 'Manajemen Donasi' : 'Pengguna & Role'
+  const pageTitle = section === 'overview' ? 'Monitoring' : section === 'donations' ? 'Manajemen Donasi' : section === 'testimonials' ? 'Moderasi Ulasan' : 'Pengguna & Role'
   const pageDescription = section === 'overview'
     ? 'Pantau antrean, keterlambatan, dan aktivitas operasional KEMBALI.'
     : section === 'donations'
       ? 'Periksa dan lanjutkan pengajuan berdasarkan tahap prosesnya.'
-      : 'Kelola akun yang memiliki akses ke platform.'
+      : section === 'testimonials'
+        ? 'Pilih ulasan donatur yang layak ditampilkan pada halaman Beranda.'
+        : 'Kelola akun yang memiliki akses ke platform.'
 
   return <main className="admin-page">
     <div className="admin-shell">
@@ -220,6 +263,7 @@ export default function Admin() {
         <nav className="admin-nav" aria-label="Navigasi admin">
           <button className={section === 'overview' ? 'is-active' : ''} onClick={() => openSection('overview')}><Icon name="overview"/>Monitoring</button>
           <button className={section === 'donations' ? 'is-active' : ''} onClick={() => openSection('donations')}><Icon name="box"/>Donasi</button>
+          {user.status === 'Admin' && <button className={section === 'testimonials' ? 'is-active' : ''} onClick={() => openSection('testimonials')}><Icon name="reviews"/>Ulasan</button>}
           <button className={section === 'users' ? 'is-active' : ''} onClick={() => openSection('users')}><Icon name="users"/>Pengguna</button>
         </nav>
         <div className="admin-sidebar-footer"><span className="admin-role-label">{user.status}</span><button type="button" className="admin-logout-button" onClick={async () => { await logout(); navigate('/login') }}><Icon name="logout"/>Keluar Akun</button></div>
@@ -228,7 +272,7 @@ export default function Admin() {
       <section className="admin-content">
         <header className="admin-topbar"><button type="button" className="admin-mobile-menu" onClick={() => setMenuOpen(true)} aria-label="Buka menu admin" aria-expanded={menuOpen}><span/><span/><span/></button><div><p className="admin-eyebrow">KEMBALI OPERATIONS</p><h1>{pageTitle}</h1><p className="admin-muted">{pageDescription}</p></div><div className="admin-user-pill"><span className="admin-user-dot"/>{user.name}</div></header>
         {toast && <div className="admin-toast" role="status">{toast}</div>}
-        {error && <div className="admin-error" role="alert">{error}<button type="button" onClick={section === 'users' ? loadUsers : () => loadDonations(selected?.id)}>Coba lagi</button></div>}
+        {error && <div className="admin-error" role="alert">{error}<button type="button" onClick={section === 'users' ? loadUsers : section === 'testimonials' ? loadTestimonials : () => loadDonations(selected?.id)}>Coba lagi</button></div>}
 
         {section === 'overview' && <>
           <div className="admin-metric-grid">
@@ -250,6 +294,16 @@ export default function Admin() {
           <div className="admin-status-tabs" role="tablist" aria-label="Filter status donasi"><button type="button" role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>Semua <span>{donations.length}</span></button>{STATUS_ORDER.map((status) => <button type="button" role="tab" aria-selected={filter === status} className={filter === status ? 'is-active' : ''} onClick={() => setFilter(status)} key={status}>{SHORT_STATUS_LABELS[status]} <span>{counts[status] || 0}</span></button>)}</div>
           <div className="admin-toolbar"><label className="admin-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari kode, donatur, barang, atau komunitas"/></label></div>
           {loading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat data...</div> : filtered.length === 0 ? <div className="admin-empty"><Icon name="box"/><strong>Belum ada donasi yang cocok</strong></div> : <div className="admin-donation-list">{filtered.map((donation) => <button type="button" className="admin-donation-row" key={donation.id} onClick={() => setSelected(donation)}><img src={donation.image} alt=""/><span className="admin-donation-main"><strong>{donation.item_name}</strong><small>{donation.donation_code} · {donation.donorName}</small><em className={donation.assigned_to ? 'is-assigned' : ''}>{donation.assigneeName || 'Belum ditangani'}</em></span><span className="admin-donation-community">{donation.communityName}</span><span className={`admin-status status-${donation.status}`}>{donation.statusLabel}</span><span className="admin-donation-date">{donation.dateLabel}</span><span className="admin-row-arrow">→</span></button>)}</div>}
+        </section>}
+
+        {section === 'testimonials' && <section className="admin-panel admin-testimonial-panel">
+          <div className="admin-panel-header"><div><h2>Ulasan Donatur</h2><p>Hanya ulasan yang dipilih admin yang tampil pada Beranda.</p></div><button type="button" className="admin-refresh-btn" onClick={loadTestimonials}>↻ Refresh</button></div>
+          <div className="admin-status-tabs" role="tablist" aria-label="Filter publikasi ulasan">
+            <button type="button" role="tab" aria-selected={testimonialFilter === 'all'} className={testimonialFilter === 'all' ? 'is-active' : ''} onClick={() => setTestimonialFilter('all')}>Semua <span>{testimonials.length}</span></button>
+            <button type="button" role="tab" aria-selected={testimonialFilter === 'hidden'} className={testimonialFilter === 'hidden' ? 'is-active' : ''} onClick={() => setTestimonialFilter('hidden')}>Tidak Ditampilkan <span>{testimonials.filter((item) => !item.is_approved).length}</span></button>
+            <button type="button" role="tab" aria-selected={testimonialFilter === 'shown'} className={testimonialFilter === 'shown' ? 'is-active' : ''} onClick={() => setTestimonialFilter('shown')}>Ditampilkan <span>{testimonials.filter((item) => item.is_approved).length}</span></button>
+          </div>
+          {testimonialsLoading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat ulasan...</div> : filteredTestimonials.length === 0 ? <div className="admin-empty"><Icon name="reviews"/><strong>Belum ada ulasan pada filter ini</strong><span>Ulasan muncul setelah donasi diterima komunitas.</span></div> : <div className="admin-testimonial-list">{filteredTestimonials.map((testimonial) => <article className="admin-testimonial-card" key={testimonial.id}><img src={testimonial.avatar} alt={`Foto ${testimonial.authorName}`}/><div className="admin-testimonial-copy"><div><strong>{testimonial.authorName}</strong><span>{testimonial.donationCode} · {testimonial.itemName}</span></div><p>“{testimonial.content}”</p><small>{testimonial.dateLabel}</small></div><div className="admin-testimonial-control"><span className={testimonial.is_approved ? 'is-shown' : 'is-hidden'}>{testimonial.is_approved ? 'Ditampilkan' : 'Tidak ditampilkan'}</span><button type="button" className={testimonial.is_approved ? 'is-hide' : 'is-show'} onClick={() => handleTestimonialVisibility(testimonial)} disabled={testimonialActionId === testimonial.id}>{testimonialActionId === testimonial.id ? 'Menyimpan...' : testimonial.is_approved ? 'Sembunyikan' : 'Tampilkan di Beranda'}</button></div></article>)}</div>}
         </section>}
 
         {section === 'users' && <section className="admin-panel"><div className="admin-panel-header"><div><h2>Daftar Pengguna</h2><p>Role dan identitas akun yang terdaftar.</p></div><button type="button" className="admin-refresh-btn" onClick={loadUsers}>↻ Refresh</button></div>{usersLoading ? <div className="admin-empty"><span className="admin-spinner"/>Memuat pengguna...</div> : <div className="admin-users-list">{users.map((person) => <div className="admin-user-row" key={person.id}><div className="admin-user-avatar">{(person.full_name || person.username || 'P').charAt(0).toUpperCase()}</div><div className="admin-user-info"><strong>{person.full_name || 'Tanpa nama'}</strong><span>{person.username || person.email || 'Email tidak tersedia'}</span></div><span className={`admin-role-badge role-${person.role}`}>{person.role}</span><small>{person.phone || 'Telepon belum diatur'}</small></div>)}</div>}</section>}

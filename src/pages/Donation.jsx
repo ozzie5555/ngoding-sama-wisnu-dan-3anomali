@@ -58,7 +58,14 @@ export default function Donation() {
     try {
       const all = await donationService.getUserDonations()
       setDonations(all)
-      setActiveDonation(all.find((item) => ['pending', 'verified', 'pickup', 'shipping'].includes(item.status)) || null)
+      setActiveDonation(
+        all.find((item) => ['pending', 'verified', 'pickup', 'shipping'].includes(item.status))
+          || all.find((item) => item.status === 'received')
+          || null,
+      )
+      setSelectedDetailDonation((current) => (
+        current ? all.find((item) => item.id === current.id) || null : null
+      ))
     } catch (error) {
       console.error('[Donation] Failed to load donations:', error)
       setDonations([])
@@ -83,7 +90,7 @@ export default function Donation() {
       .subscribe()
 
     return () => {
-      channel.unsubscribe()
+      supabase.removeChannel(channel)
     }
   }, [isAuthenticated, user?.id, loadDonations])
 
@@ -380,6 +387,3 @@ export default function Donation() {
     </>
   )
 }
-
-
-

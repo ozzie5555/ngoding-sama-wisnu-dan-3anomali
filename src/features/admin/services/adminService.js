@@ -104,6 +104,50 @@ export const adminService = {
     return data || []
   },
 
+  async getTestimonials() {
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('id, user_id, donation_id, rating, content, is_approved, created_at, approved_at')
+      .order('created_at', { ascending: false })
+    if (error) throw new Error(error.message)
+
+    const rows = data || []
+    const profileIds = [...new Set(rows.map((row) => row.user_id).filter(Boolean))]
+    const donationIds = [...new Set(rows.map((row) => row.donation_id).filter(Boolean))]
+    const [{ data: profiles }, { data: donations }] = await Promise.all([
+      profileIds.length
+        ? supabase.from('profiles').select('id, full_name, username, avatar_path').in('id', profileIds)
+        : Promise.resolve({ data: [] }),
+      donationIds.length
+        ? supabase.from('donations').select('id, donation_code, item_name').in('id', donationIds)
+        : Promise.resolve({ data: [] }),
+    ])
+    const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile]))
+    const donationMap = new Map((donations || []).map((donation) => [donation.id, donation]))
+
+    return rows.map((row) => {
+      const profile = profileMap.get(row.user_id)
+      const donation = donationMap.get(row.donation_id)
+      return {
+        ...row,
+        authorName: profile?.full_name || profile?.username || 'Donatur KEMBALI',
+        avatar: profile?.avatar_path || '/User 03C.svg',
+        donationCode: donation?.donation_code || 'Donasi',
+        itemName: donation?.item_name || 'Barang donasi',
+        dateLabel: formatDate(row.created_at),
+      }
+    })
+  },
+
+  async moderateTestimonial(testimonialId, approved) {
+    const { data, error } = await supabase.rpc('moderate_testimonial', {
+      p_testimonial_id: testimonialId,
+      p_approved: approved,
+    })
+    if (error) throw new Error(error.message)
+    return data
+  },
+
   async transitionDonation(donationId, nextStatus, note = '') {
     const { data, error } = await supabase.rpc('transition_donation_status', {
       p_donation_id: donationId,

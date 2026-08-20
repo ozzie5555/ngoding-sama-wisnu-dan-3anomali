@@ -61,6 +61,7 @@ const mapDonation = async (donation) => {
     conditionNote: donation.condition_note,
     optionChosenNote: '(sesuai opsi yang sudah dipilih)',
     reviewSubmitted: Boolean(donation.testimonials?.length),
+    reviewText: donation.testimonials?.[0]?.content || '',
   };
 };
 
@@ -79,7 +80,8 @@ const DONATION_SELECT = `
   pickup_at,
   community_id,
   communities ( id, name, slug, location ),
-  donation_items ( storage_path, sort_order )
+  donation_items ( storage_path, sort_order ),
+  testimonials ( id, content )
 `;
 
 export const donationService = {
