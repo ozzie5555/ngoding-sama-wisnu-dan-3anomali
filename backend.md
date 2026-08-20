@@ -218,7 +218,9 @@ Saluran donasi alternatif komunitas: drop point, alamat resmi, rekening, atau ko
 
 ### 4.5 Chat target
 
-FE belum menyediakan chat. Saat dikerjakan, gunakan `chat_rooms`, `chat_members`, `chat_messages`, dan `live_chat_threads`. Semua read/write harus dibatasi membership atau relasi user-admin.
+Chat komunitas sekarang memakai `chat_rooms`, `chat_members`, dan `chat_messages`. RPC `get_or_create_community_chat_room` membuat/mendaftarkan membership secara atomik berdasarkan slug komunitas. Frontend mengambil pesan dari Supabase dan berlangganan INSERT Realtime berdasarkan `room_id`; cleanup channel dilakukan saat pindah komunitas/unmount. Guest hanya dapat melihat tampilan, sedangkan pengiriman pesan memerlukan session.
+
+`live_chat_threads` tetap disiapkan untuk chat dukungan langsung dengan admin/manager dan belum menjadi panel terpisah. Semua read/write pesan dibatasi membership melalui RLS.
 
 ---
 
@@ -473,7 +475,8 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 | OTP nomor telepon (Twilio) | ⏳ Terjadwal 21 Agustus 2026 | Saat ini masih mode demo; SMS real belum diaktifkan |
 | Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
 | Aktivitas dan riwayat donasi | ⚠️ FE wired | Menggunakan `donationService`; perlu menjalankan migration 0015 dan menguji Realtime |
-| Admin, chat, realtime donasi | ⏳ Sebagian | Realtime donasi sudah dipasang di halaman, transition admin masih perlu diuji |
+| Chat komunitas | ✅ FE wired | Room/membership RPC, baca/kirim pesan, dan Realtime `chat_messages`; jalankan migration 0016 di project development |
+| Admin, chat, realtime donasi | ⏳ Sebagian | Realtime donasi sudah dipasang di halaman, transition admin dan live support masih perlu diuji |
 
 Status ini bukan pengganti pengujian backend. Setelah agent backend menjalankan migration/RLS, ulangi test dengan akun anon, user biasa, manager, dan admin.
 
@@ -721,6 +724,8 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0013 | DELETE policy for profile-photos | ✅ Run |
 | 0014 | Safe username lookup RPC for pre-auth login | ⚠️ File dibuat, jalankan di project Supabase |
 | 0015 | Align donation status transitions: pickup → shipping → received | ⚠️ File dibuat, jalankan di project Supabase |
+| 0016 | Chat room bootstrap RPC + Realtime publication | ⚠️ File dibuat, jalankan di project Supabase |
+| 0017 | Fix recursive chat RLS membership policy | ⚠️ File dibuat, jalankan di project Supabase |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp

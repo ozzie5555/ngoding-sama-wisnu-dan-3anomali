@@ -817,3 +817,19 @@
 
   .impact-stats { display: grid; grid-template-columns: 1fr 1fr; }
 }
+.chat-status-message {
+  margin: 10px 18px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #eef8f5;
+  color: #34796b;
+  font-size: 11px;
+  text-align: center;
+}
+.chat-status-message.is-error {
+  background: #fff4f1;
+  color: #b4513c;
+}
+.chat-input:disabled { cursor: not-allowed; opacity: .65; }
+
+.donator-empty-state { padding: 14px 4px; color: var(--color-text-muted, #8b9fa2); font-size: 11px; }

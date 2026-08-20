@@ -1,13 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../context/useAuth'
+import { chatService } from '../features/community/services/chatService'
 import Footer from '../components/Footer'
 import './Community.css'
 
-const donators = [
-  { id: 'wisnu',  name: 'Wisnu3anomali', avatar: '/assets/community/avatars/wisnu.png' },
-  { id: 'eloj',   name: 'Eloj',          avatar: '/assets/community/avatars/eloj.png' },
-  { id: 'krisnq', name: 'Krisnq',        avatar: '/assets/community/avatars/krisnq.png' },
-  { id: 'hnyin',  name: 'Hnyin',         avatar: '/assets/community/avatars/hnyin.png' },
-]
+const donators = []
 
 const initialCommunities = [
   {
@@ -135,18 +132,68 @@ function AvatarImg({ src, alt, className }) {
 }
 
 export default function Community() {
+  const { isAuthenticated, user } = useAuth()
+  const [topDonors, setTopDonors] = useState([])
+  const [topDonorsLoading, setTopDonorsLoading] = useState(true)
   const [selectedId, setSelectedId]     = useState('general')
   const [messageInput, setMessageInput] = useState('')
   const [allMessages, setAllMessages]   = useState(() => {
     const map = {}
-    initialCommunities.forEach((c) => { map[c.id] = [...c.messages] })
+    initialCommunities.forEach((c) => { map[c.id] = [] })
     return map
   })
   const [replyingTo, setReplyingTo]         = useState(null)
   const [attachedImages, setAttachedImages] = useState([])
+  const [roomIds, setRoomIds] = useState({})
+  const [chatLoading, setChatLoading] = useState(false)
+  const [chatError, setChatError] = useState('')
   const fileInputRef = useRef(null)
   const selected = initialCommunities.find((c) => c.id === selectedId) || initialCommunities[0]
   const messages = allMessages[selectedId] || []
+
+  useEffect(() => {
+    let active = true
+    chatService.getTopDonors(4)
+      .then((donors) => active && setTopDonors(donors))
+      .catch((error) => {
+        console.error('[Community] Failed to load top donors:', error)
+        if (active) setTopDonors([])
+      })
+      .finally(() => active && setTopDonorsLoading(false))
+    return () => { active = false }
+  }, [])
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return undefined
+    let active = true
+    let cleanup = () => {}
+    setChatLoading(true)
+    setChatError('')
+    chatService.getRoom(selectedId)
+      .then(async (room) => {
+        if (!active) return
+        setRoomIds((prev) => ({ ...prev, [selectedId]: room.id }))
+        const remoteMessages = await chatService.getMessages(room.id, user.id)
+        if (!active) return
+        setAllMessages((prev) => ({ ...prev, [selectedId]: remoteMessages }))
+        cleanup = chatService.subscribe(room.id, user.id, (incoming) => {
+          setAllMessages((prev) => {
+            const current = prev[selectedId] || []
+            return current.some((message) => message.id === incoming.id)
+              ? prev
+              : { ...prev, [selectedId]: [...current, incoming] }
+          })
+        })
+      })
+      .catch((error) => {
+        if (active) setChatError(error.message || 'Chat belum dapat dimuat.')
+      })
+      .finally(() => active && setChatLoading(false))
+    return () => {
+      active = false
+      cleanup()
+    }
+  }, [isAuthenticated, user?.id, selectedId])
 
   function handleSelectCommunity(id) {
     setSelectedId(id)
@@ -162,26 +209,36 @@ export default function Community() {
     setAttachedImages([])
   }
 
-  function handleSend(e) {
+  async function handleSend(e) {
     e.preventDefault()
     const text = messageInput.trim()
     if (!text && attachedImages.length === 0) return
-    const newMsg = {
-      id: Date.now(),
-      sender: 'You',
-      avatar: '/assets/community/avatars/wisnu.png',
-      text: text || '',
-      isOwn: true,
-      replyTo: replyingTo ? { id: replyingTo.id, sender: replyingTo.sender, text: replyingTo.text } : null,
-      images: attachedImages.map((f) => f.name),
+    if (!isAuthenticated || !user?.id) {
+      setChatError('Masuk terlebih dahulu untuk mengirim pesan.')
+      return
     }
-    setAllMessages((prev) => ({
-      ...prev,
-      [selectedId]: [...(prev[selectedId] || []), newMsg],
-    }))
-    setMessageInput('')
-    setReplyingTo(null)
-    setAttachedImages([])
+    const roomId = roomIds[selectedId]
+    if (!roomId) {
+      setChatError('Ruang chat sedang disiapkan. Coba lagi sebentar.')
+      return
+    }
+    try {
+      setChatError('')
+      const sent = await chatService.sendMessage(roomId, text || attachedImages.map((file) => file.name).join(', '), user.id)
+      if (sent) {
+        setAllMessages((prev) => {
+          const current = prev[selectedId] || []
+          return current.some((message) => message.id === sent.id)
+            ? prev
+            : { ...prev, [selectedId]: [...current, sent] }
+        })
+      }
+      setMessageInput('')
+      setReplyingTo(null)
+      setAttachedImages([])
+    } catch (error) {
+      setChatError(error.message || 'Pesan gagal dikirim.')
+    }
   }
 
   function handleCopy(text) {
@@ -209,7 +266,7 @@ export default function Community() {
     setAttachedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const memberAvatars = donators.slice(0, 4)
+  const memberAvatars = (topDonors.length > 0 ? topDonors : donators).slice(0, 4)
 
   return (
     <main className="community-page">
@@ -222,12 +279,18 @@ export default function Community() {
               <p className="top-donators-sub">Para Donatur KEMBALI</p>
             </header>
             <ul className="donator-list" role="list">
-              {donators.map((d) => (
-                <li key={d.id} className="donator-item">
-                  <AvatarImg src={d.avatar} alt={d.name} className="donator-avatar" />
-                  <span className="donator-name">{d.name}</span>
-                </li>
-              ))}
+              {topDonorsLoading ? (
+                <li className="donator-empty-state">Memuat donatur...</li>
+              ) : topDonors.length === 0 ? (
+                <li className="donator-empty-state">Belum ada donasi tercatat.</li>
+              ) : (
+                topDonors.map((d) => (
+                  <li key={d.id} className="donator-item">
+                    <AvatarImg src={d.avatar} alt={d.name} className="donator-avatar" />
+                    <span className="donator-name">{d.name}</span>
+                  </li>
+                ))
+              )}
             </ul>
           </aside>
 
@@ -262,6 +325,8 @@ export default function Community() {
               )}
             </div>
 
+            {chatLoading && <div className="chat-status-message" role="status">Menghubungkan ke chat...</div>}
+            {chatError && <div className="chat-status-message is-error" role="alert">{chatError}</div>}
             <div className="chat-messages" role="log" aria-live="polite" aria-label="Pesan komunitas">
               {messages.map((msg) =>
                 msg.isOwn ? (
@@ -374,6 +439,7 @@ export default function Community() {
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     autoComplete="off"
+                    disabled={!isAuthenticated || chatLoading}
                   />
                   <button
                     type="button"
