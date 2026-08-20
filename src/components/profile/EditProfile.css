@@ -181,6 +181,22 @@
   padding-right: 36px;
 }
 
+.input-leading-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--color-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-leading-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
 .input-trailing-btn,
 .input-trailing-icon {
   position: absolute;

@@ -373,13 +373,19 @@ export default function EditProfile() {
                 className="input-with-icon-wrapper"
                 onClick={() => setIsLocationPickerOpen(true)}
               >
+                <span className="input-leading-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </span>
                 <input
                   id="input-location"
                   type="text"
                   value={formData.location}
                   placeholder="Atur Lokasi (Provinsi, Kota, dll)"
                   readOnly
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', paddingLeft: '34px' }}
                 />
                 <button
                   type="button"
