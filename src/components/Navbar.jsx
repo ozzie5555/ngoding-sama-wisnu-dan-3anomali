@@ -136,6 +136,17 @@ export default function Navbar() {
                   </span>
                 </div>
                 <div className="dropdown-divider" />
+                {(user.status === 'Admin' || user.status === 'Manager Komunitas') && (
+                  <Link to="/admin" className="dropdown-item" role="menuitem" onClick={handleNavClick}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                      <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span>Admin Dashboard</span>
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="dropdown-item"

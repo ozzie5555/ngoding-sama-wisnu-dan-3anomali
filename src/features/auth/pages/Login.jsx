@@ -57,6 +57,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdminLogin = location.pathname === '/admin/login';
 
 
   const handleLogin = async (e) => {
@@ -112,7 +113,8 @@ export default function Login() {
         sessionStorage.removeItem('kembali_password_recovery_pending');
         setLoginSuccess(true);
         // Determine return destination
-        const returnTo = location.state?.returnTo || (sessionStorage.getItem('pendingDonation') ? '/donasi/form' : '/');
+        const staffAccount = response.user?.role === 'admin' || response.user?.role === 'manager';
+        const returnTo = staffAccount ? '/admin' : (location.state?.returnTo || (sessionStorage.getItem('pendingDonation') ? '/donasi/form' : '/'));
         // Show success screen for 1.5s, then navigate
         setTimeout(() => {
           login(); // Set isAuthenticated true
@@ -144,8 +146,8 @@ export default function Login() {
     <AuthLayout>
       <div className="auth-header">
         <img src={KembaliLogo} alt="KEMBALI" className="auth-page-logo" />
-        <h1>Sign-in</h1>
-        <p>Ayo bergabung dengan KEMBALI!</p>
+        <h1>{isAdminLogin ? 'Admin Sign-in' : 'Sign-in'}</h1>
+        <p>{isAdminLogin ? 'Masuk ke dashboard operasional KEMBALI' : 'Ayo bergabung dengan KEMBALI!'}</p>
       </div>
 
       <form className="auth-form" onSubmit={handleLogin}>

@@ -63,6 +63,7 @@ export const authService = {
         username: profile?.username || '@' + data.user.email.split('@')[0],
         phone: profile?.phone || '',
         avatar: profile?.avatar_path || '',
+        role: profile?.role || 'user',
       },
     };
   },

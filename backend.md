@@ -286,7 +286,9 @@ Buat `submit_donation(payload jsonb)` agar submit tidak terdiri dari banyak requ
 7. Membuat notifikasi.
 8. Mengembalikan `id`, `donation_code`, dan `status`.
 
-Buat `transition_donation_status(donation_id, next_status, note)` untuk admin/manager. RPC harus memiliki daftar transisi yang diizinkan dan menulis event + notification dalam transaksi yang sama.
+Buat `claim_donation(donation_id, claim)` agar satu donasi hanya ditangani satu admin/manager pada saat yang sama. RPC mengunci baris donasi (`FOR UPDATE`), menolak pengambilalihan tugas yang sedang dipegang petugas lain, dan mengizinkan petugas yang sama melepas tugasnya.
+
+Buat `transition_donation_status(donation_id, next_status, note)` untuk admin/manager. RPC memiliki daftar transisi yang diizinkan, mewajibkan petugas mengambil tugas terlebih dahulu, mengunci baris donasi, lalu menulis perubahan status, audit event, dan notification dalam satu transaksi. Assignment otomatis dilepas saat status menjadi `received` atau `cancelled`.
 
 ---
 
@@ -474,9 +476,10 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 | Change password/email | ✅ Selesai | Re-authentication dan update Auth |
 | OTP nomor telepon (Twilio) | ⏳ Terjadwal 21 Agustus 2026 | Saat ini masih mode demo; SMS real belum diaktifkan |
 | Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
-| Aktivitas dan riwayat donasi | ⚠️ FE wired | Menggunakan `donationService`; perlu menjalankan migration 0015 dan menguji Realtime |
-| Chat komunitas | ✅ FE wired | Room/membership RPC, baca/kirim pesan, dan Realtime `chat_messages`; jalankan migration 0016 di project development |
-| Admin, chat, realtime donasi | ⏳ Sebagian | Realtime donasi sudah dipasang di halaman, transition admin dan live support masih perlu diuji |
+| Aktivitas dan riwayat donasi | ⚠️ FE wired | Menggunakan `donationService`; query remote sudah aktif, pembaruan Realtime masih perlu diuji lintas akun |
+| Chat komunitas | ✅ FE wired | Room/membership RPC, baca/kirim/edit/reply pesan, dan Realtime `chat_messages` |
+| Admin dashboard | ⚠️ FE wired | `/admin` memiliki monitoring, antrean prioritas, tab status, pencarian, detail foto, ambil/lepas tugas, konfirmasi transisi, dan audit aktivitas; jalankan migration 0021 |
+| Admin, chat, realtime donasi | ⏳ Sebagian | Dashboard admin dan chat komunitas sudah tersedia; live support/thread admin masih perlu diuji |
 
 Status ini bukan pengganti pengujian backend. Setelah agent backend menjalankan migration/RLS, ulangi test dengan akun anon, user biasa, manager, dan admin.
 
@@ -600,21 +603,23 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 - Photo upload ke `item-photos` bucket (private) + save ke `donation_items` table.
 - Slug → UUID resolution untuk `community_id`.
 - Status donasi 5 step: pending → verified → pickup → shipping → received.
-- Status update via SQL manual (belum ada admin dashboard).
+- Status diperbarui admin/manager melalui dashboard `/admin` dan RPC, bukan SQL manual.
 - **Donation page (`/donasi`)**: Aktivitas dan Riwayat sudah di-wire ke query donasi milik user; section disembunyikan jika user belum punya donasi. Perlu verifikasi remote Supabase dan Realtime.
 
-### Fase 4 — Admin, tracking, realtime
+### Fase 4 — Admin, tracking, realtime (SEBAGIAN)
 
-- Buat admin transition dan timeline `/donasi/:donationCode`.
-- Hubungkan notifications dan Realtime dengan filter ownership.
+- Dashboard admin, transition status, assignment petugas, audit aktivitas, dan timeline `/donasi/:donationCode` sudah tersedia.
+- Jalankan migration 0021 dan uji konflik assignment memakai dua akun admin/manager.
+- Hubungkan notifications dan Realtime dengan filter ownership agar perubahan status terlihat tanpa refresh.
 
 **Lulus jika:** admin mengubah status dan pemilik melihat timeline/notifikasi tanpa refresh.
 
-### Fase 5 — Testimoni, newsletter, chat
+### Fase 5 — Testimoni, newsletter, dan penyempurnaan chat
 
 - Testimoni hanya setelah `received`, lalu moderasi admin.
 - Newsletter dan WhatsApp memakai Edge Function jika provider diperlukan.
 - Chat dikerjakan setelah membership dan route komunitas siap.
+- Sempurnakan moderasi dan pengujian beban untuk chat serta monitoring admin.
 
 ---
 
@@ -722,12 +727,14 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0011 | Storage policies for item-photos | ✅ Run |
 | 0012 | Add pickup & shipping donation statuses | ✅ Run |
 | 0013 | DELETE policy for profile-photos | ✅ Run |
-| 0014 | Safe username lookup RPC for pre-auth login | ⚠️ File dibuat, jalankan di project Supabase |
-| 0015 | Align donation status transitions: pickup → shipping → received | ⚠️ File dibuat, jalankan di project Supabase |
-| 0016 | Chat room bootstrap RPC + Realtime publication | ⚠️ File dibuat, jalankan di project Supabase |
-| 0017 | Fix recursive chat RLS membership policy | ⚠️ File dibuat, jalankan di project Supabase |
-| 0018 | Chat reply relation | ⚠️ File dibuat, jalankan di project Supabase |
-| 0019 | Chat message edit + RLS own update | ⚠️ File dibuat, jalankan di project Supabase |
+| 0014 | Safe username lookup RPC for pre-auth login | ✅ Run |
+| 0015 | Align donation status transitions: pickup → shipping → received | ✅ Run |
+| 0016 | Chat room bootstrap RPC + Realtime publication | ✅ Run |
+| 0017 | Fix recursive chat RLS membership policy | ✅ Run |
+| 0018 | Chat reply relation | ✅ Run |
+| 0019 | Chat message edit + RLS own update | ✅ Run |
+| 0020 | Align database donation status constraint | ✅ Run |
+| 0021 | Admin donation assignment, row locking, dan safe transition RPC | ⚠️ File dibuat, belum dijalankan di project Supabase |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
@@ -739,7 +746,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 
 - **Avatar positioning**: ✅ Sudah diperbaiki. Upload, posisi avatar, refresh state, dan penghapusan avatar sudah terhubung ke Supabase Storage dan tabel profiles.
 - **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
-- **Status donasi**: RPC transition sudah disiapkan untuk alur pickup/shipping; admin dashboard belum tersedia dan migration 0015 perlu dijalankan di project remote.
+- **Monitoring admin**: Frontend dashboard dan RPC assignment sudah disiapkan. Migration 0021 belum dijalankan di project remote, sehingga fitur ambil/lepas tugas dan transition terbaru belum dapat diuji.
 - **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
-- **Chat**: Migration ada tapi belum ada frontend integration.
+- **Chat**: Frontend dan migration sudah terhubung; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
 - **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.

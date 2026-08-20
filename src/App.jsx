@@ -15,6 +15,7 @@ import ResetPassword from './features/auth/pages/ResetPassword'
 import CompleteProfile from './features/auth/pages/CompleteProfile'
 import CariKebutuhan from './pages/CariKebutuhan'
 import DonationForm from './pages/DonationForm'
+import Admin from './pages/Admin'
 
 function NeedsProfileRedirect() {
   const { user, isAuthenticated, initialized, pendingProfileRedirect, clearPendingProfileRedirect } = useAuth()
@@ -46,14 +47,29 @@ function NeedsProfileRedirect() {
   return null
 }
 
+function StaffRouteRedirect() {
+  const { isAuthenticated, initialized, user } = useAuth()
+  const location = useLocation()
+  const isStaff = user?.status === "Admin" || user?.status === "Manager Komunitas"
+  const isAdminRoute = location.pathname === "/admin"
+
+  if (initialized && isAuthenticated && isStaff && !isAdminRoute) {
+    return <Navigate to="/admin" replace />
+  }
+
+  return null
+}
+
 export default function App() {
   const location = useLocation()
-  const isAuthPage = ['/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
+  const isAuthPage = ['/login', '/admin/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
+  const isAdminPage = location.pathname.startsWith('/admin')
 
   return (
     <AuthProvider>
       <NeedsProfileRedirect />
-      {!isAuthPage && <Navbar />}
+      <StaffRouteRedirect />
+      {!isAuthPage && !isAdminPage && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/donasi" element={<Donation />} />
@@ -68,7 +84,9 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/history" element={<ProfileHistory />} />
         <Route path="/komunitas" element={<Community />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
