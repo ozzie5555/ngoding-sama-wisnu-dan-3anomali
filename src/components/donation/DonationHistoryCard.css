@@ -1,0 +1,142 @@
+/* ── Donation History Card Styles ── */
+.kembali-history-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1.5px solid #aab9ba;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(12, 33, 36, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.kembali-history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(12, 33, 36, 0.12);
+}
+
+.kembali-history-media {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #f4f8f5;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kembali-history-img {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  object-fit: contain;
+}
+
+.kembali-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.kembali-status-badge.status-selesai {
+  background: #dcf4ed;
+  color: #0d6e53;
+  border: 1px solid #b7ebd9;
+}
+
+.kembali-status-badge.status-proses {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.kembali-status-badge.status-konfirmasi {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.kembali-status-badge.status-dibatalkan {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.kembali-history-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px 18px 18px;
+}
+
+.kembali-history-title {
+  margin: 0 0 4px;
+  color: #062632;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.kembali-history-meta {
+  margin: 0 0 8px;
+  color: #5a7476;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.kembali-history-desc {
+  margin: 0 0 14px;
+  color: #789093;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.kembali-history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.kembali-tag-chip {
+  padding: 4px 10px;
+  border: 1px solid #cbd7d8;
+  border-radius: 999px;
+  color: #4a6366;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 10px;
+  font-weight: 500;
+  background: #fafcfc;
+}
+
+.kembali-history-btn {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #25383b;
+  color: #ffffff;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kembali-history-btn:hover {
+  background: #111e20;
+  transform: translateY(-1px);
+}

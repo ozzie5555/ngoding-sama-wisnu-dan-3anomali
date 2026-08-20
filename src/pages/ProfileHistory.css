@@ -1,0 +1,403 @@
+/* ── Profile History Page Styles ── */
+.profile-history-page {
+  padding-top: 24px;
+  color: #062632;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-history-container {
+  max-width: 1300px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 32px;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.profile-history-breadcrumb {
+  margin-bottom: 16px;
+}
+
+.profile-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #238b94;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.profile-back-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-back-link:hover {
+  color: #165b61;
+  transform: translateX(-2px);
+}
+
+.profile-history-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1.5px solid #edf2f2;
+  margin-bottom: 28px;
+}
+
+.profile-history-title {
+  margin: 0 0 8px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: #062632;
+  line-height: 1.2;
+}
+
+.profile-history-subtitle {
+  margin: 0;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 15px;
+  color: #5a7476;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+.profile-new-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  background: #31595b;
+  color: #ffffff;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.profile-new-btn:hover {
+  background: #203c3e;
+  transform: translateY(-1px);
+}
+
+/* Tabs */
+.profile-history-tabs-wrap {
+  margin-bottom: 32px;
+}
+
+.profile-history-tabs {
+  display: inline-flex;
+  gap: 8px;
+  background: #f4f8f7;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.profile-tab-item {
+  padding: 10px 24px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: #5a7476;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-tab-item.is-active {
+  background: #ffffff;
+  color: #062632;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Section */
+.profile-activity-section {
+  margin-bottom: 48px;
+}
+
+.profile-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #edf2f2;
+}
+
+.profile-section-heading h2 {
+  margin: 0;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #062632;
+}
+
+.profile-section-count {
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #789093;
+  background: #f0f4f4;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+/* Grids */
+.profile-donation-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.profile-community-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+.profile-comm-card {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border: 1.5px solid #d4e3e4;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgba(12, 33, 36, 0.06);
+  transition: all 0.2s ease;
+}
+
+.profile-comm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(12, 33, 36, 0.1);
+}
+
+.comm-card-logo-wrap {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #f4f8f7;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8e7;
+}
+
+.comm-card-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.comm-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.comm-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.comm-card-name {
+  margin: 0;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: #062632;
+}
+
+.comm-card-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.comm-card-badge.status-selesai {
+  background: #dcf4ed;
+  color: #0d6e53;
+}
+
+.comm-card-badge.status-dalam-proses {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.comm-card-badge.status-konfirmasi {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.comm-card-activity {
+  margin: 0 0 6px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #238b94;
+}
+
+.comm-card-desc {
+  margin: 0 0 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 12px;
+  line-height: 1.45;
+  color: #789093;
+}
+
+.comm-card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 11px;
+  color: #8b9fa2;
+  padding-top: 8px;
+  border-top: 1px dashed #edf2f2;
+}
+
+/* Empty Block */
+.profile-empty-block {
+  padding: 36px 20px;
+  background: #f8fbfa;
+  border: 1.5px dashed #cdd9d7;
+  border-radius: 16px;
+  text-align: center;
+  color: #789093;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 13.5px;
+}
+
+.empty-sub-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 18px;
+  background: #238b94;
+  color: #ffffff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Unauthenticated State */
+.profile-history-unauth {
+  padding-top: 40px;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.unauth-box {
+  max-width: 480px;
+  padding: 40px 32px;
+  background: #ffffff;
+  border: 1.5px solid #d4e3e4;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(6, 38, 50, 0.08);
+  margin-bottom: 60px;
+}
+
+.unauth-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0369a1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.unauth-badge svg {
+  width: 28px;
+  height: 28px;
+}
+
+.unauth-box h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #062632;
+}
+
+.unauth-box p {
+  margin: 0 0 24px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: #5a7476;
+}
+
+.unauth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-unauth-login {
+  padding: 12px 24px;
+  background: #31595b;
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-unauth-login:hover {
+  background: #203c3e;
+}
+
+.btn-unauth-home {
+  padding: 12px 24px;
+  background: transparent;
+  color: #31595b;
+  border: 1.5px solid #31595b;
+  border-radius: 12px;
+  font-family: var(--font-sora, 'Sora', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .profile-history-container {
+    padding-inline: 16px;
+  }
+  .profile-history-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-donation-cards-grid,
+  .profile-community-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

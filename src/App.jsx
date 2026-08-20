@@ -4,7 +4,9 @@ import { useAuth } from './context/useAuth'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Donation from './pages/Donation'
+import DonationHistory from './pages/DonationHistory'
 import Profile from './pages/Profile'
+import ProfileHistory from './pages/ProfileHistory'
 import Insight from './pages/Insight'
 import Community from './pages/Community'
 import Login from './features/auth/pages/Login'
@@ -55,12 +57,16 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/donasi" element={<Donation />} />
+        <Route path="/donation" element={<Donation />} />
+        <Route path="/donasi/history" element={<DonationHistory />} />
+        <Route path="/donation/history" element={<DonationHistory />} />
         <Route path="/donasi/form" element={<DonationForm />} />
         <Route path="/donation/form" element={<DonationForm />} />
         <Route path="/cari-kebutuhan" element={<CariKebutuhan />} />
         <Route path="/cari-kebutuhan/:communityId" element={<CariKebutuhan />} />
         <Route path="/insight" element={<Insight />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/history" element={<ProfileHistory />} />
         <Route path="/komunitas" element={<Community />} />
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />

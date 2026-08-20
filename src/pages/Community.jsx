@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Footer from '../components/Footer'
 import './Community.css'
 
@@ -142,39 +142,71 @@ export default function Community() {
     initialCommunities.forEach((c) => { map[c.id] = [...c.messages] })
     return map
   })
+  const [replyingTo, setReplyingTo]         = useState(null)
+  const [attachedImages, setAttachedImages] = useState([])
+  const fileInputRef = useRef(null)
   const selected = initialCommunities.find((c) => c.id === selectedId) || initialCommunities[0]
   const messages = allMessages[selectedId] || []
 
   function handleSelectCommunity(id) {
     setSelectedId(id)
     setMessageInput('')
+    setReplyingTo(null)
+    setAttachedImages([])
   }
 
   function handleBackToGeneral() {
     setSelectedId('general')
     setMessageInput('')
+    setReplyingTo(null)
+    setAttachedImages([])
   }
 
   function handleSend(e) {
     e.preventDefault()
     const text = messageInput.trim()
-    if (!text) return
+    if (!text && attachedImages.length === 0) return
     const newMsg = {
       id: Date.now(),
       sender: 'You',
       avatar: '/assets/community/avatars/wisnu.png',
-      text,
+      text: text || '',
       isOwn: true,
+      replyTo: replyingTo ? { id: replyingTo.id, sender: replyingTo.sender, text: replyingTo.text } : null,
+      images: attachedImages.map((f) => f.name),
     }
     setAllMessages((prev) => ({
       ...prev,
       [selectedId]: [...(prev[selectedId] || []), newMsg],
     }))
     setMessageInput('')
+    setReplyingTo(null)
+    setAttachedImages([])
   }
 
   function handleCopy(text) {
     navigator.clipboard?.writeText(text).catch(() => {})
+  }
+
+  function handleReply(msg) {
+    setReplyingTo(msg)
+  }
+
+  function handleCancelReply() {
+    setReplyingTo(null)
+  }
+
+  function handleAttachImages(e) {
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      setAttachedImages((prev) => [...prev, ...files])
+    }
+    // Reset so the same file can be selected again
+    e.target.value = ''
+  }
+
+  function handleRemoveImage(index) {
+    setAttachedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const memberAvatars = donators.slice(0, 4)
@@ -266,7 +298,7 @@ export default function Community() {
                         <p>{msg.text}</p>
                       </div>
                       <div className="message-actions other">
-                        <button type="button" className="msg-action-btn">
+                        <button type="button" className="msg-action-btn" onClick={() => handleReply(msg)}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                           </svg>
@@ -287,28 +319,81 @@ export default function Community() {
             </div>
 
             <form className="chat-input-area" onSubmit={handleSend} aria-label="Kirim pesan">
-              <label htmlFor="community-msg-input" className="sr-only">Masukkan pesan</label>
               <input
-                id="community-msg-input"
-                type="text"
-                className="chat-input"
-                placeholder="Masukkan pesan..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                autoComplete="off"
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                onChange={handleAttachImages}
+                tabIndex={-1}
               />
-              <button type="button" className="chat-attach-btn" aria-label="Lampirkan gambar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
-              </button>
+              <div className={`chat-input-wrapper${replyingTo ? ' has-reply' : ''}${attachedImages.length > 0 ? ' has-attachments' : ''}`}>
+                {replyingTo && (
+                  <div className="chat-reply-bar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="reply-icon" aria-hidden="true">
+                      <path d="M9 14l-4-4 4-4" />
+                      <path d="M5 10h11a4 4 0 0 1 0 8h-1" />
+                    </svg>
+                    <span className="reply-text">Reply Messages....</span>
+                    <button type="button" className="reply-close-btn" onClick={handleCancelReply} aria-label="Batal reply">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                {attachedImages.length > 0 && (
+                  <div className="chat-attachments">
+                    {attachedImages.map((file, idx) => (
+                      <span key={idx} className="chat-attachment-chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="attachment-chip-icon" aria-hidden="true">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span className="attachment-chip-name">{file.name}</span>
+                        <button type="button" className="attachment-chip-remove" onClick={() => handleRemoveImage(idx)} aria-label={`Hapus ${file.name}`}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="chat-input-row">
+                  <label htmlFor="community-msg-input" className="sr-only">Masukkan pesan</label>
+                  <input
+                    id="community-msg-input"
+                    type="text"
+                    className="chat-input"
+                    placeholder="Masukkan pesan..."
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    className="chat-attach-btn"
+                    aria-label="Lampirkan gambar"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
               <button
                 type="submit"
                 className="chat-send-btn"
                 aria-label="Kirim pesan"
-                disabled={!messageInput.trim()}
+                disabled={!messageInput.trim() && attachedImages.length === 0}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <line x1="22" y1="2" x2="11" y2="13"/>
