@@ -1,21 +1,47 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { authService } from '../../features/auth/services/authService'
 import { DeleteAccountModal } from './ProfileModal'
 import './PrivacyData.css'
 
+const DEFAULT_PRIVACY = { contributionVisibility: true, generalLocation: false, impactReport: true, donationHistory: true }
+
+const mapPrivacySettings = (settings) => ({
+  contributionVisibility: settings?.contribution_visibility ?? DEFAULT_PRIVACY.contributionVisibility,
+  generalLocation: settings?.general_location ?? DEFAULT_PRIVACY.generalLocation,
+  impactReport: settings?.impact_report ?? DEFAULT_PRIVACY.impactReport,
+  donationHistory: settings?.donation_history ?? DEFAULT_PRIVACY.donationHistory,
+})
+
 export default function PrivacyData() {
   const { user, updatePrivacy, refreshProfile, logout } = useAuth()
-
-  const [privacyState, setPrivacyState] = useState(() => ({
-    contributionVisibility: user?.privacy?.contributionVisibility ?? true,
-    generalLocation: user?.privacy?.generalLocation ?? false,
-    impactReport: user?.privacy?.impactReport ?? true,
-    donationHistory: user?.privacy?.donationHistory ?? true,
-  }))
-
+  const initialPrivacy = mapPrivacySettings(user?.privacy && {
+    contribution_visibility: user.privacy.contributionVisibility,
+    general_location: user.privacy.generalLocation,
+    impact_report: user.privacy.impactReport,
+    donation_history: user.privacy.donationHistory,
+  })
+  const [privacyState, setPrivacyState] = useState(initialPrivacy)
+  const [savedPrivacyState, setSavedPrivacyState] = useState(initialPrivacy)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [saveToast, setSaveToast] = useState('')
+
+  useEffect(() => {
+    let mounted = true
+    authService.getPrivacySettings()
+      .then((settings) => {
+        if (!mounted) return
+        const mapped = mapPrivacySettings(settings)
+        setPrivacyState(mapped)
+        setSavedPrivacyState(mapped)
+      })
+      .catch((error) => mounted && setSaveToast('Gagal memuat pengaturan: ' + error.message))
+      .finally(() => mounted && setIsLoading(false))
+    return () => { mounted = false }
+  }, [])
 
   const handleToggle = (key) => {
     setPrivacyState((prev) => ({
@@ -25,40 +51,39 @@ export default function PrivacyData() {
   }
 
   const handleReset = () => {
-    if (user?.privacy) {
-      setPrivacyState({
-        contributionVisibility: user.privacy.contributionVisibility ?? true,
-        generalLocation: user.privacy.generalLocation ?? false,
-        impactReport: user.privacy.impactReport ?? true,
-        donationHistory: user.privacy.donationHistory ?? true,
-      })
-    }
-    setSaveToast('Pengaturan privasi telah diatur ulang.')
+    setPrivacyState(savedPrivacyState)
+    setSaveToast('Perubahan yang belum disimpan telah dibatalkan.')
     setTimeout(() => setSaveToast(''), 3000)
   }
 
   const handleSave = async () => {
+    setIsSaving(true)
     try {
       await authService.updatePrivacySettings(privacyState)
-      // Update local context
-      Object.keys(privacyState).forEach((k) => {
-        updatePrivacy(k, privacyState[k])
-      })
+      setSavedPrivacyState(privacyState)
+      Object.keys(privacyState).forEach((key) => updatePrivacy(key, privacyState[key]))
+      await refreshProfile()
       setSaveToast('Pengaturan privasi berhasil diperbarui!')
     } catch (err) {
       setSaveToast('Gagal menyimpan: ' + err.message)
+    } finally {
+      setIsSaving(false)
+      setTimeout(() => setSaveToast(''), 3000)
     }
-    setTimeout(() => setSaveToast(''), 3000)
   }
 
   const handleConfirmDeleteAccount = async () => {
+    setIsDeleting(true)
     try {
       await authService.deleteAccount()
       logout()
       window.location.href = '/'
+      return true
     } catch (err) {
       setSaveToast('Gagal menghapus akun: ' + err.message)
       setTimeout(() => setSaveToast(''), 3000)
+      setIsDeleting(false)
+      return false
     }
   }
 
@@ -73,7 +98,9 @@ export default function PrivacyData() {
 
       {saveToast && <div className="save-notification-toast">{saveToast}</div>}
 
-      <div className="privacy-settings-list">
+      {isLoading && <div className="privacy-loading" role="status">Memuat pengaturan privasi...</div>}
+
+      <div className={`privacy-settings-list ${isLoading ? 'is-loading' : ''}`}>
         {/* Item 1: Visibilitas kontribusi */}
         <div className="privacy-item-row">
           <div className="privacy-item-info">
@@ -185,16 +212,18 @@ export default function PrivacyData() {
           type="button"
           className="btn-privacy-save"
           onClick={handleSave}
+          disabled={isLoading || isSaving}
         >
-          Simpan
+          {isSaving ? 'Menyimpan...' : 'Simpan'}
         </button>
       </div>
 
       {/* Delete Account Modal Confirmation */}
       <DeleteAccountModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => !isDeleting && setIsDeleteModalOpen(false)}
         onConfirmDelete={handleConfirmDeleteAccount}
+        isDeleting={isDeleting}
       />
     </div>
   )

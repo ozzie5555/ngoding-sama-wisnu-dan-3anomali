@@ -401,3 +401,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+.privacy-history-hidden { max-width: 620px; margin: 48px auto 72px; }
+
+.privacy-history-hidden {
+  border: 1px solid #d9eae5;
+  border-radius: 16px;
+  padding: 28px 24px;
+  background: linear-gradient(145deg, #fbfefd, #f3faf7);
+  text-align: center;
+  color: #41665e;
+}
+.privacy-history-hidden h1 { margin: 10px 0 8px; color: #214a40; font-size: 22px; }
+.privacy-history-hidden p { max-width: 440px; margin: 0 auto 18px; line-height: 1.6; font-size: 13px; }
+.privacy-history-hidden .privacy-hidden-icon { width: 38px; height: 38px; margin: 0 auto; display: grid; place-items: center; border-radius: 50%; background: #dcefe9; color: #247666; font-size: 24px; }

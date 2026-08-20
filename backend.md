@@ -79,8 +79,9 @@ stateDiagram-v2
   [*] --> Draft
   Draft --> Pending: Konfirmasi & Ajukan
   Pending --> Verified: Admin verifikasi
-  Verified --> InTransit: Admin atur pengiriman/pickup
-  InTransit --> Received: Komunitas menerima
+  Verified --> Pickup: Admin jadwalkan pickup
+  Pickup --> Shipping: Barang dikirim
+  Shipping --> Received: Komunitas menerima
   Received --> TestimonialPending: User kirim ulasan
   TestimonialPending --> Published: Admin setujui
   TestimonialPending --> Rejected: Admin tolak
@@ -192,7 +193,7 @@ Saluran donasi alternatif komunitas: drop point, alamat resmi, rekening, atau ko
 | `description` | deskripsi tambahan |
 | `pickup_address` | snapshot alamat saat submit |
 | `pickup_at` | jadwal pickup/pengiriman, nullable |
-| `status` | `pending`, `verified`, `in_transit`, `received`, `cancelled` |
+| `status` | `pending`, `verified`, `pickup`, `shipping`, `received`, `cancelled` |
 | `submitted_at`, `received_at` | waktu status terkait |
 | `created_at`, `updated_at` | timestamp |
 
@@ -466,12 +467,13 @@ Bagian berikut adalah status yang sudah diverifikasi di frontend dan Supabase pr
 | Profile edit | ✅ Selesai | Update nama, username, email profile, telepon, tanggal lahir, dan alamat |
 | Avatar | ✅ Selesai | Upload, positioning, refresh state, dan hapus dari Storage |
 | Picker lokasi | ✅ Selesai | Provinsi → kota/kabupaten → kecamatan → kelurahan |
-| Privacy settings | ✅ Selesai | Terhubung ke profile_settings |
+| Privacy settings | ✅ Selesai | Load/save 4 toggle ke profile_settings; efek visibilitas diterapkan pada overview dan riwayat profil |
+| Delete account | ✅ Selesai | Edge Function delete-account terdeploy; menghapus data user, foto Storage, profil, dan Auth user secara permanen |
 | Change password/email | ✅ Selesai | Re-authentication dan update Auth |
 | OTP nomor telepon (Twilio) | ⏳ Terjadwal 21 Agustus 2026 | Saat ini masih mode demo; SMS real belum diaktifkan |
 | Artikel dan statistik Beranda | ⏳ Sebagian | Sebagian masih berasal dari data frontend |
-| Aktivitas donasi | ⏳ Sebagian | Beberapa bagian masih hardcode/design |
-| Admin, chat, realtime donasi | ⏳ Belum | Menunggu fase backend berikutnya |
+| Aktivitas dan riwayat donasi | ⚠️ FE wired | Menggunakan `donationService`; perlu menjalankan migration 0015 dan menguji Realtime |
+| Admin, chat, realtime donasi | ⏳ Sebagian | Realtime donasi sudah dipasang di halaman, transition admin masih perlu diuji |
 
 Status ini bukan pengganti pengujian backend. Setelah agent backend menjalankan migration/RLS, ulangi test dengan akun anon, user biasa, manager, dan admin.
 
@@ -541,7 +543,7 @@ Supabase CLI/link diperlukan jika anggota tim akan:
 - mengatur secrets;
 - menjalankan seed atau query administrasi.
 
-Jangan menaruh access token CLI, service role key, atau secret Edge Function di repository.
+Jangan menaruh access token CLI, service role key, atau secret Edge Function di repository. delete-account wajib dipanggil melalui session user dan tidak boleh diekspos ke browser.
 
 ### Catatan project bersama
 
@@ -572,7 +574,7 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 - Change Password: re-auth + `auth.updateUser({ password })` + timestamp ke `profiles.password_last_updated`.
 - Change Email: re-auth + `auth.updateUser({ email })` + sync ke `profiles.email`.
 - Change WhatsApp: save ke `profiles.phone`.
-- Delete Account: hapus dari `profiles` (cascade ke `profile_settings`) + sign out.
+- Delete Account: panggil Edge Function `delete-account` dengan session user; function memakai service role di server untuk membersihkan foto Storage, baris `donations` milik user, `profiles` beserta data cascade, lalu menghapus user dari `auth.users`. Frontend sign out setelah function berhasil. Service role key tidak pernah masuk browser.
 
 **Lulus jika:** dua akun dapat daftar/login/logout/edit profile/reset password dan tidak dapat melihat data private akun lain.
 
@@ -591,12 +593,12 @@ Project Supabase development dipakai bersama untuk testing. Gunakan data uji, bu
 
 ### Fase 3 — Form dan submit donasi (SEBAGIAN)
 
-- DonationForm: submit ke `donations` table via `donationService.submitDonation()`.
+- DonationForm: submit melalui RPC `submit_donation` di `donationService.submitDonation()`, lalu upload foto ke Storage.
 - Photo upload ke `item-photos` bucket (private) + save ke `donation_items` table.
 - Slug → UUID resolution untuk `community_id`.
 - Status donasi 5 step: pending → verified → pickup → shipping → received.
 - Status update via SQL manual (belum ada admin dashboard).
-- **Donation page (`/donasi`)**: Aktivitas Donasi & Riwayat masih **hardcode/design** — BE belum di-wire. Menunggu design final.
+- **Donation page (`/donasi`)**: Aktivitas dan Riwayat sudah di-wire ke query donasi milik user; section disembunyikan jika user belum punya donasi. Perlu verifikasi remote Supabase dan Realtime.
 
 ### Fase 4 — Admin, tracking, realtime
 
@@ -718,6 +720,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0012 | Add pickup & shipping donation statuses | ✅ Run |
 | 0013 | DELETE policy for profile-photos | ✅ Run |
 | 0014 | Safe username lookup RPC for pre-auth login | ⚠️ File dibuat, jalankan di project Supabase |
+| 0015 | Align donation status transitions: pickup → shipping → received | ⚠️ File dibuat, jalankan di project Supabase |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
@@ -729,7 +732,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 
 - **Avatar positioning**: ✅ Sudah diperbaiki. Upload, posisi avatar, refresh state, dan penghapusan avatar sudah terhubung ke Supabase Storage dan tabel profiles.
 - **Donation photo display**: Foto diambil dari `donation_items.storage_path` via `getPublicUrl`. Belum ditampilkan di card donasi di `/donasi`.
-- **Status donasi**: Update status masih manual via SQL. Belum ada admin dashboard atau RPC untuk transition.
+- **Status donasi**: RPC transition sudah disiapkan untuk alur pickup/shipping; admin dashboard belum tersedia dan migration 0015 perlu dijalankan di project remote.
 - **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
 - **Chat**: Migration ada tapi belum ada frontend integration.
 - **Insight articles**: Masih hardcoded di frontend. Perlu fetch dari `articles` table.

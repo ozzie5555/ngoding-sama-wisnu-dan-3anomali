@@ -177,3 +177,8 @@
     width: 100%;
   }
 }
+
+
+.privacy-loading { margin: 18px 0; padding: 12px 14px; border: 1px solid #d9eae5; border-radius: 10px; color: #638079; background: #f8fcfb; font-size: 12px; }
+.privacy-settings-list.is-loading { opacity: .55; pointer-events: none; }
+.btn-privacy-save:disabled { opacity: .65; cursor: wait; }

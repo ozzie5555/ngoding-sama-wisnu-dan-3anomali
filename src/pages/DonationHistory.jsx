@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router'
+import { useAuth } from '../context/useAuth'
+import { supabase } from '../lib/supabase/client'
+import { donationService } from '../features/donation/services/donationService'
 import DonationHistoryCard from '../components/donation/DonationHistoryCard'
 import DonationDetailModal from '../components/donation/DonationDetailModal'
 import Footer from '../components/Footer'
-import { getStoredDonations } from '../data/donationData'
 import './DonationHistory.css'
 
 const FILTER_TABS = [
@@ -14,15 +16,50 @@ const FILTER_TABS = [
 ]
 
 export default function DonationHistory() {
+  const { isAuthenticated, initialized, user } = useAuth()
   const [donations, setDonations] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('semua')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedDonation, setSelectedDonation] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const loadDonations = async () => {
+    if (!isAuthenticated || !user?.id) {
+      setDonations([])
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    try {
+      setDonations(await donationService.getUserDonations())
+    } catch (error) {
+      console.error('[DonationHistory] Failed to load donations:', error)
+      setDonations([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    setDonations(getStoredDonations())
-  }, [])
+    loadDonations()
+    if (!isAuthenticated || !user?.id) return undefined
+
+    const channel = supabase
+      .channel('my-donation-history')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'donations',
+        filter: `donor_id=eq.${user.id}`,
+      }, loadDonations)
+      .subscribe()
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [isAuthenticated, user?.id])
 
   const handleOpenDetail = (donation) => {
     setSelectedDonation(donation)
@@ -35,7 +72,7 @@ export default function DonationHistory() {
   }
 
   const handleReviewSubmitted = () => {
-    setDonations(getStoredDonations())
+    loadDonations()
   }
 
   // Filter donations based on active tab and search query
@@ -66,6 +103,18 @@ export default function DonationHistory() {
 
     return true
   })
+
+  if (!initialized || !isAuthenticated) {
+    return (
+      <main className="donation-history-page">
+        <div className="history-empty-card">
+          <h3>Masuk untuk Melihat Riwayat</h3>
+          <p>Riwayat donasi hanya dapat dilihat oleh pemilik akun.</p>
+          <Link to="/login" className="empty-action-btn">Masuk Sekarang</Link>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="donation-history-page">
@@ -139,7 +188,9 @@ export default function DonationHistory() {
             Menampilkan <strong>{filteredDonations.length}</strong> donasi
           </div>
 
-          {filteredDonations.length === 0 ? (
+          {loading ? (
+            <div className="history-empty-card"><p>Memuat riwayat donasi...</p></div>
+          ) : filteredDonations.length === 0 ? (
             <div className="history-empty-card">
               <div className="empty-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

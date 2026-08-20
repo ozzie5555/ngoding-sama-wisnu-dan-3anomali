@@ -175,15 +175,15 @@ export function DatePickerModal({ isOpen, onClose, onSelectDate }) {
 // ==========================================================
 // 2. DELETE ACCOUNT MODAL (Figma Page 5)
 // ==========================================================
-export function DeleteAccountModal({ isOpen, onClose, onConfirmDelete }) {
+export function DeleteAccountModal({ isOpen, onClose, onConfirmDelete, isDeleting = false }) {
   const [dontShowAgain, setDontShowAgain] = useState(false)
 
   if (!isOpen) return null
 
   return (
-    <div className="profile-modal-overlay" onClick={onClose}>
+    <div className={isDeleting ? 'profile-modal-overlay is-busy' : 'profile-modal-overlay'} onClick={() => !isDeleting && onClose()}>
       <div className="profile-modal-box delete-modal" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="modal-x-close" onClick={onClose} aria-label="Tutup modal">
+        <button type="button" className="modal-x-close" onClick={onClose} aria-label="Tutup modal" disabled={isDeleting}>
           &times;
         </button>
 
@@ -198,9 +198,11 @@ export function DeleteAccountModal({ isOpen, onClose, onConfirmDelete }) {
           </div>
 
           <div className="delete-modal-text">
-            <h3 className="modal-title">Hapus Akun</h3>
+            <h3 className="modal-title">{isDeleting ? 'Menghapus akun...' : 'Hapus Akun'}</h3>
             <p className="modal-desc">
-              Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan.
+              {isDeleting
+                ? 'Data akun dan file pribadi sedang dibersihkan dengan aman. Jangan tutup halaman ini.'
+                : 'Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan.'}
             </p>
           </div>
         </div>
@@ -211,23 +213,30 @@ export function DeleteAccountModal({ isOpen, onClose, onConfirmDelete }) {
               type="checkbox"
               checked={dontShowAgain}
               onChange={(e) => setDontShowAgain(e.target.checked)}
+              disabled={isDeleting}
             />
             <span>Jangan tampilkan lagi</span>
           </label>
 
           <div className="modal-buttons-row">
-            <button type="button" className="modal-btn-cancel" onClick={onClose}>
+            <button type="button" className="modal-btn-cancel" onClick={onClose} disabled={isDeleting}>
               Batal
             </button>
             <button
               type="button"
               className="modal-btn-danger"
-              onClick={() => {
-                onConfirmDelete(dontShowAgain)
-                onClose()
+              onClick={async () => {
+                const deleted = await onConfirmDelete(dontShowAgain)
+                if (deleted) onClose()
               }}
+              disabled={isDeleting}
             >
-              Hapus
+              {isDeleting ? (
+                <>
+                  <span className="delete-loading-spinner" aria-hidden="true" />
+                  Menghapus...
+                </>
+              ) : 'Hapus'}
             </button>
           </div>
         </div>

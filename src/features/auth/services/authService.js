@@ -346,17 +346,14 @@ export const authService = {
     const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
-    // Delete from profiles (cascades to profile_settings)
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', user.id);
+    const { data, error } = await supabase.functions.invoke('delete-account', {
+      body: {},
+    });
 
-    if (profileError) throw new Error(profileError.message);
+    if (error) throw new Error(error.message || 'Gagal menghapus akun');
+    if (!data?.success) throw new Error(data?.error || 'Gagal menghapus akun');
 
-    // Sign out (Supabase doesn't allow self-delete via client, so we clean up data + sign out)
     await supabase.auth.signOut();
-
     return { success: true };
   },
 

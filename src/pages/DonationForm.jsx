@@ -50,10 +50,22 @@ export default function DonationForm() {
   const [notes, setNotes] = useState('');
   const [fileName, setFileName] = useState('');
   const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [donationCode, setDonationCode] = useState('');
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreviewUrl('');
+      return undefined;
+    }
+
+    const previewUrl = URL.createObjectURL(photoFile);
+    setPhotoPreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [photoFile]);
 
   // 1. STRICT ROUTE-LEVEL AUTHENTICATION CHECK
   useEffect(() => {
@@ -229,25 +241,43 @@ export default function DonationForm() {
                 {/* Foto Upload */}
                 <div className="donation-field-group">
                   <label className="donation-field-label">Foto Barang untuk Verifikasi</label>
-                  <label htmlFor="file-upload" className="donation-upload-box">
-                    <UploadIcon />
+                  <label htmlFor="file-upload" className={`donation-upload-box ${photoPreviewUrl ? 'has-preview' : ''}`}>
+                    {photoPreviewUrl ? (
+                      <img src={photoPreviewUrl} alt="Preview barang yang dipilih" className="donation-upload-preview" />
+                    ) : (
+                      <UploadIcon />
+                    )}
                     <p className="donation-upload-text">
-                      {fileName ? `File terpilih: ${fileName}` : 'Klik untuk unggah foto barang'}
+                      {fileName ? fileName : 'Klik untuk unggah foto barang'}
                     </p>
                     <p className="donation-upload-subtext">Format PNG, JPG atau JPEG (Maks. 5MB)</p>
                     <input
                       id="file-upload"
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
                       style={{ display: 'none' }}
                       onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          setFileName(e.target.files[0].name);
-                          setPhotoFile(e.target.files[0]);
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setFileName(file.name);
+                          setPhotoFile(file);
                         }
+                        e.target.value = '';
                       }}
                     />
                   </label>
+                  {photoFile && (
+                    <button
+                      type="button"
+                      className="donation-upload-remove"
+                      onClick={() => {
+                        setFileName('');
+                        setPhotoFile(null);
+                      }}
+                    >
+                      Hapus foto & pilih ulang
+                    </button>
+                  )}
                 </div>
 
                 {/* Section 2: Metode Penyerahan */}
@@ -342,12 +372,12 @@ export default function DonationForm() {
               Terima kasih telah berkontribusi memberikan kehidupan kedua pada barang layak pakai. Pengajuan donasi Anda sedang diproses oleh mitra {community.name}.
             </p>
             {donationCode && (
-              <div style={{ background: '#f6f9f8', borderRadius: '10px', padding: '12px 20px', marginBottom: '20px', textAlign: 'center' }}>
-                <span style={{ fontSize: '12px', color: '#658185' }}>Kode Donasi</span>
-                <p style={{ fontSize: '18px', fontWeight: '700', color: '#062632', margin: '4px 0 0', fontFamily: 'var(--font-montserrat)' }}>{donationCode}</p>
+              <div className="donation-success-code">
+                <span>Kode Donasi</span>
+                <p>{donationCode}</p>
               </div>
             )}
-            <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="donation-success-actions">
               <button
                 type="button"
                 className="btn-form-cancel"

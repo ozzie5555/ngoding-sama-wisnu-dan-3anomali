@@ -681,3 +681,18 @@
     grid-column: auto;
   }
 }
+
+/* Account deletion progress state */
+.profile-modal-overlay.is-busy { cursor: wait; }
+.profile-modal-overlay.is-busy .delete-modal { animation: delete-modal-pulse 1.8s ease-in-out infinite; }
+.delete-modal .modal-btn-danger:disabled,
+.delete-modal .modal-btn-cancel:disabled,
+.delete-modal .modal-x-close:disabled { cursor: wait; }
+.delete-modal .modal-btn-danger:disabled { display: inline-flex; align-items: center; justify-content: center; gap: 8px; opacity: .82; }
+.delete-loading-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: delete-spinner .7s linear infinite; }
+@keyframes delete-spinner { to { transform: rotate(360deg); } }
+@keyframes delete-modal-pulse { 0%, 100% { box-shadow: 0 22px 60px rgba(185, 28, 28, .12); } 50% { box-shadow: 0 22px 70px rgba(185, 28, 28, .22); } }
+@media (prefers-reduced-motion: reduce) {
+  .profile-modal-overlay.is-busy .delete-modal { animation: none; }
+  .delete-loading-spinner { animation-duration: 1.4s; }
+}

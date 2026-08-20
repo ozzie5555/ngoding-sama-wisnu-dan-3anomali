@@ -24,7 +24,7 @@ export default function DonationActivity({
       case 'received':
         return {
           themeClass: 'theme-completed',
-          illustration: '/ceklist.svg',
+          illustration: '/free-shipping-1--e-commerce-free-shipping.svg',
           illustrationAlt: 'Donasi Sampai Tujuan',
           title: (
             <>
@@ -92,7 +92,7 @@ export default function DonationActivity({
         }
         return {
           themeClass: 'theme-confirmation',
-          illustration: '/student-studying.svg',
+          illustration: '/free-shipping-1--e-commerce-free-shipping.svg',
           illustrationAlt: 'Donasi Sedang Dikonfirmasi',
           title: (
             <>
@@ -121,7 +121,7 @@ export default function DonationActivity({
             alt={config.illustrationAlt}
             className="activity-illustration-img"
             onError={(e) => {
-              e.target.src = '/ceklist.svg'
+              e.target.src = '/free-shipping-1--e-commerce-free-shipping.svg'
             }}
           />
         </div>
@@ -148,7 +148,7 @@ export default function DonationActivity({
             <span className="activity-info-label">Donasi</span>
             <p className="activity-info-val">
               {donation.category || donation.title}{' '}
-              <span className="activity-info-sub">{donation.optionChosenNote || '(sesuai opsi yang sudah dipilih)'}</span>
+              <span className="activity-info-sub">({donation.quantity || 1} barang)</span>
             </p>
           </div>
 

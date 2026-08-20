@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import { donationService } from '../features/donation/services/donationService'
 import DonationHistoryCard from '../components/donation/DonationHistoryCard'
 import DonationDetailModal from '../components/donation/DonationDetailModal'
 import Footer from '../components/Footer'
-import { getStoredDonations, getCommunityActivities } from '../data/donationData'
 import './ProfileHistory.css'
+
+
+const COMMUNITY_LOGOS = {
+  sedekas: '/sedekas semarang barat 1.svg',
+  'dipo-waste-bank': '/dipo waste bank 1.svg',
+  'panti-asuhan-al-jannah': '/Panji AL JANNAH 1.svg',
+  'panti-asuhan-kristen-tanah-putih': '/Panti asuhan kristen tanah putih 1.svg',
+}
+
+const COMMUNITY_STATUS_LABELS = {
+  pending: 'Dalam Proses',
+  verified: 'Terverifikasi',
+  pickup: 'Dalam Proses',
+  shipping: 'Dalam Proses',
+  received: 'Selesai',
+  cancelled: 'Dibatalkan',
+}
 
 const PROFILE_TABS = [
   { key: 'semua', label: 'Semua' },
@@ -14,7 +31,7 @@ const PROFILE_TABS = [
 ]
 
 export default function ProfileHistory() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('semua')
   const [donations, setDonations] = useState([])
@@ -22,10 +39,47 @@ export default function ProfileHistory() {
   const [selectedDonation, setSelectedDonation] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const loadDonations = async () => {
+    if (!isAuthenticated || !user?.id) {
+      setDonations([])
+      return
+    }
+
+    try {
+      const remoteDonations = await donationService.getUserDonations()
+      setDonations(remoteDonations)
+
+      const completedCommunityActivities = remoteDonations
+        .filter((donation) => donation.status !== 'cancelled')
+        .map((donation) => {
+          const community = Array.isArray(donation.communities)
+            ? donation.communities[0]
+            : donation.communities
+          return {
+            id: `community-${donation.id}`,
+            communityName: donation.destination || community?.name || 'Komunitas Terverifikasi',
+            image: COMMUNITY_LOGOS[community?.slug] || '/sedekas semarang barat 1.svg',
+            activity: donation.status === 'received'
+              ? `Penerimaan ${donation.title}`
+              : `Pengajuan ${donation.title}`,
+            description: donation.status === 'received'
+              ? `${donation.quantity || 1} barang berhasil diterima oleh komunitas mitra.`
+              : `${donation.quantity || 1} barang sedang diproses oleh komunitas mitra.`,
+            date: donation.date,
+            status: COMMUNITY_STATUS_LABELS[donation.status] || 'Dalam Proses',
+            location: community?.location || 'Lokasi komunitas mitra',
+          }
+        })
+      setCommunityActs(completedCommunityActivities)
+    } catch (error) {
+      console.error('[ProfileHistory] Failed to load donations:', error)
+      setDonations([])
+    }
+  }
+
   useEffect(() => {
-    setDonations(getStoredDonations())
-    setCommunityActs(getCommunityActivities())
-  }, [])
+    loadDonations()
+  }, [isAuthenticated, user?.id])
 
   const handleOpenDetail = (donation) => {
     setSelectedDonation(donation)
@@ -38,7 +92,7 @@ export default function ProfileHistory() {
   }
 
   const handleReviewSubmitted = () => {
-    setDonations(getStoredDonations())
+    loadDonations()
   }
 
   // If user is not authenticated
@@ -61,6 +115,32 @@ export default function ProfileHistory() {
             <button type="button" className="btn-unauth-home" onClick={() => navigate('/')}>
               Kembali ke Beranda
             </button>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
+
+  const historyVisible = user?.privacy?.donationHistory ?? true
+
+  if (!historyVisible) {
+    return (
+      <main className="profile-history-page">
+        <div className="profile-history-container">
+          <div className="profile-history-breadcrumb">
+            <Link to="/profile" className="profile-back-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Kembali ke Profil
+            </Link>
+          </div>
+          <div className="privacy-history-hidden" role="status">
+            <div className="privacy-hidden-icon" aria-hidden="true">⌁</div>
+            <h1>Riwayat donasi disembunyikan</h1>
+            <p>Aktifkan “Riwayat donasi” di menu Privasi &amp; Data jika ingin melihat aktivitas dan dampak donasi pada profil.</p>
+            <Link to="/profile?tab=privacy" className="empty-sub-btn">Atur Privasi</Link>
           </div>
         </div>
         <Footer />

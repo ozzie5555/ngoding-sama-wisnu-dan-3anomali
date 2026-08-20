@@ -383,3 +383,39 @@
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+
+.donation-history-col.is-full-width {
+  grid-column: 1 / -1;
+}
+
+
+.donation-data-loading {
+  width: min(100% - 48px, 1180px);
+  min-height: 70px;
+  margin: 28px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #d9eae5;
+  border-radius: 16px;
+  color: #638079;
+  background: #f8fcfb;
+  font-size: 13px;
+}
+
+.donation-data-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #c8dfd8;
+  border-top-color: #4c8272;
+  border-radius: 50%;
+  animation: donationDataSpin .75s linear infinite;
+}
+
+@keyframes donationDataSpin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .donation-data-spinner { animation: none; }
+}

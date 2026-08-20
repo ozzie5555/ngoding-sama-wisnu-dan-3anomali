@@ -4,7 +4,7 @@ import { useAuth } from '../../context/useAuth'
 import { donationService } from '../../features/donation/services/donationService'
 import DonationDetailModal from '../donation/DonationDetailModal'
 import PaginationBar from '../insight/PaginationBar'
-import { getStoredDonations, getDonationById } from '../../data/donationData'
+import { getDonationById } from '../../data/donationData'
 import './ProfileOverview.css'
 
 const STATUS_LABELS = {
@@ -28,10 +28,16 @@ const CATEGORY_LABELS = {
 
 // Community slug to logo mapping
 const COMMUNITY_LOGOS = {
-  sedekas: '/sedekas.svg',
+  sedekas: '/sedekas semarang barat 1.svg',
   'dipo-waste-bank': '/dipo waste bank 1.svg',
   'panti-asuhan-al-jannah': '/Panji AL JANNAH 1.svg',
   'panti-asuhan-kristen-tanah-putih': '/Panti asuhan kristen tanah putih 1.svg',
+}
+
+const getGeneralLocation = (location) => {
+  if (!location) return 'Lokasi belum diatur'
+  const parts = String(location).split(',').map((part) => part.trim()).filter(Boolean)
+  return parts.length >= 2 ? parts.slice(-2).join(', ') : parts[0]
 }
 
 const chunkArray = (arr, size = 2) => {
@@ -66,25 +72,8 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         ])
         donations = donRes || []
         communities = commRes || []
-      } catch {
-        // Fallback to local store
-      }
-
-      // If no remote donations, use centralized local donations
-      if (donations.length === 0) {
-        const localDonations = getStoredDonations()
-        donations = localDonations.map((d) => ({
-          id: d.id,
-          rawDonation: d,
-          item_name: d.title,
-          photoUrl: d.image,
-          communities: { name: d.destination },
-          category: d.categoryKey || d.category,
-          condition_note: d.conditionNote || 'Layak Pakai',
-          quantity: d.quantity || 1,
-          status: d.status,
-          submitted_at: d.submittedAt || new Date().toISOString(),
-        }))
+      } catch (error) {
+        console.error('[ProfileOverview] Failed to load remote activity:', error)
       }
 
       // Map donations to activity cards
@@ -106,43 +95,13 @@ export default function ProfileOverview({ onNavigateToEdit }) {
 
       setActivities(acts)
 
-      // Fallback partners if empty
-      if (communities.length === 0) {
-        setPartners([
-          {
-            id: 'p1',
-            image: '/sedekas semarang barat 1.svg',
-            title: 'Sedekas',
-            description: 'Komunitas di Semarang Barat yang menyalurkan barang layak pakai.',
-          },
-          {
-            id: 'p2',
-            image: '/Panji AL JANNAH 1.svg',
-            title: 'Panti Asuhan Al Jannah',
-            description: 'Membina anak yatim, piatu, dan dhuafa di Semarang.',
-          },
-          {
-            id: 'p3',
-            image: '/Panti asuhan kristen tanah putih 1.svg',
-            title: 'Panti Asuhan Kristen Tanah Putih',
-            description: 'Panti asuhan di Candisari, Semarang.',
-          },
-          {
-            id: 'p4',
-            image: '/dipo waste bank 1.svg',
-            title: 'Dipo Waste Bank',
-            description: 'Bank sampah TPST UNDIP Tembalang Semarang.',
-          },
-        ])
-      } else {
-        const parts = communities.map((c) => ({
-          id: c.id,
-          image: COMMUNITY_LOGOS[c.slug] || c.logo_path || '/sedekas.svg',
-          title: c.name,
-          description: c.description || c.location || 'Komunitas verified',
-        }))
-        setPartners(parts)
-      }
+      const parts = communities.map((c) => ({
+        id: c.id,
+        image: COMMUNITY_LOGOS[c.slug] || c.logo_path || '/sedekas.svg',
+        title: c.name,
+        description: c.description || c.location || 'Komunitas verified',
+      }))
+      setPartners(parts)
     } catch (err) {
       console.error('[ProfileOverview] Failed to load data:', err)
     } finally {
@@ -177,6 +136,11 @@ export default function ProfileOverview({ onNavigateToEdit }) {
 
   const activeDonationPage = Math.min(donationPage, donationChunks.length)
   const activePartnerPage = Math.min(partnerPage, partnerChunks.length)
+  const privacy = user?.privacy || {}
+  const contributionVisible = privacy.contributionVisibility ?? true
+  const generalLocationVisible = privacy.generalLocation ?? false
+  const impactVisible = privacy.impactReport ?? true
+  const historyVisible = privacy.donationHistory ?? true
 
   return (
     <div className="profile-overview-container">
@@ -203,7 +167,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <span>{user.location || 'Lokasi belum diatur'}</span>
+            <span>{generalLocationVisible ? getGeneralLocation(user.location) : 'Lokasi disembunyikan'}</span>
           </div>
 
           <div className="profile-donor-badge">
@@ -225,15 +189,15 @@ export default function ProfileOverview({ onNavigateToEdit }) {
         {/* 3 Statistic Cards */}
         <div className="profile-stats-grid">
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.donations ?? 0}</span>
+            <span className="profile-stat-number">{contributionVisible ? (user.stats?.donations ?? 0) : '—'}</span>
             <span className="profile-stat-label">Donasi</span>
           </div>
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.distributed ?? 0}</span>
+            <span className="profile-stat-number">{impactVisible ? (user.stats?.distributed ?? 0) : '—'}</span>
             <span className="profile-stat-label">Tersalur</span>
           </div>
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{user.stats?.saved ?? 0}</span>
+            <span className="profile-stat-number">{impactVisible ? (user.stats?.saved ?? 0) : '—'}</span>
             <span className="profile-stat-label">Simpan</span>
           </div>
         </div>
@@ -242,6 +206,15 @@ export default function ProfileOverview({ onNavigateToEdit }) {
       {/* RIGHT COLUMN: Activities */}
       <section className="profile-right-col" aria-label="Aktivitas Pengguna">
         <h2 className="profile-section-title">Aktivitas &amp; Riwayat</h2>
+        {!historyVisible ? (
+          <div className="privacy-hidden-state">
+            <div className="privacy-hidden-icon" aria-hidden="true">⌁</div>
+            <h3>Riwayat donasi disembunyikan</h3>
+            <p>Aktifkan “Riwayat donasi” di Privasi &amp; Data untuk menampilkan aktivitas dan komunitas mitra pada profil.</p>
+            <Link to="/profile?tab=privacy" className="empty-state-btn">Atur Privasi</Link>
+          </div>
+        ) : (
+          <>
 
         {/* Group 1: Donasi saya */}
         <div className="activity-group">
@@ -469,6 +442,8 @@ export default function ProfileOverview({ onNavigateToEdit }) {
             </div>
           )}
         </div>
+          </>
+        )}
       </section>
 
       {/* Donation Detail Modal */}

@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useLocation } from 'react-router'
 import { useAuth } from '../context/useAuth'
+import { supabase } from '../lib/supabase/client'
+import { donationService } from '../features/donation/services/donationService'
 import CariKebutuhanModal from '../components/donation/CariKebutuhanModal'
 import DonationActivity from '../components/donation/DonationActivity'
 import DonationHistoryCard from '../components/donation/DonationHistoryCard'
 import DonationDetailModal from '../components/donation/DonationDetailModal'
 import Footer from '../components/Footer'
-import { getStoredDonations, getActiveDonation } from '../data/donationData'
 import './Donation.css'
 
 const flow = [
@@ -31,7 +32,7 @@ const stats = [
 ]
 
 export default function Donation() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const location = useLocation()
 
   // Modal State
@@ -40,16 +41,51 @@ export default function Donation() {
 
   // Donation State
   const [donations, setDonations] = useState([])
+  const [donationsLoading, setDonationsLoading] = useState(false)
   const [activeDonation, setActiveDonation] = useState(null)
   const [selectedDetailDonation, setSelectedDetailDonation] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
-  // Load donations from centralized store
+  const loadDonations = useCallback(async () => {
+    if (!isAuthenticated || !user?.id) {
+      setDonations([])
+      setActiveDonation(null)
+      setDonationsLoading(false)
+      return
+    }
+
+    setDonationsLoading(true)
+    try {
+      const all = await donationService.getUserDonations()
+      setDonations(all)
+      setActiveDonation(all.find((item) => ['pending', 'verified', 'pickup', 'shipping'].includes(item.status)) || null)
+    } catch (error) {
+      console.error('[Donation] Failed to load donations:', error)
+      setDonations([])
+      setActiveDonation(null)
+    } finally {
+      setDonationsLoading(false)
+    }
+  }, [isAuthenticated, user?.id])
+
   useEffect(() => {
-    const all = getStoredDonations()
-    setDonations(all)
-    setActiveDonation(getActiveDonation())
-  }, [])
+    loadDonations()
+    if (!isAuthenticated || !user?.id) return undefined
+
+    const channel = supabase
+      .channel('my-donation-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'donations',
+        filter: `donor_id=eq.${user.id}`,
+      }, loadDonations)
+      .subscribe()
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [isAuthenticated, user?.id, loadDonations])
 
   // Open modal if navigated with hash or state or search param
   useEffect(() => {
@@ -77,12 +113,7 @@ export default function Donation() {
   }
 
   const handleReviewSubmitted = () => {
-    const updated = getStoredDonations()
-    setDonations(updated)
-    if (activeDonation) {
-      const refreshedActive = updated.find((d) => d.id === activeDonation.id)
-      if (refreshedActive) setActiveDonation(refreshedActive)
-    }
+    loadDonations()
   }
 
   return (
@@ -128,21 +159,28 @@ export default function Donation() {
       </section>
 
       {/* Authenticated Activity & History Section */}
-      {isAuthenticated && (
+      {isAuthenticated && donationsLoading && (
+        <div className="donation-data-loading" role="status">
+          <span className="donation-data-spinner" />
+          Memuat aktivitas dan riwayat donasi...
+        </div>
+      )}
+      {isAuthenticated && !donationsLoading && donations.length > 0 && (
         <section className="donation-activity-section" id="aktivitas">
-          <div className="donation-activity-col">
-            <div className="donation-section-heading-row">
-              <h2 className="donation-section-title">Aktivitas Donasi</h2>
+          {activeDonation && (
+            <div className="donation-activity-col">
+              <div className="donation-section-heading-row">
+                <h2 className="donation-section-title">Aktivitas Donasi</h2>
+              </div>
+
+              <DonationActivity
+                donation={activeDonation}
+                onOpenDetail={handleOpenDetailModal}
+              />
             </div>
+          )}
 
-            {/* Dynamic Activity Card */}
-            <DonationActivity
-              donation={activeDonation}
-              onOpenDetail={handleOpenDetailModal}
-            />
-          </div>
-
-          <div className="donation-history-col">
+          <div className={`donation-history-col ${activeDonation ? '' : 'is-full-width'}`}>
             <div className="donation-section-heading-row">
               <h2 className="donation-section-title">Riwayat</h2>
             </div>

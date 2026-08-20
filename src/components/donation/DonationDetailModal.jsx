@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import DonationTracker from './DonationTracker'
-import { submitDonationReview } from '../../data/donationData'
+import { donationService } from '../../features/donation/services/donationService'
 import './DonationDetailModal.css'
 
 export default function DonationDetailModal({
@@ -31,19 +31,25 @@ export default function DonationDetailModal({
 
   const isCompleted = donation.status === 'completed' || donation.status === 'received'
 
-  const handleSendReview = (e) => {
+  const handleSendReview = async (e) => {
     e.preventDefault()
     if (!reviewMessage.trim()) return
 
     setIsSubmitting(true)
-    setTimeout(() => {
-      submitDonationReview(donation.id, reviewMessage)
+    try {
+      await donationService.createTestimonial({
+        donationId: donation.id,
+        rating: 5,
+        title: 'Ulasan Donasi',
+        content: reviewMessage.trim(),
+      })
       setSubmittedReview(true)
+      if (onReviewSubmitted) onReviewSubmitted(donation.id, reviewMessage)
+    } catch (error) {
+      alert(error.message || 'Ulasan gagal dikirim. Coba lagi.')
+    } finally {
       setIsSubmitting(false)
-      if (onReviewSubmitted) {
-        onReviewSubmitted(donation.id, reviewMessage)
-      }
-    }, 400)
+    }
   }
 
   return (
@@ -93,6 +99,10 @@ export default function DonationDetailModal({
                 <div className="modal-detail-row">
                   <span className="detail-key">Kategori</span>
                   <span className="detail-val">{donation.category || 'Barang Bekas'}</span>
+                </div>
+                <div className="modal-detail-row">
+                  <span className="detail-key">Jumlah Barang</span>
+                  <span className="detail-val">{donation.quantity || 1} barang</span>
                 </div>
                 <div className="modal-detail-row">
                   <span className="detail-key">Tanggal Pengajuan</span>
@@ -205,7 +215,7 @@ export default function DonationDetailModal({
                     <span className="info-block-label">Donasi</span>
                     <p className="info-block-val">
                       {donation.category || donation.title}{' '}
-                      <span className="info-block-sub">{donation.optionChosenNote || '(sesuai opsi yang sudah dipilih)'}</span>
+                      <span className="info-block-sub">({donation.quantity || 1} barang)</span>
                     </p>
                   </div>
 
