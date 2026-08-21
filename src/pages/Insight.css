@@ -137,11 +137,9 @@
 .hero-illustration-card {
   width: 100%;
   max-width: 480px;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(6, 38, 50, 0.12);
-  background: #f8fbfa;
-  box-shadow: 0 8px 24px rgba(6, 38, 50, 0.04);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .hero-main-img {
@@ -350,7 +348,7 @@
   aspect-ratio: 1 / 1;
   border-radius: 10px;
   overflow: hidden;
-  background: #f0f7f6;
+  background: transparent;
   margin-bottom: 12px;
 }
 

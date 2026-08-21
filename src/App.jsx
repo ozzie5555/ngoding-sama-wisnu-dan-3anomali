@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Route, Routes, useLocation, Navigate } from 'react-router'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/useAuth'
@@ -16,6 +17,7 @@ import CompleteProfile from './features/auth/pages/CompleteProfile'
 import CariKebutuhan from './pages/CariKebutuhan'
 import DonationForm from './pages/DonationForm'
 import Admin from './pages/Admin'
+import BrandIntro from "./components/BrandIntro"
 
 function NeedsProfileRedirect() {
   const { user, isAuthenticated, initialized, pendingProfileRedirect, clearPendingProfileRedirect } = useAuth()
@@ -64,9 +66,21 @@ export default function App() {
   const location = useLocation()
   const isAuthPage = ['/login', '/admin/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
   const isAdminPage = location.pathname.startsWith('/admin')
+  const [showIntro, setShowIntro] = useState(() => (
+    location.pathname === "/"
+    && sessionStorage.getItem("kembali:intro-seen") !== "true"
+    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ))
+
+  const finishIntro = () => {
+    sessionStorage.setItem("kembali:intro-seen", "true")
+    setShowIntro(false)
+  }
 
   return (
     <AuthProvider>
+      {showIntro && <BrandIntro onComplete={finishIntro} />}
+      <div className={"app-content " + (showIntro ? "is-intro-running" : "is-intro-ready")}>
       <NeedsProfileRedirect />
       <StaffRouteRedirect />
       {!isAuthPage && !isAdminPage && <Navbar />}
@@ -91,6 +105,7 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
       </Routes>
+      </div>
     </AuthProvider>
   )
 }
