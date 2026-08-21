@@ -4,6 +4,11 @@ import { supabase } from '../lib/supabase/client'
 import { DEFAULT_USER } from '../data/profileData'
 import { donationService } from '../features/donation/services/donationService'
 
+const formatUsername = (username, email = '') => {
+  const value = String(username || email.split('@')[0] || 'pengguna').trim().replace(/^@+/, '')
+  return `@${value}`
+}
+
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(DEFAULT_USER)
@@ -42,7 +47,7 @@ export function AuthProvider({ children }) {
             email: email,
             name: profile.full_name || email.split('@')[0],
             shortName: (profile.full_name || email.split('@')[0]).split(' ')[0],
-            username: profile.username || '@' + email.split('@')[0],
+            username: formatUsername(profile.username, email),
             needsProfile: true,
           }))
           return
@@ -67,7 +72,7 @@ export function AuthProvider({ children }) {
           id: profile.id,
           name: fallbackName,
           shortName: fallbackName.split(' ')[0],
-          username: profile.username || (email ? '@' + email.split('@')[0] : '@pengguna'),
+          username: formatUsername(profile.username, email),
           email: email,
           phone: profile.phone || '',
           birthDate: profile.birth_date || '',
@@ -94,7 +99,7 @@ export function AuthProvider({ children }) {
           email: email,
           name: email.split('@')[0],
           shortName: email.split('@')[0],
-          username: '@' + email.split('@')[0],
+          username: formatUsername('', email),
           needsProfile: true,
         }))
       }

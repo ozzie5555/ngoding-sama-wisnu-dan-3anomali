@@ -26,7 +26,7 @@ const LockIcon = () => (
 
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12Z" />
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
@@ -59,6 +59,16 @@ export default function Login() {
   const location = useLocation();
   const isAdminLogin = location.pathname === '/admin/login';
 
+  const handleGoogleLogin = async () => {
+    setGeneralError('');
+    setLoading(true);
+    try {
+      await authService.signInWithGoogle(location.pathname);
+    } catch (err) {
+      setGeneralError(err.message || 'Gagal masuk dengan Google.');
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,8 +83,8 @@ export default function Login() {
       setEmailError('Email is required');
       hasError = true;
     } else {
-      // If it looks like an email (contains @), check its format
-      if (emailOrUsername.includes('@')) {
+      // @username adalah username; simbol @ di tengah identifier menandakan email.
+      if (emailOrUsername.includes('@') && !emailOrUsername.trim().startsWith('@')) {
         const formatError = validateEmail(emailOrUsername);
         if (formatError) {
           setEmailError('Invalid email format');
@@ -162,7 +172,7 @@ export default function Login() {
               id="email"
               type="text"
               className={`auth-input ${emailError ? 'input-error' : ''}`}
-              placeholder=""
+              placeholder="email@contoh.com atau @username"
               value={emailOrUsername}
               onChange={(e) => {
                 setEmailOrUsername(e.target.value);
@@ -248,7 +258,7 @@ export default function Login() {
         <button
           type="button"
           className="google-btn"
-          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { prompt: 'select_account' } } })}
+          onClick={handleGoogleLogin}
           disabled={loading}
         >
           <img src="/google-logo.svg" alt="" />

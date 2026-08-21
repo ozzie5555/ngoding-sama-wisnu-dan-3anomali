@@ -73,25 +73,59 @@ img {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #f9fcf8;
+  display: grid;
+  place-items: center;
   z-index: 9999;
 }
 
-.app-loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(63, 190, 199, 0.2);
-  border-top-color: #238b94;
+.app-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #073942;
+  text-align: center;
+}
+
+.app-loading-mark {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border: 1px solid rgba(63, 190, 199, .25);
   border-radius: 50%;
-  animation: appSpin 0.8s linear infinite;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(7, 57, 66, .1);
+  animation: appLoadingPulse 1.5s ease-in-out infinite;
 }
 
-@keyframes appSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+.app-loading-mark img { width: 44px; height: 44px; }
+.app-loading-content strong { font-size: 22px; letter-spacing: .18em; text-indent: .18em; }
+.app-loading-content p { margin: 10px 20px 20px; color: #648083; font-size: 12px; }
+.app-loading-progress { width: 150px; height: 3px; overflow: hidden; border-radius: 999px; background: #e1ece8; }
+.app-loading-progress i { display: block; width: 45%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #3fbec7, #b7dd61); animation: appLoadingProgress 1.1s ease-in-out infinite; }
 
+.app-auth-success {
+  position: fixed;
+  inset: 0;
+  z-index: 21000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9fcf8;
+  color: #073942;
+  text-align: center;
+}
+.app-auth-success .animated-checkmark { margin-bottom: 24px; }
+.app-auth-success h1 { margin: 0 0 10px; font-size: clamp(28px, 6vw, 38px); }
+.app-auth-success p { margin: 0; color: #648083; font-size: 15px; }
+
+@keyframes appLoadingPulse { 50% { transform: translateY(-4px); box-shadow: 0 20px 46px rgba(7, 57, 66, .15); } }
+@keyframes appLoadingProgress { 0% { transform: translateX(-110%); } 100% { transform: translateX(330%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading-mark,
+  .app-loading-progress i { animation: none; }
+}

@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Route, Routes, useLocation, Navigate } from 'react-router'
+import { useEffect, useState } from "react"
+import { Route, Routes, useLocation, useNavigate, Navigate } from 'react-router'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/useAuth'
 import Navbar from './components/Navbar'
@@ -18,14 +18,19 @@ import CariKebutuhan from './pages/CariKebutuhan'
 import DonationForm from './pages/DonationForm'
 import Admin from './pages/Admin'
 import BrandIntro from "./components/BrandIntro"
+import LoadingScreen from './components/LoadingScreen'
+import AnimatedCheckmark from './features/auth/components/AnimatedCheckmark'
 
 function NeedsProfileRedirect() {
   const { user, isAuthenticated, initialized, pendingProfileRedirect, clearPendingProfileRedirect } = useAuth()
   const location = useLocation()
+  const isAuthFlow = ['/login', '/admin/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
 
   if (!initialized) {
-    return <div className="app-loading-screen"><div className="app-loading-spinner" /></div>
+    return <LoadingScreen />
   }
+
+  if (sessionStorage.getItem('kembali_auth_success_pending') || isAuthFlow) return null
 
   // After login, redirect once to complete profile (if needed)
   // Only triggers after a fresh sign-in; user can then browse nav freely
@@ -54,6 +59,9 @@ function StaffRouteRedirect() {
   const location = useLocation()
   const isStaff = user?.status === "Admin" || user?.status === "Manager Komunitas"
   const isAdminRoute = location.pathname === "/admin"
+  const isAuthFlow = ['/login', '/admin/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
+
+  if (sessionStorage.getItem('kembali_auth_success_pending') || isAuthFlow) return null
 
   if (initialized && isAuthenticated && isStaff && !isAdminRoute) {
     return <Navigate to="/admin" replace />
@@ -62,7 +70,44 @@ function StaffRouteRedirect() {
   return null
 }
 
-export default function App() {
+function OAuthSuccessRedirect() {
+  const { initialized, isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
+  const pending = sessionStorage.getItem('kembali_auth_success_pending') === 'oauth'
+
+  useEffect(() => {
+    if (!pending || !initialized) return undefined
+    if (!isAuthenticated) {
+      sessionStorage.removeItem('kembali_auth_success_pending')
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => {
+      sessionStorage.removeItem('kembali_auth_success_pending')
+      const isStaff = user?.status === 'Admin' || user?.status === 'Manager Komunitas'
+      const destination = isStaff
+        ? '/admin'
+        : user?.needsProfile
+          ? '/complete-profile'
+          : sessionStorage.getItem('pendingDonation') ? '/donasi/form' : '/'
+      navigate(destination, { replace: true })
+    }, 1400)
+
+    return () => window.clearTimeout(timer)
+  }, [initialized, isAuthenticated, navigate, pending, user?.needsProfile, user?.status])
+
+  if (!pending || !initialized || !isAuthenticated) return null
+  return (
+    <div className="app-auth-success" role="status" aria-live="polite">
+      <AnimatedCheckmark />
+      <h1>Berhasil Masuk!</h1>
+      <p>Selamat datang di KEMBALI</p>
+    </div>
+  )
+}
+
+function AppContent() {
+  const { initialized } = useAuth()
   const location = useLocation()
   const isAuthPage = ['/login', '/admin/login', '/sign-up', '/reset-password', '/complete-profile'].includes(location.pathname)
   const isAdminPage = location.pathname.startsWith('/admin')
@@ -77,8 +122,11 @@ export default function App() {
     setShowIntro(false)
   }
 
+  if (!initialized) return <LoadingScreen />
+
   return (
-    <AuthProvider>
+    <>
+      <OAuthSuccessRedirect />
       {showIntro && <BrandIntro onComplete={finishIntro} />}
       <div className={"app-content " + (showIntro ? "is-intro-running" : "is-intro-ready")}>
       <NeedsProfileRedirect />
@@ -106,6 +154,10 @@ export default function App() {
         <Route path="/complete-profile" element={<CompleteProfile />} />
       </Routes>
       </div>
-    </AuthProvider>
+    </>
   )
+}
+
+export default function App() {
+  return <AuthProvider><AppContent /></AuthProvider>
 }

@@ -15,7 +15,7 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
   const needsProfile = Boolean(user?.needsProfile)
-  const displayName = needsProfile ? 'Lengkapi Profil' : (user?.shortName || 'Pengguna')
+  const displayName = needsProfile ? 'Lengkapi Profil' : (user?.username || '@pengguna')
   const unreadCount = notifications.filter((item) => !item.is_read).length
 
   const loadNotifications = useCallback(async () => {
@@ -113,9 +113,13 @@ export default function Navbar() {
 
         <button
           className="menu-toggle"
-          aria-label="Buka menu"
+          aria-label={open ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={open}
-          onClick={() => setOpen(!open)}
+          onClick={() => {
+            setOpen((current) => !current)
+            setDropdownOpen(false)
+            setNotificationOpen(false)
+          }}
         >
           <span />
           <span />
@@ -140,7 +144,7 @@ export default function Navbar() {
           {isAuthenticated && open && (
             <div className="mobile-user-links">
               <Link to={needsProfile ? '/complete-profile' : '/profile'} className="mobile-profile-link" onClick={handleNavClick}>
-                {needsProfile ? 'Lengkapi Profil' : `Profil Saya (${user.shortName || user.name})`}
+                {needsProfile ? 'Lengkapi Profil' : `Profil Saya (${displayName})`}
               </Link>
               <button type="button" className="mobile-logout-btn" onClick={handleLogout}>
                 Keluar
@@ -178,6 +182,7 @@ export default function Navbar() {
                 onClick={() => {
                   setNotificationOpen((current) => !current)
                   setDropdownOpen(false)
+                  setOpen(false)
                 }}
                 aria-expanded={notificationOpen}
                 aria-haspopup="true"

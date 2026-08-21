@@ -1,0 +1,29 @@
+- main [ref=f3e4]:
+  - generic [ref=f3e7]:
+    - generic [ref=f3e8]:
+      - img "KEMBALI" [ref=f3e9]
+      - heading "Sign-up" [level=1] [ref=f3e10]
+      - paragraph [ref=f3e11]: Ayo bergabung dengan KEMBALI!
+    - generic [ref=f3e12]:
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: Email
+        - textbox "Email" [ref=f3e16]
+      - generic [ref=f3e17]:
+        - generic [ref=f3e18]:
+          - generic [ref=f3e19]: Password
+          - generic [ref=f3e20]: Password minimal 8 karakter harus memuat huruf, angka, dan simbol
+        - generic [ref=f3e21]:
+          - textbox "Password" [ref=f3e22]
+          - button "Tampilkan password" [ref=f3e23] [cursor=pointer]
+      - generic [ref=f3e27]:
+        - generic [ref=f3e28]: Konfirmasi Password
+        - generic [ref=f3e29]:
+          - textbox "Konfirmasi Password" [ref=f3e30]
+          - button "Tampilkan password" [ref=f3e31] [cursor=pointer]
+      - button "Daftar" [ref=f3e35] [cursor=pointer]
+      - generic [ref=f3e36]: Atau
+      - button "Lanjutkan dengan Google" [ref=f3e37] [cursor=pointer]
+      - generic [ref=f3e38]:
+        - text: Sudah punya akun?
+        - link "Sign-in" [ref=f3e39] [cursor=pointer]:
+          - /url: /login

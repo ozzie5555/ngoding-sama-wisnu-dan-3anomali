@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
+import CardRail from '../components/CardRail'
+import LoadingScreen from '../components/LoadingScreen'
 import Footer from '../components/Footer'
 import { supabase } from '../lib/supabase/client'
 import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
@@ -44,7 +46,7 @@ function Heading({ eyebrow, title, accent, sub, preAccent }) {
 }
 
 function PartnerGrid({ partners }) {
-  return <div className="partner-grid">{partners.map((partner) => <article className="partner-card" key={partner.id}><img src={partner.logo} alt="" /><h3>{partner.name}</h3><p>{partner.description}</p><div className="partner-meta"><address>{partner.address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="partner-sosmed-icon" />{partner.handle}</span></div></article>)}</div>
+  return <CardRail className="partner-grid" label="Partner KEMBALI">{partners.map((partner) => <article className="partner-card" key={partner.id}><img src={partner.logo} alt="" /><h3>{partner.name}</h3><p>{partner.description}</p><div className="partner-meta"><address>{partner.address}</address><span><img src="/ri_instagram-fill.svg" alt="Instagram" className="partner-sosmed-icon" />{partner.handle}</span></div></article>)}</CardRail>
 }
 
 function AnimatedStat({ value }) {
@@ -81,35 +83,39 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState(null)
   const [reviews, setReviews] = useState([])
   const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
+  const [partnersLoading, setPartnersLoading] = useState(true)
+  const [reviewsLoading, setReviewsLoading] = useState(true)
 
   useEffect(() => {
     let active = true
     communityService.getCommunities()
       .then((rows) => { if (active && rows.length) setPartners(rows) })
       .catch((error) => console.error('[Home] Failed to load communities:', error))
+      .finally(() => { if (active) setPartnersLoading(false) })
     return () => { active = false }
   }, [])
 
 
   useEffect(() => {
     let ignore = false
+    let initialLoad = true
 
     async function loadReviews() {
       const { data, error } = await supabase.rpc('get_home_testimonials', { p_limit: 12 })
 
       if (error) {
         console.error('[Home] Failed to load testimonials:', error.message)
-        return
+      } else if (!ignore) {
+        setReviews((data || []).map((item) => ({
+          id: item.id,
+          avatar: item.avatar_path || '/User 03C.svg',
+          name: item.full_name || item.username || 'Donatur KEMBALI',
+          role: 'Donatur KEMBALI',
+          text: item.content,
+        })))
       }
-      if (ignore) return
-
-      setReviews((data || []).map((item) => ({
-        id: item.id,
-        avatar: item.avatar_path || '/User 03C.svg',
-        name: item.full_name || item.username || 'Donatur KEMBALI',
-        role: 'Donatur KEMBALI',
-        text: item.content,
-      })))
+      if (initialLoad && !ignore) setReviewsLoading(false)
+      initialLoad = false
     }
 
     loadReviews()
@@ -129,13 +135,15 @@ export default function Home() {
     { title: "Ide Daur Ulang Sampah", date: "Semarang, 24 Juli 2026", image: "/recycle.svg" },
     { title: "Berita Ekonomi Sirkular", date: "Jakarta, 29 April 2026", image: "/ecology.svg" },
   ]
-  const visibleArticles = [0, 1, 2].map(offset => articles[(article + offset) % articles.length])
+  const visibleArticles = [-1, 0, 1].map(offset => articles[(article + offset + articles.length) % articles.length])
   const reviewSource = reviews.length ? reviews : EMPTY_REVIEW
   const reviewSequence = Array.from(
     { length: Math.max(1, Math.ceil(4 / reviewSource.length)) },
     () => reviewSource,
   ).flat()
   const marqueeReviews = [...reviewSequence, ...reviewSequence]
+
+  if (partnersLoading || reviewsLoading) return <LoadingScreen message="Memuat halaman Beranda..." />
 
   return (
     <>
@@ -149,17 +157,17 @@ export default function Home() {
           <div className="landscape" aria-hidden="true"><i /><i /><i /><i /></div>
         </section>
 
-        <section className="impact"><div className="stat-grid">{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</div><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
+        <section className="impact"><CardRail className="stat-grid" label="Statistik dampak" compact>{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</CardRail><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
 
         <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />By - Anonymous</p><a href="#artikel">Visit Now</a></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
 
-        <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
+        <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><CardRail className="service-grid" label="Layanan KEMBALI">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</CardRail></section>
 
         <section className="testimonials"><Heading eyebrow="Segala Masukan Sangat Berarti untuk Kami" title="Ulasan" accent="Pengguna" sub="Bersama Menciptakan Perubahan" /><div className="review-board"><div className="review-track review-row-one">{marqueeReviews.map((review, i) => <article key={`first-${review.id}-${i}`}><header><img src={review.avatar} alt={`Foto ${review.name}`} /><div><h3>{review.name}</h3><span>{review.role}</span></div></header><p>“{review.text}”</p></article>)}</div><div className="review-track review-row-two">{[...marqueeReviews].reverse().map((review, i) => <article key={`second-${review.id}-${i}`}><header><img src={review.avatar} alt={`Foto ${review.name}`} /><div><h3>{review.name}</h3><span>{review.role}</span></div></header><p>“{review.text}”</p></article>)}</div></div></section>
 
-        <section className="steps" id="steps"><h2>Bagaimana Cara<br /><em>Berdonasi?</em></h2><p className="steps-intro">Ikuti langkah-langkah berikut untuk melakukan donasi online melalui KEMBALI.</p><div className="step-grid">{[['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'], ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'], ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'], ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.']].map(([t, d], i) => <article key={t}><b>{i + 1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</div></section>
+        <section className="steps" id="steps"><h2>Bagaimana Cara<br /><em>Berdonasi?</em></h2><p className="steps-intro">Ikuti langkah-langkah berikut untuk melakukan donasi online melalui KEMBALI.</p><CardRail className="step-grid" label="Tahapan donasi" compact>{[['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'], ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'], ['Konfirmasi', 'Periksa kembali detail donasi dan konfirmasi pengajuan.'], ['Tracking Donasi', 'Pantau proses donasi hingga sampai ke penerima.']].map(([t, d], i) => <article key={t}><b>{i + 1}</b><div><h3>{t}</h3><p>{d}</p></div></article>)}</CardRail></section>
 
-        <section className="donatable"><Heading eyebrow="Beri Kehidupan Kedua untuk Barangmu!" preAccent="Barang" title={<>yang Bisa<br />Anda Donasikan</>} sub="Barang apa saja yang bisa didonasikan melalui KEMBALI?" /><div className="item-grid">{items.map(([img, title, color]) => <article key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3></article>)}</div></section>
+        <section className="donatable"><Heading eyebrow="Beri Kehidupan Kedua untuk Barangmu!" preAccent="Barang" title={<>yang Bisa<br />Anda Donasikan</>} sub="Barang apa saja yang bisa didonasikan melalui KEMBALI?" /><CardRail className="item-grid" label="Barang yang bisa didonasikan">{items.map(([img, title, color]) => <article key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3></article>)}</CardRail></section>
 
         <section className="partners" id="komunitas"><Heading eyebrow="Berkenalan dengan Komunitas Kami" title="Partner Kami" sub="Kami bekerja sama dengan berbagai komunitas." /><PartnerGrid partners={partners} /></section>
 

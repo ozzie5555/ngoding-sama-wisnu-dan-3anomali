@@ -503,8 +503,28 @@
   }
 
   .menu-toggle {
-    display: block;
+    order: 3;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    margin-left: 0;
+  }
+
+  .navbar > .brand {
+    order: 1;
+  }
+
+  .navbar-user-actions {
+    order: 2;
     margin-left: auto;
+  }
+
+  .navbar-user-actions .user-menu-container {
+    display: none;
   }
 
   .login-button {
@@ -595,8 +615,8 @@
   }
 
   .notification-button {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
   }
 
   .notification-dropdown {

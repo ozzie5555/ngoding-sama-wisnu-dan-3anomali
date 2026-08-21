@@ -755,6 +755,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0028 | Legacy schema Insight yang pernah diterapkan; tidak lagi digunakan frontend | ⚪ Applied, inactive |
 | 0029 | Lampiran gambar chat privat, batas file, dan Storage RLS | ✅ Run |
 | 0030 | Hardening role profil, data pribadi, RPC statistik, dan email newsletter | ✅ Run |
+| 0031 | Top Donatur dari seluruh donasi non-batal, menghormati visibilitas kontribusi | ✅ Run |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
@@ -773,3 +774,5 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - **Chat**: Baca, kirim, reply, edit, Realtime, dan lampiran gambar privat sudah terhubung. Maksimal 4 gambar JPG/PNG/WebP berukuran 5MB per pesan; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
 - **Security hardening**: Migration 0030 membatasi kolom profil yang dapat diubah user, memisahkan data profil publik lewat RPC aman, membatasi `increment_stat` ke service role, dan menutup pembacaan daftar newsletter bagi user biasa.
 - **Insight articles**: Konten dan tampilan kembali memakai data lokal frontend. Migration 0028 dipertahankan dalam riwayat remote agar urutan migration Supabase tetap konsisten, tetapi tidak dipanggil aplikasi.
+- **Top Donatur**: RPC `get_top_donors` menghitung jumlah barang dari semua donasi non-batal dan hanya menampilkan profil yang mengizinkan visibilitas kontribusi. Halaman Komunitas memperbarui daftar setiap 15 detik dan saat tab kembali aktif.
+- **Auth loading dan success**: Route aplikasi ditahan sampai session serta profile Supabase selesai dimuat. Login password, callback Google, signup, reset password, dan penyimpanan profil menampilkan animasi centang sebelum redirect agar data default tidak sempat terlihat.

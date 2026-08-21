@@ -8,6 +8,8 @@ import CariKebutuhanModal from '../components/donation/CariKebutuhanModal'
 import DonationActivity from '../components/donation/DonationActivity'
 import DonationHistoryCard from '../components/donation/DonationHistoryCard'
 import DonationDetailModal from '../components/donation/DonationDetailModal'
+import CardRail from '../components/CardRail'
+import LoadingScreen from '../components/LoadingScreen'
 import Footer from '../components/Footer'
 import './Donation.css'
 
@@ -26,6 +28,7 @@ export default function Donation() {
   const [isCariModalOpen, setIsCariModalOpen] = useState(false)
   const [modalCommunityId, setModalCommunityId] = useState(null)
   const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
+  const [partnersLoading, setPartnersLoading] = useState(true)
 
   // Donation State
   const [donations, setDonations] = useState([])
@@ -68,6 +71,7 @@ export default function Donation() {
     communityService.getCommunities()
       .then((rows) => { if (active && rows.length) setPartners(rows) })
       .catch((error) => console.error('[Donation] Failed to load communities:', error))
+      .finally(() => { if (active) setPartnersLoading(false) })
     return () => { active = false }
   }, [])
 
@@ -118,6 +122,8 @@ export default function Donation() {
   const handleReviewSubmitted = () => {
     loadDonations()
   }
+
+  if (partnersLoading) return <LoadingScreen message="Memuat halaman Donasi..." />
 
   return (
     <>
@@ -192,7 +198,7 @@ export default function Donation() {
               <span>Donasi saya</span>
               <Link to="/donasi/history" className="history-see-all-link">Lihat Semua →</Link>
             </div>
-            <div className="donation-history-list">
+            <CardRail className="donation-history-list" label="Riwayat donasi">
               {donations.slice(0, 2).map((item) => (
                 <DonationHistoryCard
                   key={item.id}
@@ -200,7 +206,7 @@ export default function Donation() {
                   onOpenDetail={handleOpenDetailModal}
                 />
               ))}
-            </div>
+            </CardRail>
           </div>
         </section>
       )}
@@ -208,7 +214,7 @@ export default function Donation() {
       {/* Donation Flow */}
       <section className="donation-flow" id="alur">
         <h2>Alur Donasi di KEMBALI</h2>
-        <div className="flow-row">
+        <CardRail className="flow-row" label="Alur donasi" compact>
           {[
             ['Cari Kebutuhan', 'Temukan barang yang sedang dibutuhkan oleh komunitas.'],
             ['Isi Form Donasi', 'Lengkapi informasi barang dan data diri dengan mudah.'],
@@ -223,12 +229,13 @@ export default function Donation() {
               </div>
             </article>
           ))}
-        </div>
+        </CardRail>
       </section>
 
       {/* 4 Options Grid */}
-      <section className="donation-options">
-        {flow.map(([img, title, desc, action, linkTarget], i) => (
+      <section>
+        <CardRail className="donation-options" label="Pilihan layanan donasi">
+          {flow.map(([img, title, desc, action, linkTarget], i) => (
           <article key={title}>
             <header>
               <div className="option-icon">
@@ -273,13 +280,14 @@ export default function Donation() {
               <a href={linkTarget}>{action} &rarr;</a>
             )}
           </article>
-        ))}
+          ))}
+        </CardRail>
       </section>
 
       {/* Why Section */}
       <section className="why">
         <h2>Mengapa Berdonasi di KEMBALI?</h2>
-        <div>
+        <CardRail className="why-list" label="Manfaat berdonasi" compact>
           {[
             ['mengapa-berdonasi-ikon/ri_leaf-fill.svg', 'Tersalurkan Tepat Sasaran', 'Donasimu akan disalurkan kepada penerima yang benar-benar membutuhkan.'],
             ['mengapa-berdonasi-ikon/mdi_recycle.svg', 'Dukung Ekonomi Sirkular', 'Mengurangi limbah dengan memanfaatkan kembali barang agar bernilai.'],
@@ -294,13 +302,13 @@ export default function Donation() {
               </div>
             </article>
           ))}
-        </div>
+        </CardRail>
       </section>
 
       {/* Verified Communities */}
       <section className="verified" id="verified">
         <h2>Komunitas Terverifikasi</h2>
-        <div className="verified-grid">
+        <CardRail className="verified-grid" label="Komunitas terverifikasi">
           {partners.map((partner) => (
             <article key={partner.id}>
               <img src={partner.logo} alt="" />
@@ -334,7 +342,7 @@ export default function Donation() {
               </div>
             </article>
           ))}
-        </div>
+        </CardRail>
       </section>
 
       </main>

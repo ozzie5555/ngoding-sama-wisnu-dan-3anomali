@@ -10,7 +10,7 @@ export default function EditProfile() {
   // Force refresh profile from DB on mount
   useEffect(() => {
     refreshProfile()
-  }, [])
+  }, [refreshProfile])
 
   // Local form state initialized from user context
   const [formData, setFormData] = useState(() => ({
@@ -27,18 +27,21 @@ export default function EditProfile() {
   // Sync form when user data loads from DB (once per user ID)
   const [syncedUserId, setSyncedUserId] = useState(null)
   useEffect(() => {
-    if (!user?.id || user.id === syncedUserId) return
-    setFormData({
-      name: user.name || '',
-      username: user.username || '',
-      email: user.email || '',
-      phone: user.phone || '',
-      birthDate: user.birthDate || '',
-      location: user.location || '',
-      avatar: user.avatar || '',
-      avatarPosition: user.avatarPosition || '50% 50%',
-    })
-    setSyncedUserId(user.id)
+    if (!user?.id || user.id === syncedUserId) return undefined
+    const syncTimer = window.setTimeout(() => {
+      setFormData({
+        name: user.name || '',
+        username: user.username || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        birthDate: user.birthDate || '',
+        location: user.location || '',
+        avatar: user.avatar || '',
+        avatarPosition: user.avatarPosition || '50% 50%',
+      })
+      setSyncedUserId(user.id)
+    }, 0)
+    return () => window.clearTimeout(syncTimer)
   }, [user, syncedUserId])
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
@@ -83,18 +86,23 @@ export default function EditProfile() {
   const handleSave = async (e) => {
     e.preventDefault()
     if (isSaving) return
+    const username = formData.username.trim().replace(/^@+/, '')
+    if (!/^[a-zA-Z0-9._]{3,30}$/.test(username)) {
+      setSaveMessage('Username harus 3–30 karakter dan hanya boleh memakai huruf, angka, titik, atau garis bawah.')
+      return
+    }
     setIsSaving(true)
     try {
       await authService.updateProfile({
         name: formData.name,
-        username: formData.username,
+        username: `@${username}`,
         email: formData.email,
         phone: formData.phone,
         birthDate: formData.birthDate,
         location: formData.location,
         avatarPosition: formData.avatarPosition,
       })
-      updateProfile(formData)
+      updateProfile({ ...formData, username: `@${username}` })
       await refreshProfile()
       setSaveMessage('Profil berhasil disimpan!')
     } catch (err) {
@@ -337,10 +345,18 @@ export default function EditProfile() {
                 id="input-username"
                 type="text"
                 value={formData.username}
-                onChange={(e) => handleChange('username', e.target.value)}
+                onChange={(e) => {
+                  const username = e.target.value.replace(/\s/g, '').replace(/^@+/, '')
+                  handleChange('username', `@${username}`)
+                }}
                 placeholder="@username"
+                autoComplete="username"
+                aria-describedby="username-login-hint"
                 required
               />
+              <small id="username-login-hint" className="profile-field-hint">
+                Saat masuk, Anda boleh mengetik username dengan atau tanpa tanda @.
+              </small>
             </div>
 
             <div className="input-group">

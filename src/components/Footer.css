@@ -304,11 +304,11 @@
 
 /* ── Mobile Breakpoint (≤ 640px) ── */
 @media (max-width: 640px) {
-  .donation-impact { margin-inline: 16px; padding: 32px 18px 28px; border-radius: 20px 20px 0 0; }
-  .donation-impact > div:nth-child(2) { gap: 8px; }
-  .donation-impact article { min-height: 120px; padding: 14px 8px; border-radius: 14px; }
-  .donation-impact strong { font-size: 18px; }
-  .donation-impact span { font-size: 9px; }
+  .donation-impact { margin-inline: 12px; padding: 24px 16px 24px; border-radius: 20px 20px 0 0; }
+  .donation-impact > div:nth-child(2) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .donation-impact article { min-height: 76px; padding: 12px 8px; border-radius: 14px; }
+  .donation-impact strong { font-size: 16px; margin-bottom: 4px; }
+  .donation-impact span { font-size: 10px; }
 
   .site-footer {
     padding: 36px 20px 24px;
@@ -351,7 +351,11 @@
 
 /* ── Very Small Mobile (≤ 360px) ── */
 @media (max-width: 360px) {
-  .donation-impact > div:nth-child(2) { grid-template-columns: 1fr; }
+  .donation-impact { margin-inline: 8px; padding: 20px 12px 20px; }
+  .donation-impact > div:nth-child(2) { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .donation-impact article { min-height: 70px; padding: 10px 4px; }
+  .donation-impact strong { font-size: 15px; }
+  .donation-impact span { font-size: 9px; }
 
   .site-footer {
     padding: 32px 16px 20px;

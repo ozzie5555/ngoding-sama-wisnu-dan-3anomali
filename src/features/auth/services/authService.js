@@ -22,7 +22,9 @@ export const authService = {
     const identifier = emailOrUsername.trim();
     let email = identifier;
 
-    if (!identifier.includes('@')) {
+    const isUsername = identifier.startsWith('@') || !identifier.includes('@');
+
+    if (isUsername) {
       const { data: profileEmail, error: lookupError } = await supabase.rpc(
         'lookup_email_by_username',
         { p_username: identifier }
@@ -104,6 +106,22 @@ export const authService = {
     if (error) throw new Error(error.message);
   },
 
+  signInWithGoogle: async (returnPath = '/login') => {
+    sessionStorage.setItem('kembali_auth_success_pending', 'oauth');
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}${returnPath}`,
+        queryParams: { prompt: 'select_account' },
+      },
+    });
+    if (error) {
+      sessionStorage.removeItem('kembali_auth_success_pending');
+      throw new Error(error.message);
+    }
+    return { success: true, data };
+  },
+
   resetPassword: async (email) => {
     return authService.requestEmailReset(email);
   },
@@ -125,6 +143,7 @@ export const authService = {
    * Designed for direct integration with WhatsApp Business API / Twilio / custom provider
    */
   requestWhatsappOtp: async (phone) => {
+    if (!phone?.trim()) throw new Error('Nomor WhatsApp wajib diisi.');
     // Demo-only fallback until a real SMS/WhatsApp provider is configured.
     if (!import.meta.env.DEV) {
       throw new Error('Provider OTP belum dikonfigurasi.');
@@ -182,9 +201,10 @@ export const authService = {
     const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
+    const username = updates.username?.trim().replace(/^@+/, '');
     const profileUpdates = {
       full_name: updates.name,
-      username: updates.username,
+      username: username ? `@${username}` : null,
       email: updates.email,
       phone: updates.phone,
       birth_date: updates.birthDate || null,
@@ -434,4 +454,3 @@ export const authService = {
     return { success: true };
   },
 };
-

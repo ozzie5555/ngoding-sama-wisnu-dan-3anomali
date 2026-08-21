@@ -6,6 +6,7 @@ import { authService } from '../services/authService';
 import { supabase } from '../../../lib/supabase/client';
 import KembaliLogo from '../../../assets/images/Group 6.svg';
 import { LocationPickerModal } from '../../../components/profile/ProfileModal';
+import AnimatedCheckmark from '../components/AnimatedCheckmark';
 
 const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -20,7 +21,7 @@ const ChevronDownIcon = () => (
 );
 
 export default function CompleteProfile() {
-  const { user, updateProfile, refreshProfile } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   // Step 1: Phone verification
@@ -43,6 +44,7 @@ export default function CompleteProfile() {
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [profileSaved, setProfileSaved] = useState(false);
 
   // WhatsApp timer
   useEffect(() => {
@@ -141,11 +143,19 @@ export default function CompleteProfile() {
       return;
     }
 
+    const normalizedUsername = username.trim().replace(/^@+/, '');
+    if (normalizedUsername && !/^[a-zA-Z0-9._]{3,30}$/.test(normalizedUsername)) {
+      setError('Username harus 3–30 karakter dan hanya boleh memakai huruf, angka, titik, atau garis bawah.');
+      return;
+    }
+
+    const savedUsername = `@${normalizedUsername || fullName.trim().split(' ')[0].toLowerCase()}`;
+
     setLoading(true);
     try {
       await authService.updateProfile({
         name: fullName.trim(),
-        username: username.trim() || `@${fullName.trim().split(' ')[0].toLowerCase()}`,
+        username: savedUsername,
         email: user?.email || '',
         phone: phone,
         birthDate: birthDate,
@@ -157,7 +167,7 @@ export default function CompleteProfile() {
         await supabase.auth.updateUser({
           data: {
             full_name: fullName.trim(),
-            username: username.trim() || `@${fullName.trim().split(' ')[0].toLowerCase()}`,
+            username: savedUsername,
           }
         });
       } catch (metaErr) {
@@ -165,6 +175,8 @@ export default function CompleteProfile() {
       }
 
       await refreshProfile();
+      setProfileSaved(true);
+      await new Promise((resolve) => window.setTimeout(resolve, 1400));
       navigate('/');
     } catch (err) {
       setError(err.message || 'Gagal menyimpan profil');
@@ -172,6 +184,18 @@ export default function CompleteProfile() {
       setLoading(false);
     }
   };
+
+  if (profileSaved) {
+    return (
+      <AuthLayout>
+        <div className="success-screen">
+          <AnimatedCheckmark />
+          <h2>Profil Berhasil Disimpan!</h2>
+          <p>Selamat datang di KEMBALI</p>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout>
@@ -308,8 +332,16 @@ export default function CompleteProfile() {
                 style={{ paddingLeft: '14px' }}
                 placeholder="cth: @username_anda"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\s/g, '').replace(/^@+/, '');
+                  setUsername(value ? `@${value}` : '');
+                }}
+                autoComplete="username"
+                aria-describedby="complete-profile-username-hint"
               />
+              <span id="complete-profile-username-hint" className="location-field-hint">
+                Ditampilkan dengan @. Saat masuk, tanda @ boleh dipakai atau tidak.
+              </span>
             </div>
 
             <div className="form-group">

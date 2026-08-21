@@ -704,7 +704,7 @@
 }
 
 /* Mobile */
-@media (max-width: 767px) {
+@media (max-width: 840px) {
   .community-wrapper { padding: 16px 16px 24px; }
 
   .community-layout {
@@ -783,6 +783,6 @@
 @media (max-width: 1023px) {
   .community-chat { height: 430px; min-height: 0; }
 }
-@media (max-width: 767px) {
+@media (max-width: 840px) {
   .community-chat { height: 420px; min-height: 0; }
 }

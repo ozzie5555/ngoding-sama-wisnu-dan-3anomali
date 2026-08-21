@@ -1257,20 +1257,35 @@
 
 /* 480px and below (Small Mobile) */
 @media (max-width: 480px) {
+  .insight-hero-section {
+    padding-top: 32px;
+    padding-bottom: 36px;
+  }
+
+  .hero-illustration-card {
+    max-width: 260px;
+  }
+
   .section-heading-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .hero-main-title {
-    font-size: 26px;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .hero-description {
+    font-size: 13.5px;
+    margin-bottom: 20px;
   }
 
   .featured-news-title {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .detail-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 }
 

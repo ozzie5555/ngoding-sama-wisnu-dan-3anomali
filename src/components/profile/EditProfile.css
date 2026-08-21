@@ -175,6 +175,12 @@
   font-weight: 400;
 }
 
+.profile-field-hint {
+  color: #718780;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
 .input-with-icon-wrapper {
   position: relative;
   display: flex;

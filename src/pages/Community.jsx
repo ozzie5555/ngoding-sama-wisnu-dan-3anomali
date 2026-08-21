@@ -3,6 +3,7 @@ import { useAuth } from '../context/useAuth'
 import { chatService } from '../features/community/services/chatService'
 import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
 import Footer from '../components/Footer'
+import LoadingScreen from '../components/LoadingScreen'
 import './Community.css'
 
 const donators = []
@@ -61,6 +62,7 @@ export default function Community() {
   const [topDonors, setTopDonors] = useState([])
   const [topDonorsLoading, setTopDonorsLoading] = useState(true)
   const [communities, setCommunities] = useState(fallbackChatCommunities)
+  const [communitiesLoading, setCommunitiesLoading] = useState(true)
   const [selectedId, setSelectedId]     = useState('general')
   const [messageInput, setMessageInput] = useState('')
   const [allMessages, setAllMessages]   = useState(() => {
@@ -88,6 +90,7 @@ export default function Community() {
         if (active && rows.length) setCommunities([GENERAL_COMMUNITY, ...rows.map(mapChatCommunity)])
       })
       .catch((error) => console.error('[Community] Failed to load communities:', error))
+      .finally(() => { if (active) setCommunitiesLoading(false) })
     return () => { active = false }
   }, [])
 
@@ -103,14 +106,21 @@ export default function Community() {
 
   useEffect(() => {
     let active = true
-    chatService.getTopDonors(4)
-      .then((donors) => active && setTopDonors(donors))
-      .catch((error) => {
-        console.error('[Community] Failed to load top donors:', error)
-        if (active) setTopDonors([])
-      })
-      .finally(() => active && setTopDonorsLoading(false))
-    return () => { active = false }
+    const loadTopDonors = () => chatService.getTopDonors(4)
+      .then((donors) => { if (active) setTopDonors(donors) })
+      .catch((error) => console.error('[Community] Failed to load top donors:', error))
+      .finally(() => { if (active) setTopDonorsLoading(false) })
+
+    loadTopDonors()
+    const refreshTimer = window.setInterval(loadTopDonors, 15000)
+    const refreshWhenVisible = () => { if (!document.hidden) loadTopDonors() }
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+
+    return () => {
+      active = false
+      window.clearInterval(refreshTimer)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
   }, [])
 
   useEffect(() => {
@@ -266,6 +276,10 @@ export default function Community() {
   }
 
   const memberAvatars = (topDonors.length > 0 ? topDonors : donators).slice(0, 4)
+
+  if (communitiesLoading || topDonorsLoading) {
+    return <LoadingScreen message="Memuat komunitas dan Top Donatur..." />
+  }
 
   return (
     <>
