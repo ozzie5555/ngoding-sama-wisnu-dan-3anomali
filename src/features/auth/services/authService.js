@@ -1,7 +1,9 @@
 import { supabase } from '../../../lib/supabase/client';
 
+// Keep the clearly-labelled competition demo available when deployment config
+// is missing. Set VITE_ENABLE_DEMO_OTP=false to disable it explicitly.
 const isDemoOtpEnabled = import.meta.env.DEV
-  || import.meta.env.VITE_ENABLE_DEMO_OTP === 'true';
+  || import.meta.env.VITE_ENABLE_DEMO_OTP !== 'false';
 
 export const authService = {
   // Reliable way to get current user (getUser may fail, fallback to session)

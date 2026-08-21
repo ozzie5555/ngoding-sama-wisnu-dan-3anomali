@@ -683,7 +683,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 
 ## 15. OTP Nomor Telepon — Status & Rencana Twilio
 
-**Status saat ini:** Mock demo. Kode `1234` aktif otomatis pada development dan dapat diaktifkan secara eksplisit pada deployment presentasi dengan `VITE_ENABLE_DEMO_OTP=true`. Belum ada SMS yang dikirim dan mode ini bukan verifikasi nomor sungguhan.
+**Status saat ini:** Mock demo. Kode `1234` aktif otomatis pada development dan deployment presentasi. Set `VITE_ENABLE_DEMO_OTP=false` untuk mematikannya. Belum ada SMS yang dikirim dan mode ini bukan verifikasi nomor sungguhan.
 
 **Target implementasi:** 21 Agustus 2026 (besok)
 
@@ -715,7 +715,7 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - Kredensial Twilio harus disimpan sebagai secret Supabase/server-side.
 - Jangan mencetak token, OTP, nomor telepon, atau kredensial ke log.
 - Mode demo tetap dipakai sampai integrasi real selesai dan diuji.
-- Untuk deployment lomba, aktifkan `VITE_ENABLE_DEMO_OTP=true` di environment Vercel Production/Preview lalu redeploy. Hapus atau ubah menjadi `false` setelah Twilio aktif.
+- Untuk deployment lomba, `VITE_ENABLE_DEMO_OTP=true` dapat dicantumkan di environment Vercel Production/Preview agar konfigurasinya eksplisit. Ubah menjadi `false` setelah Twilio aktif.
 - Setelah testing, matikan provider atau batasi pengiriman agar unit trial tidak habis tanpa sengaja.
 
 **Yang perlu didokumentasikan setelah implementasi:** nomor penerima yang diverifikasi, konfigurasi sender, flow OTP untuk signup/reset/login, serta hasil pengujian dan sisa unit trial.
