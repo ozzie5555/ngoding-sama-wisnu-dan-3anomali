@@ -10,15 +10,32 @@ const impactStats = [
 ]
 
 export default function Footer() {
-  const [email, setEmail] = useState('')
-  const [subscribed, setSubscribed] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubscribe = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (email.trim()) {
-      setSubscribed(true)
-      setEmail('')
-      setTimeout(() => setSubscribed(false), 4000)
+    setLoading(true)
+
+    const formData = new FormData(e.target)
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/kembalikebalik@gmail.com", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (response.ok) {
+        setSubmitted(true)
+        e.target.reset()
+        setTimeout(() => setSubmitted(false), 5000)
+      } else {
+        alert("Gagal mengirim masukan. Coba lagi nanti.")
+      }
+    } catch {
+      alert("Terjadi kesalahan jaringan.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -41,128 +58,125 @@ export default function Footer() {
       </section>
 
       <footer className="site-footer">
-      <div className="footer-inner">
-        <div className="footer-grid">
-          {/* Brand Section */}
-          <div className="footer-brand">
-            <Link to="/" className="brand" aria-label="KEMBALI Beranda">
-              <img src="/logo.svg" alt="KEMBALI" />
-              <span>KEMBALI</span>
-            </Link>
-            <p className="footer-desc">
-              Platform donasi barang layak pakai untuk mengurangi limbah dan memberikan dampak sosial berkelanjutan.
-            </p>
-            <div className="footer-socials" aria-label="Media Sosial KEMBALI">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram KEMBALI"
-                className="social-link"
-              >
-                <img src="/ri_instagram-fill.svg" alt="" aria-hidden="true" />
-              </a>
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="TikTok KEMBALI"
-                className="social-link"
-              >
-                <img src="/ic_baseline-tiktok.svg" alt="" aria-hidden="true" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X / Twitter KEMBALI"
-                className="social-link"
-              >
-                <img src="/devicon_twitter.svg" alt="" aria-hidden="true" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube KEMBALI"
-                className="social-link"
-              >
-                <img src="/selfhst_youtube-dark.svg" alt="" aria-hidden="true" />
-              </a>
+        <div className="footer-inner">
+          <div className="footer-grid">
+            {/* Brand Section */}
+            <div className="footer-brand">
+              <Link to="/" className="brand" aria-label="KEMBALI Beranda">
+                <img src="/logo.svg" alt="KEMBALI" />
+                <span>KEMBALI</span>
+              </Link>
+              <p className="footer-desc">
+                Platform donasi barang layak pakai untuk mengurangi limbah dan memberikan dampak sosial berkelanjutan.
+              </p>
+              <div className="footer-socials" aria-label="Media Sosial KEMBALI">
+                <a
+                  href="https://www.instagram.com/kembalidonasi/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram KEMBALI"
+                  className="social-link"
+                >
+                  <img src="/ri_instagram-fill.svg" alt="" aria-hidden="true" />
+                </a>
+                <a
+                  href="https://www.tiktok.com/@kembalidonasi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="TikTok KEMBALI"
+                  className="social-link"
+                >
+                  <img src="/ic_baseline-tiktok.svg" alt="" aria-hidden="true" />
+                </a>
+                <a
+                  href="https://x.com/kembalidonasi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X / Twitter KEMBALI"
+                  className="social-link"
+                >
+                  <img src="/devicon_twitter.svg" alt="" aria-hidden="true" />
+                </a>
+                <a
+                  href="https://www.youtube.com/@kembalidonasi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube KEMBALI"
+                  className="social-link"
+                >
+                  <img src="/selfhst_youtube-dark.svg" alt="" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+
+            {/* Main Navigation */}
+            <div className="footer-nav-col">
+              <h3 className="footer-col-title">Navigasi Utama</h3>
+              <ul className="footer-links">
+                <li>
+                  <Link to="/">Beranda</Link>
+                </li>
+                <li>
+                  <Link to="/donasi">Donasi</Link>
+                </li>
+                <li>
+                  <Link to="/insight">Insight</Link>
+                </li>
+                <li>
+                  <Link to="/komunitas">Komunitas</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Help & Legal */}
+            <div className="footer-nav-col">
+              <h3 className="footer-col-title">Bantuan &amp; Legal</h3>
+              <ul className="footer-links">
+                <li>
+                  <a href="/#faq">Pusat Bantuan / FAQ</a>
+                </li>
+                <li>
+                  <a href="#terms">Syarat &amp; Ketentuan</a>
+                </li>
+                <li>
+                  <a href="#privacy">Kebijakan Privasi</a>
+                </li>
+                <li>
+                  <a href="#guide">Panduan Keamanan Donasi</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Form Pengaduan */}
+            <div className="footer-newsletter">
+              <h3 className="footer-col-title">Pengaduan &amp; Masukan</h3>
+              <p className="newsletter-desc">
+                Punya keluhan, kendala donasi, atau masukan? Sampaikan kepada tim KEMBALI.
+              </p>
+              
+              {submitted ? (
+                <div className="newsletter-success">
+                  ✓ Terima kasih! Pesan kamu berhasil terkirim.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="newsletter-form">
+                  <input type="email" name="email" placeholder="Email kamu" required />
+                  <textarea name="message" placeholder="Tuliskan masukan atau pengaduan kamu..." rows={3} required />
+                  <button type="submit" disabled={loading}>
+                    {loading ? 'Mengirim...' : 'Kirim'}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
 
-          {/* Main Navigation */}
-          <div className="footer-nav-col">
-            <h3 className="footer-col-title">Navigasi Utama</h3>
-            <ul className="footer-links">
-              <li>
-                <Link to="/">Beranda</Link>
-              </li>
-              <li>
-                <Link to="/donasi">Donasi</Link>
-              </li>
-              <li>
-                <Link to="/insight">Insight</Link>
-              </li>
-              <li>
-                <Link to="/komunitas">Komunitas</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Help & Legal */}
-          <div className="footer-nav-col">
-            <h3 className="footer-col-title">Bantuan &amp; Legal</h3>
-            <ul className="footer-links">
-              <li>
-                <a href="/#faq">Pusat Bantuan / FAQ</a>
-              </li>
-              <li>
-                <a href="#terms">Syarat &amp; Ketentuan</a>
-              </li>
-              <li>
-                <a href="#privacy">Kebijakan Privasi</a>
-              </li>
-              <li>
-                <a href="#guide">Panduan Keamanan Donasi</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div className="footer-newsletter">
-            <h3 className="footer-col-title">Newsletter</h3>
-            <p className="newsletter-desc">
-              Dapatkan update kegiatan dan informasi terbaru dari KEMBALI.
+          {/* Copyright */}
+          <div className="footer-bottom">
+            <p className="copyright">
+              © 2026 KEMBALI. Seluruh hak cipta dilindungi.
             </p>
-            {subscribed ? (
-              <div className="newsletter-success">
-                <span>✓ Terima kasih telah berlangganan!</span>
-              </div>
-            ) : (
-              <form className="newsletter-form" onSubmit={handleSubscribe}>
-                <input
-                  type="email"
-                  aria-label="Alamat email untuk newsletter"
-                  placeholder="Masukkan email kamu"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <button type="submit">Berlangganan</button>
-              </form>
-            )}
           </div>
         </div>
-
-        {/* Copyright */}
-        <div className="footer-bottom">
-          <p className="copyright">
-            © 2026 KEMBALI. Seluruh hak cipta dilindungi.
-          </p>
-        </div>
-      </div>
       </footer>
     </>
   )

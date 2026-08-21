@@ -327,6 +327,8 @@
 
 .insight-article-card {
   height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(6, 38, 50, 0.12);
@@ -370,7 +372,9 @@
   flex-grow: 1;
 }
 
-.article-card-tags {
+.article-card-tags,
+.news-card-tags,
+.video-card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -456,6 +460,7 @@
 
 .insight-news-card {
   height: 100%;
+  width: 100%;
   border-radius: 16px;
   padding: 20px;
   box-sizing: border-box;
@@ -490,13 +495,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.news-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
 }
 
 .news-card-title {
@@ -677,13 +675,6 @@
   justify-content: center;
 }
 
-.video-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
 .video-card-title {
   font-size: 19px;
   font-weight: 600;
@@ -720,6 +711,7 @@
   padding: 40px 20px;
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .insight-detail-container {
@@ -1149,7 +1141,88 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN SYSTEM
+   8. ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-illustration-col {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-content-col {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+.hero-main-img {
+  animation: heroFloat 6s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.insight-article-card,
+.insight-news-card,
+.insight-video-card {
+  will-change: transform, box-shadow;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.video-card-thumbnail {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insight-video-card:hover .video-card-thumbnail {
+  transform: scale(1.05);
+}
+
+.insight-detail-overlay {
+  animation: overlayFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.insight-detail-container {
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM & BREAKPOINTS
    ========================================================================== */
 
 /* 1200px – 1024px */
@@ -1194,6 +1267,44 @@
 
   .stat-value {
     font-size: 18px;
+  }
+
+  .insight-detail-overlay {
+    padding: 20px 12px;
+  }
+
+  .insight-detail-container {
+    padding: 32px 20px;
+    border-radius: 16px;
+  }
+
+  .detail-header {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .detail-header-right {
+    justify-content: flex-start;
+  }
+
+  .detail-header-illustration {
+    width: 100%;
+    max-width: 240px;
+  }
+
+  .article-4-view .detail-header-illustration {
+    width: 100%;
+    max-width: 280px;
+    margin-top: 0;
+  }
+
+  .editorial-heading {
+    font-size: 20px;
+    margin: 28px 0 12px 0;
+  }
+
+  .detail-title {
+    font-size: 26px;
   }
 }
 
@@ -1265,6 +1376,14 @@
     gap: 16px;
   }
 
+  .video-card-thumbnail-wrapper {
+    width: 100%;
+  }
+
+  .video-card-title {
+    font-size: 16px;
+  }
+
   .detail-header {
     grid-template-columns: 1fr;
   }
@@ -1277,12 +1396,64 @@
     padding: 24px 16px;
   }
 
+  .accordion-box {
+    padding: 14px 16px;
+  }
+
+  .accordion-number {
+    font-size: 22px;
+    min-width: 32px;
+  }
+
+  .accordion-title {
+    font-size: 16px;
+  }
+
   .accordion-body {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .accordion-media {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .info-box-title,
+  .safety-point-title {
+    font-size: 17px;
+  }
+
+  .article-info-box,
+  .safety-point-box {
+    padding: 18px 20px;
+  }
+
+  .btn-detail-close {
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* 600px and below (Mobile Pagination & Grid Adjustment) */
+@media (max-width: 600px) {
+  .pagination-connector-line {
+    width: 36px;
+  }
+
+  .pagination-track {
+    gap: 8px;
+  }
+
+  .pagination-number-btn {
+    font-size: 12px;
   }
 
   .circular-actions-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
@@ -1316,7 +1487,22 @@
   }
 
   .detail-title {
-    font-size: 22px;
+    font-size: 20px;
+  }
+
+  .circular-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-intro,
+  .detail-subintro,
+  .editorial-intro-block p,
+  .editorial-section-block p,
+  .editorial-paragraphs-flow p {
+    font-size: 14px;
+  }
+
+  .btn-detail-back {
+    width: 100%;
   }
 }
-

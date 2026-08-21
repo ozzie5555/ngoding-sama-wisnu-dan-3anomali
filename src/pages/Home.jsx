@@ -105,7 +105,6 @@ export default function Home() {
   const [reviews, setReviews] = useState([])
   const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
   
-  // State untuk kontrol Carousel Insight
   const [activeIndex, setActiveIndex] = useState(0)
   const totalArticles = Math.min(articlesData.length, 4)
 
@@ -117,7 +116,6 @@ export default function Home() {
     setActiveIndex((prev) => (prev === totalArticles - 1 ? 0 : prev + 1))
   }
 
-  // Scroll reveal observer
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('is-revealed'))
@@ -228,7 +226,7 @@ export default function Home() {
           </div>
         </section>
         
-        {/* Section: Seputar Tentang KEMBALI - 3D Carousel Style */}
+        {/* Section Insight (Kontrol Carousel Disatukan Cukup 1 Set) */}
         <section className="insight reveal-on-scroll" id="insight">
           <Heading
             className="reveal-on-scroll"
@@ -238,10 +236,6 @@ export default function Home() {
           />
 
           <div className="article-carousel reveal-on-scroll reveal-delay-1">
-            <button type="button" className="carousel-arrow prev" onClick={handlePrev} aria-label="Previous">
-              ‹
-            </button>
-
             <div className="article-window">
               {articlesData.slice(0, 4).map((art, idx) => {
                 let positionClass = 'hidden'
@@ -280,22 +274,28 @@ export default function Home() {
                 )
               })}
             </div>
+          </div>
+          
+          {/* Cukup 1 set kontrol panah + dots di bawah */}
+          <div className="carousel-controls">
+            <button type="button" className="carousel-arrow prev" onClick={handlePrev} aria-label="Previous">
+              ‹
+            </button>
+
+            <div className="dots">
+              {articlesData.slice(0, 4).map((_, idx) => (
+                <i
+                  key={idx}
+                  className={idx === activeIndex ? 'active' : ''}
+                  onClick={() => setActiveIndex(idx)}
+                />
+              ))}
+            </div>
 
             <button type="button" className="carousel-arrow next" onClick={handleNext} aria-label="Next">
               ›
             </button>
           </div>
-
-          <div className="dots">
-            {articlesData.slice(0, 4).map((_, idx) => (
-              <i
-                key={idx}
-                className={idx === activeIndex ? 'active' : ''}
-                onClick={() => setActiveIndex(idx)}
-              />
-            ))}
-          </div>
-
         </section>
 
         <section className="services reveal-on-scroll" id="layanan">
