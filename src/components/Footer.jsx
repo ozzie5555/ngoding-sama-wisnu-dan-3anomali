@@ -71,7 +71,7 @@ export default function Footer() {
               </p>
               <div className="footer-socials" aria-label="Media Sosial KEMBALI">
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/kembalidonasi/"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram KEMBALI"
@@ -80,7 +80,7 @@ export default function Footer() {
                   <img src="/ri_instagram-fill.svg" alt="" aria-hidden="true" />
                 </a>
                 <a
-                  href="https://tiktok.com"
+                  href="https://www.tiktok.com/@kembalidonasi"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="TikTok KEMBALI"
@@ -89,7 +89,7 @@ export default function Footer() {
                   <img src="/ic_baseline-tiktok.svg" alt="" aria-hidden="true" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://x.com/kembalidonasi"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="X / Twitter KEMBALI"
@@ -98,7 +98,7 @@ export default function Footer() {
                   <img src="/devicon_twitter.svg" alt="" aria-hidden="true" />
                 </a>
                 <a
-                  href="https://youtube.com"
+                  href="https://www.youtube.com/@kembalidonasi"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="YouTube KEMBALI"
