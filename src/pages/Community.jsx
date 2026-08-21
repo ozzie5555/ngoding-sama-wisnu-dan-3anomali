@@ -38,6 +38,24 @@ function AvatarImg({ src, alt, className }) {
   )
 }
 
+function MessageBody({ message }) {
+  return (
+    <>
+      {message.replyTo && <div className="message-reply-preview"><strong>{message.replyTo.sender}</strong><span>{message.replyTo.text}</span></div>}
+      {message.images?.length > 0 && (
+        <div className={`message-image-grid image-count-${message.images.length}`}>
+          {message.images.map((url, index) => (
+            <a href={url} target="_blank" rel="noreferrer" key={url} aria-label={`Buka gambar ${index + 1}`}>
+              <img src={url} alt={`Lampiran chat ${index + 1}`} loading="lazy" />
+            </a>
+          ))}
+        </div>
+      )}
+      {message.text && <p>{message.text} {message.editedAt && <small className="message-edited-label">(diedit)</small>}</p>}
+    </>
+  )
+}
+
 export default function Community() {
   const { isAuthenticated, user } = useAuth()
   const [topDonors, setTopDonors] = useState([])
@@ -55,6 +73,7 @@ export default function Community() {
   const [attachedImages, setAttachedImages] = useState([])
   const [roomIds, setRoomIds] = useState({})
   const [chatLoading, setChatLoading] = useState(false)
+  const [chatSending, setChatSending] = useState(false)
   const [chatError, setChatError] = useState('')
   const fileInputRef = useRef(null)
   const chatMessagesRef = useRef(null)
@@ -98,8 +117,6 @@ export default function Community() {
     if (!isAuthenticated || !user?.id) return undefined
     let active = true
     let cleanup = () => {}
-    setChatLoading(true)
-    setChatError('')
     chatService.getRoom(selectedId)
       .then(async (room) => {
         if (!active) return
@@ -127,6 +144,8 @@ export default function Community() {
   }, [isAuthenticated, user?.id, selectedId])
 
   function handleSelectCommunity(id) {
+    setChatLoading(true)
+    setChatError('')
     setSelectedId(id)
     setMessageInput('')
     setReplyingTo(null)
@@ -135,6 +154,8 @@ export default function Community() {
   }
 
   function handleBackToGeneral() {
+    setChatLoading(true)
+    setChatError('')
     setSelectedId('general')
     setMessageInput('')
     setReplyingTo(null)
@@ -156,6 +177,7 @@ export default function Community() {
       return
     }
     try {
+      setChatSending(true)
       setChatError('')
       if (editingMessage) {
         const updated = await chatService.updateMessage(editingMessage.id, text, user.id)
@@ -164,7 +186,7 @@ export default function Community() {
           [selectedId]: (prev[selectedId] || []).map((message) => message.id === updated.id ? updated : message),
         }))
       } else {
-        const sent = await chatService.sendMessage(roomId, text || attachedImages.map((file) => file.name).join(', '), user.id, replyingTo?.id || null)
+        const sent = await chatService.sendMessage(roomId, text, user.id, replyingTo?.id || null, attachedImages)
         if (sent) {
           setAllMessages((prev) => {
             const current = prev[selectedId] || []
@@ -180,6 +202,8 @@ export default function Community() {
       setAttachedImages([])
     } catch (error) {
       setChatError(error.message || 'Pesan gagal dikirim.')
+    } finally {
+      setChatSending(false)
     }
   }
 
@@ -213,6 +237,7 @@ export default function Community() {
   function handleEdit(msg) {
     setEditingMessage(msg)
     setReplyingTo(null)
+    setAttachedImages([])
     setMessageInput(msg.text)
   }
 
@@ -223,7 +248,13 @@ export default function Community() {
 
   function handleAttachImages(e) {
     const files = Array.from(e.target.files || [])
-    if (files.length > 0) {
+    const invalidFile = files.find((file) => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)
+    if (invalidFile) {
+      setChatError('Gunakan gambar JPG, PNG, atau WebP dengan ukuran maksimal 5MB.')
+    } else if (attachedImages.length + files.length > 4) {
+      setChatError('Maksimal 4 gambar per pesan.')
+    } else if (files.length > 0) {
+      setChatError('')
       setAttachedImages((prev) => [...prev, ...files])
     }
     // Reset so the same file can be selected again
@@ -309,8 +340,7 @@ export default function Community() {
                     <div className="message-bubble-group own">
                       <span className="message-sender-label own">You</span>
                       <div className="message-bubble own">
-                        {msg.replyTo && <div className="message-reply-preview"><strong>{msg.replyTo.sender}</strong><span>{msg.replyTo.text}</span></div>}
-                        <p>{msg.text} {msg.editedAt && <small className="message-edited-label">(diedit)</small>}</p>
+                        <MessageBody message={msg} />
                       </div>
                       <div className="message-actions own">
                         <button type="button" className="msg-action-btn" onClick={() => handleEdit(msg)}>
@@ -336,8 +366,7 @@ export default function Community() {
                     <div className="message-bubble-group other">
                       <span className="message-sender-label other">{msg.sender}</span>
                       <div className="message-bubble other">
-                        {msg.replyTo && <div className="message-reply-preview"><strong>{msg.replyTo.sender}</strong><span>{msg.replyTo.text}</span></div>}
-                        <p>{msg.text} {msg.editedAt && <small className="message-edited-label">(diedit)</small>}</p>
+                        <MessageBody message={msg} />
                       </div>
                       <div className="message-actions other">
                         <button type="button" className="msg-action-btn" onClick={() => handleReply(msg)}>
@@ -364,7 +393,7 @@ export default function Community() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 multiple
                 className="sr-only"
                 onChange={handleAttachImages}
@@ -427,13 +456,14 @@ export default function Community() {
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     autoComplete="off"
-                    disabled={!isAuthenticated || chatLoading}
+                    disabled={!isAuthenticated || chatLoading || chatSending}
                   />
                   <button
                     type="button"
                     className="chat-attach-btn"
                     aria-label="Lampirkan gambar"
                     onClick={() => fileInputRef.current?.click()}
+                    disabled={!isAuthenticated || chatLoading || chatSending || Boolean(editingMessage)}
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -447,7 +477,7 @@ export default function Community() {
                 type="submit"
                 className="chat-send-btn"
                 aria-label="Kirim pesan"
-                disabled={!messageInput.trim() && attachedImages.length === 0}
+                disabled={chatSending || (!messageInput.trim() && attachedImages.length === 0)}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <line x1="22" y1="2" x2="11" y2="13"/>

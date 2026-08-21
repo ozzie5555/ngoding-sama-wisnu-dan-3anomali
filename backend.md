@@ -313,17 +313,21 @@ Contoh policy profile:
 ```sql
 alter table public.profiles enable row level security;
 
-create policy "authenticated users read profiles"
+create policy "users read own full profile"
 on public.profiles for select to authenticated
-using (true);
+using ((select auth.uid()) = id);
 
 create policy "users update their own profile"
 on public.profiles for update to authenticated
 using ((select auth.uid()) = id)
 with check ((select auth.uid()) = id);
+
+revoke update on table public.profiles from authenticated;
+grant update (username, full_name, phone, address, avatar_path, birth_date, email, password_last_updated, updated_at)
+on table public.profiles to authenticated;
 ```
 
-Untuk `UPDATE`, policy `SELECT` yang sesuai juga diperlukan. Kolom `role`, `verification_status`, `is_approved`, dan status donasi tidak boleh dinaikkan oleh user biasa.
+Untuk `UPDATE`, policy `SELECT` yang sesuai juga diperlukan. RLS membatasi baris, sedangkan column grant migration 0030 melarang user mengubah `role`, `verification_status`, dan `phone_verified_at`. Nama, username, dan avatar pengguna lain hanya dibaca melalui RPC `get_public_profiles`, yang tidak mengembalikan email, telepon, tanggal lahir, maupun alamat.
 
 ### Pengujian RLS minimum
 
@@ -375,6 +379,7 @@ Setelah login, simpan tujuan seperti `/donasi?community_id=...` dan kembalikan u
 | `community-assets` | Logo komunitas | Baca publik; upload manager/admin |
 | `article-media` | Cover artikel | Baca published; upload admin |
 | `documentation-media` | Foto/video kegiatan | Baca publik sesuai status; upload admin/manager |
+| `chat-images` | Lampiran gambar pesan komunitas | Bucket privat; upload pemilik path, baca anggota room melalui signed URL |
 
 Gunakan path ownership, misalnya `{user_id}/{donation_id}/{uuid}.webp`. Validasi MIME, ukuran, dan jumlah file. Bucket private memakai signed URL.
 
@@ -748,10 +753,13 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 | 0026 | Secure notifications policy + Realtime publication | ✅ Run |
 | 0027 | Live communities, display metadata, dan canonical needs | ✅ Run |
 | 0028 | Legacy schema Insight yang pernah diterapkan; tidak lagi digunakan frontend | ⚪ Applied, inactive |
+| 0029 | Lampiran gambar chat privat, batas file, dan Storage RLS | ✅ Run |
+| 0030 | Hardening role profil, data pribadi, RPC statistik, dan email newsletter | ✅ Run |
 
 **Buckets yang dibuat manual di Dashboard:**
 - `profile-photos` — PUBLIC, 2MB, image/jpeg|png|webp
 - `item-photos` — PUBLIC, 5MB, image/jpeg|png|webp
+- `chat-images` — PRIVATE, 5MB per file, image/jpeg|png|webp (dibuat migration 0029)
 
 ---
 
@@ -762,5 +770,6 @@ Jika UI berubah, update kontrak data dan migration plan di dokumen ini lebih dul
 - **Monitoring admin**: Frontend dashboard dan RPC assignment sudah diterapkan. Tetap uji konflik assignment menggunakan dua akun admin/manager sebelum demo.
 - **Realtime status donasi**: Listener frontend dan publication database sudah aktif melalui migration 0023. Tetap uji lintas browser memakai akun admin dan donatur yang berbeda.
 - **OTP nomor telepon**: Masih mock demo. Integrasi Twilio dijadwalkan 21 Agustus 2026; jangan mengaktifkan SMS real sebelum kredensial dan batas biaya dikonfirmasi.
-- **Chat**: Frontend dan migration sudah terhubung; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
+- **Chat**: Baca, kirim, reply, edit, Realtime, dan lampiran gambar privat sudah terhubung. Maksimal 4 gambar JPG/PNG/WebP berukuran 5MB per pesan; tetap perlu uji Realtime lintas akun dan koneksi yang lambat.
+- **Security hardening**: Migration 0030 membatasi kolom profil yang dapat diubah user, memisahkan data profil publik lewat RPC aman, membatasi `increment_stat` ke service role, dan menutup pembacaan daftar newsletter bagi user biasa.
 - **Insight articles**: Konten dan tampilan kembali memakai data lokal frontend. Migration 0028 dipertahankan dalam riwayat remote agar urutan migration Supabase tetap konsisten, tetapi tidak dipanggil aplikasi.

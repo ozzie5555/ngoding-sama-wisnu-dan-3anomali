@@ -47,6 +47,7 @@ export default function DonationForm() {
   const [itemUnit, setItemUnit] = useState('Buah / Pcs');
   const [itemCondition, setItemCondition] = useState('Sangat Baik');
   const [deliveryMethod, setDeliveryMethod] = useState('drop-point');
+  const [pickupAddress, setPickupAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [fileName, setFileName] = useState('');
   const [photoFile, setPhotoFile] = useState(null);
@@ -57,14 +58,16 @@ export default function DonationForm() {
   const [donationCode, setDonationCode] = useState('');
 
   useEffect(() => {
-    if (!photoFile) {
-      setPhotoPreviewUrl('');
-      return undefined;
-    }
+    if (!photoFile) return undefined;
 
-    const previewUrl = URL.createObjectURL(photoFile);
-    setPhotoPreviewUrl(previewUrl);
-    return () => URL.revokeObjectURL(previewUrl);
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreviewUrl(String(reader.result || ''));
+    reader.readAsDataURL(photoFile);
+
+    return () => {
+      reader.onload = null;
+      if (reader.readyState === FileReader.LOADING) reader.abort();
+    };
   }, [photoFile]);
 
   // 1. STRICT ROUTE-LEVEL AUTHENTICATION CHECK
@@ -122,7 +125,7 @@ export default function DonationForm() {
         conditionNote: itemCondition,
         quantity: parseInt(itemQuantity, 10) || 1,
         description: notes.trim(),
-        pickupAddress: deliveryMethod === 'drop-point' ? community.address : '',
+        pickupAddress: deliveryMethod === 'drop-point' ? community.address : pickupAddress.trim(),
         photos: photoFile ? [photoFile] : [],
       });
 
@@ -266,6 +269,7 @@ export default function DonationForm() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          setPhotoPreviewUrl('');
                           setFileName(file.name);
                           setPhotoFile(file);
                         }
@@ -280,6 +284,7 @@ export default function DonationForm() {
                       onClick={() => {
                         setFileName('');
                         setPhotoFile(null);
+                        setPhotoPreviewUrl('');
                       }}
                     >
                       Hapus foto & pilih ulang
@@ -334,6 +339,9 @@ export default function DonationForm() {
                       type="text"
                       className="donation-field-input"
                       placeholder="Masukkan alamat lengkap penjemputan..."
+                      value={pickupAddress}
+                      onChange={(e) => setPickupAddress(e.target.value)}
+                      required
                     />
                   </div>
                 )}
