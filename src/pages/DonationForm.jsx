@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../context/useAuth';
 import { COMMUNITIES_DATA } from '../data/communityData';
 import { donationService } from '../features/donation/services/donationService';
-import Footer from '../components/Footer';
 import './DonationForm.css';
 
 const CheckCircleIcon = () => (
@@ -456,7 +455,7 @@ export default function DonationForm() {
       </div>
     </main>
 
-    <Footer />
+
   </>
 );
 }
