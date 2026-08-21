@@ -1209,6 +1209,10 @@
     gap: 32px;
   }
 
+  .insight-container { width: calc(100% - 32px); }
+  .section-header-row { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .btn-view-all-pill { width: 100%; }
+
   .hero-illustration-card {
     max-width: 380px;
   }

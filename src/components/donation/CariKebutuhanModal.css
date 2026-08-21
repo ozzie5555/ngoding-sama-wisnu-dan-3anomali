@@ -765,11 +765,16 @@
 
   .cari-modal-topbar {
     padding: 20px 20px 14px;
+    gap: 12px;
   }
 
   .cari-modal-heading {
     font-size: 24px;
+    line-height: 1.2;
   }
+
+  .cari-modal-header-text { min-width: 0; }
+  .cari-modal-subheading { font-size: 12px; line-height: 1.45; }
 
   .cari-modal-body {
     padding: 16px 20px 24px;
@@ -818,6 +823,9 @@
   .cari-modal-actionbar-btns {
     width: 100%;
   }
+
+  .cari-modal-actionbar-btns button,
+  .cari-modal-actionbar-btns a { flex: 1; min-width: 0; }
 
   .btn-cari-cancel,
   .btn-cari-continue {
