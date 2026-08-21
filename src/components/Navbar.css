@@ -503,6 +503,13 @@
 }
 
 @media (max-width: 840px) {
+  .site-header,
+  .site-header.is-scrolled {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   .navbar {
     min-height: 64px;
     padding: 0 16px;
