@@ -80,6 +80,7 @@ export default function Community() {
   const [chatSending, setChatSending] = useState(false)
   const [chatError, setChatError] = useState('')
   const [previewImage, setPreviewImage] = useState('')
+  const [previewZoom, setPreviewZoom] = useState(1)
   const fileInputRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const selected = communities.find((c) => c.id === selectedId) || GENERAL_COMMUNITY
@@ -109,12 +110,29 @@ export default function Community() {
 
   useEffect(() => {
     if (!previewImage) return undefined
+    const previousOverflow = document.body.style.overflow
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') setPreviewImage('')
+      if (event.key === '+' || event.key === '=') {
+        setPreviewZoom((current) => Math.min(3, current + 0.25))
+      }
+      if (event.key === '-') {
+        setPreviewZoom((current) => Math.max(0.5, current - 0.25))
+      }
+      if (event.key === '0') setPreviewZoom(1)
     }
+    document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [previewImage])
+
+  const handlePreviewImage = (url) => {
+    setPreviewZoom(1)
+    setPreviewImage(url)
+  }
 
   useEffect(() => {
     let active = true
@@ -366,7 +384,7 @@ export default function Community() {
                     <div className="message-bubble-group own">
                       <span className="message-sender-label own">You</span>
                       <div className="message-bubble own">
-                        <MessageBody message={msg} onPreviewImage={setPreviewImage} />
+                        <MessageBody message={msg} onPreviewImage={handlePreviewImage} />
                       </div>
                       <div className="message-actions own">
                         <button type="button" className="msg-action-btn" onClick={() => handleEdit(msg)}>
@@ -392,7 +410,7 @@ export default function Community() {
                     <div className="message-bubble-group other">
                       <span className="message-sender-label other">{msg.sender}</span>
                       <div className="message-bubble other">
-                        <MessageBody message={msg} onPreviewImage={setPreviewImage} />
+                        <MessageBody message={msg} onPreviewImage={handlePreviewImage} />
                       </div>
                       <div className="message-actions other">
                         <button type="button" className="msg-action-btn" onClick={() => handleReply(msg)}>
@@ -576,7 +594,35 @@ export default function Community() {
           <button type="button" className="chat-image-preview-back" onClick={() => setPreviewImage('')}>
             <span aria-hidden="true">&#8592;</span> Kembali
           </button>
-          <img src={previewImage} alt="Pratinjau lampiran chat" />
+          <div className="chat-image-preview-stage">
+            <img
+              src={previewImage}
+              alt="Pratinjau lampiran chat"
+              style={{ transform: `scale(${previewZoom})` }}
+            />
+          </div>
+          <div className="chat-image-preview-controls" aria-label="Kontrol ukuran gambar">
+            <button
+              type="button"
+              onClick={() => setPreviewZoom((current) => Math.max(0.5, current - 0.25))}
+              disabled={previewZoom <= 0.5}
+              aria-label="Perkecil gambar"
+            >
+              −
+            </button>
+            <output aria-live="polite">{Math.round(previewZoom * 100)}%</output>
+            <button
+              type="button"
+              onClick={() => setPreviewZoom((current) => Math.min(3, current + 0.25))}
+              disabled={previewZoom >= 3}
+              aria-label="Perbesar gambar"
+            >
+              +
+            </button>
+            <button type="button" className="chat-image-preview-reset" onClick={() => setPreviewZoom(1)} disabled={previewZoom === 1}>
+              Reset
+            </button>
+          </div>
         </div>
       </div>
     )}
