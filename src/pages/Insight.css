@@ -407,6 +407,10 @@
 .btn-visit-now {
   width: 100%;
   height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border-radius: 8px;
   border: 1px solid rgba(6, 38, 50, 0.3);
   background: #ffffff;
@@ -414,13 +418,36 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease,
+              border-color 0.25s ease,
+              color 0.25s ease,
+              box-shadow 0.25s ease;
 }
 
-.insight-article-card:hover .btn-visit-now {
+.btn-visit-now .btn-arrow {
+  display: inline-block;
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insight-article-card:hover .btn-visit-now,
+.btn-visit-now:hover {
   background: #248689;
   border-color: #248689;
   color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(36, 134, 137, 0.2);
+}
+
+.insight-article-card:hover .btn-visit-now .btn-arrow,
+.btn-visit-now:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-visit-now:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* ==========================================================================

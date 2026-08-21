@@ -42,7 +42,8 @@ export default function ArticleCard({ article, onCardClick }) {
               onCardClick?.(article)
             }}
           >
-            {ctaText}
+            <span>{ctaText}</span>
+            <span className="btn-arrow" aria-hidden="true">→</span>
           </button>
         </div>
       </div>
