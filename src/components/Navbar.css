@@ -490,9 +490,12 @@
   .navbar {
     min-height: 64px;
     padding: 0 16px;
+    gap: 8px;
   }
 
   .brand {
+    min-width: 0;
+    flex: 1 1 auto;
     font-size: 18px;
     letter-spacing: 1px;
   }
@@ -512,6 +515,13 @@
     justify-content: center;
     flex: 0 0 44px;
     margin-left: 0;
+    padding: 0;
+    border: 1px solid #d4e3e4;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #1f5156;
+    box-shadow: 0 3px 10px rgba(8, 33, 43, 0.08);
+    z-index: 2;
   }
 
   .navbar > .brand {
@@ -521,6 +531,14 @@
   .navbar-user-actions {
     order: 2;
     margin-left: auto;
+    flex: 0 0 auto;
+  }
+
+  .menu-toggle span {
+    width: 22px;
+    height: 2px;
+    margin: 3px 0;
+    background: currentColor;
   }
 
   .navbar-user-actions .user-menu-container {

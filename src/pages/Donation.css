@@ -306,6 +306,7 @@
   .donation-actions { width: 100%; max-width: 320px; margin-inline: auto; }
   .donation-actions button, .donation-actions a { min-width: 0; width: 100%; }
   .donation-flow { padding: 22px 18px !important; }
+  .flow-row, .why-list, .donation-options, .verified-grid { grid-template-columns: 1fr; }
   .flow-row article, .why article { flex-direction: column; align-items: center; gap: 6px; text-align: center; }
   .flow-row b, .why article .why-icon { flex-basis: 36px; width: 36px; height: 36px; }
   .why article .why-icon { padding: 8px; }
@@ -323,6 +324,52 @@
   .verified-grid h3 { font-size: 14px; }
   .verified-grid p { font-size: 11.5px; line-height: 1.45; }
   .verified-meta { font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+
+  .why {
+    margin-top: 24px !important;
+    padding: 28px 16px !important;
+    border-radius: 20px;
+  }
+  .why h2 {
+    margin-bottom: 22px;
+    font-size: clamp(24px, 7vw, 30px);
+    line-height: 1.15;
+    text-align: left;
+  }
+  .why .card-rail-shell--compact .why-list {
+    grid-template-columns: 1fr !important;
+    grid-auto-flow: row;
+    gap: 12px !important;
+    padding: 0;
+    overflow: visible;
+  }
+  .why .why-list article {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #e2e8d8;
+    border-radius: 16px;
+    background: #ffffff;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(55, 86, 87, 0.06);
+  }
+  .why .why-list article .why-icon {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+  }
+  .why .why-list h3 {
+    margin: 1px 0 5px;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+  .why .why-list p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
 }
 @media (max-width: 380px) {
 }
