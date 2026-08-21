@@ -1,5 +1,10 @@
 import { supabase } from '../../../lib/supabase/client';
 
+// Keep the clearly-labelled competition demo available when deployment config
+// is missing. Set VITE_ENABLE_DEMO_OTP=false to disable it explicitly.
+const isDemoOtpEnabled = import.meta.env.DEV
+  || import.meta.env.VITE_ENABLE_DEMO_OTP !== 'false';
+
 export const authService = {
   // Reliable way to get current user (getUser may fail, fallback to session)
   getAuthUser: async () => {
@@ -145,7 +150,7 @@ export const authService = {
   requestWhatsappOtp: async (phone) => {
     if (!phone?.trim()) throw new Error('Nomor WhatsApp wajib diisi.');
     // Demo-only fallback until a real SMS/WhatsApp provider is configured.
-    if (!import.meta.env.DEV) {
+    if (!isDemoOtpEnabled) {
       throw new Error('Provider OTP belum dikonfigurasi.');
     }
     await new Promise((res) => setTimeout(res, 700));
@@ -166,10 +171,10 @@ export const authService = {
     if (!otp || otp.length !== 4) {
       throw new Error('Kode verifikasi harus 4 digit.');
     }
-    if (import.meta.env.DEV && otp !== '1234') {
+    if (isDemoOtpEnabled && otp !== '1234') {
       throw new Error('Kode demo salah. Gunakan 1234.');
     }
-    if (!import.meta.env.DEV) {
+    if (!isDemoOtpEnabled) {
       throw new Error('Provider OTP belum dikonfigurasi.');
     }
     return {
