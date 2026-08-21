@@ -318,6 +318,32 @@
 .verified-meta span { display: inline-flex; align-items: center; gap: 6px; color: #111; }
 .verified-meta span::before { display: none; }
 .verified-meta .verified-sosmed-icon { width: 14px; height: 14px; margin: 0; object-fit: contain; flex-shrink: 0; }
+.verified-action { margin-top: 12px; }
+.btn-verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #3fbec7;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-verified:hover {
+  background: #32aeb7;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(63, 190, 199, 0.25);
+}
+.btn-verified:focus-visible {
+  outline: 3px solid rgba(63, 190, 199, 0.3);
+  outline-offset: 3px;
+}
 
 /* ── Keyframe Animations ── */
 @keyframes floatHero {
@@ -333,7 +359,7 @@
 @media (max-width: 1000px) {
   .donation-hero { grid-template-columns: 1fr 1fr; }
   .donation-actions { flex-direction: column; gap: 12px; }
-  .flow-row, .why-list { grid-template-columns: repeat(2, 1fr); }
+  .flow-row, .why-grid { grid-template-columns: repeat(2, 1fr); }
   .flow-row article::after { display: none; }
   .donation-options, .verified-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -347,7 +373,7 @@
   .donation-actions { width: 100%; max-width: 320px; margin-inline: auto; }
   .donation-actions button, .donation-actions a { min-width: 0; width: 100%; }
   .donation-flow { padding: 22px 18px !important; }
-  .flow-row, .why-list, .donation-options, .verified-grid { grid-template-columns: 1fr; }
+  .flow-row, .why-grid, .donation-options, .verified-grid { grid-template-columns: 1fr; }
   .flow-row article, .why article { flex-direction: column; align-items: center; gap: 6px; text-align: center; }
   .flow-row b, .why article .why-icon { flex-basis: 36px; width: 36px; height: 36px; }
   .why article .why-icon { padding: 8px; }
@@ -365,6 +391,7 @@
   .verified-grid h3 { font-size: 14px; }
   .verified-grid p { font-size: 11.5px; line-height: 1.45; }
   .verified-meta { font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+  .btn-verified { min-height: 36px; padding: 8px 14px; font-size: 10px; }
 
   .why {
     margin-top: 24px !important;
@@ -377,14 +404,11 @@
     line-height: 1.15;
     text-align: left;
   }
-  .why .card-rail-shell--compact .why-list {
+  .why .why-grid {
     grid-template-columns: 1fr !important;
-    grid-auto-flow: row;
     gap: 12px !important;
-    padding: 0;
-    overflow: visible;
   }
-  .why .why-list article {
+  .why .why-grid article {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -396,18 +420,18 @@
     text-align: left;
     box-shadow: 0 4px 12px rgba(55, 86, 87, 0.06);
   }
-  .why .why-list article .why-icon {
+  .why .why-grid article .why-icon {
     flex: 0 0 48px;
     width: 48px;
     height: 48px;
     padding: 10px;
   }
-  .why .why-list h3 {
+  .why .why-grid h3 {
     margin: 1px 0 5px;
     font-size: 15px;
     line-height: 1.25;
   }
-  .why .why-list p {
+  .why .why-grid p {
     font-size: 13px;
     line-height: 1.45;
   }
@@ -489,4 +513,5 @@
   .donation-hero img { animation: none; }
   .donation-data-spinner { animation: none; }
   .donation-options article, .verified-grid article, .donation-history-item { transition: none; }
+  .btn-verified { transition: none; }
 }

@@ -797,7 +797,6 @@
   .service-grid, .item-grid, .partner-grid { grid-template-columns: 1fr; }
   .service-card, .item-grid article, .partner-card { min-height: 330px; }
   .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; }
-  .steps .card-rail { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 18px 10px !important; }
   .article-window { max-width: calc(100vw - 64px); }
   .article-window article.is-featured { width: 100%; }
   .safe-point-card { padding: 20px 16px; border-radius: 16px; }
@@ -823,4 +822,3 @@
     transition: none !important;
   }
 }
-

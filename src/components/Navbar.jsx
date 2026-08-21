@@ -16,7 +16,9 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
   const needsProfile = Boolean(user?.needsProfile)
-  const displayName = needsProfile ? 'Lengkapi Profil' : (user?.username || '@pengguna')
+  const displayName = needsProfile
+    ? 'Lengkapi Profil'
+    : String(user?.username || 'pengguna').replace(/^@+/, '')
   const unreadCount = notifications.filter((item) => !item.is_read).length
 
   const loadNotifications = useCallback(async () => {

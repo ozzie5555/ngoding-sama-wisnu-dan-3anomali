@@ -13,7 +13,7 @@ export const DEFAULT_USER = {
   stats: {
     donations: 0,
     distributed: 0,
-    saved: 0,
+    partners: 0,
   },
   passwordLastUpdated: '',
   whatsapp: '',

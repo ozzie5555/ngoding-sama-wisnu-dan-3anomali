@@ -168,7 +168,7 @@ export const donationService = {
 
     const { data, error } = await supabase
       .from('donations')
-      .select('status, quantity')
+      .select('status, community_id')
       .eq('donor_id', user.id);
     if (error) throw new Error(error.message);
 
@@ -176,7 +176,11 @@ export const donationService = {
     return {
       donations: donations.length,
       distributed: donations.filter((d) => d.status === 'received').length,
-      saved: donations.reduce((sum, d) => sum + (d.quantity || 0), 0),
+      partners: new Set(
+        donations
+          .filter((d) => d.status !== 'cancelled' && d.community_id)
+          .map((d) => d.community_id),
+      ).size,
     };
   },
 
@@ -187,7 +191,8 @@ export const donationService = {
     const { data, error } = await supabase
       .from('donations')
       .select('community_id, communities ( id, name, description, location, logo_path, slug )')
-      .eq('donor_id', user.id);
+      .eq('donor_id', user.id)
+      .neq('status', 'cancelled');
     if (error) throw new Error(error.message);
 
     const communityMap = new Map();

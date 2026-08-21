@@ -1,4 +1,3 @@
-import React from 'react'
 import './DonationHistoryCard.css'
 
 export default function DonationHistoryCard({

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../../context/useAuth'
 import { donationService } from '../../features/donation/services/donationService'
@@ -60,7 +60,7 @@ export default function ProfileOverview({ onNavigateToEdit }) {
   const [donationPage, setDonationPage] = useState(1)
   const [partnerPage, setPartnerPage] = useState(1)
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       let donations = []
       let communities = []
@@ -107,11 +107,12 @@ export default function ProfileOverview({ onNavigateToEdit }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    loadData()
-  }, [])
+    const loadTimer = window.setTimeout(loadData, 0)
+    return () => window.clearTimeout(loadTimer)
+  }, [loadData])
 
   const handleOpenDetail = (act) => {
     const fullDonation = getDonationById(act.id) || act.rawDonation || {
@@ -197,8 +198,8 @@ export default function ProfileOverview({ onNavigateToEdit }) {
             <span className="profile-stat-label">Tersalur</span>
           </div>
           <div className="profile-stat-box">
-            <span className="profile-stat-number">{impactVisible ? (user.stats?.saved ?? 0) : '—'}</span>
-            <span className="profile-stat-label">Simpan</span>
+            <span className="profile-stat-number">{impactVisible ? (loading ? (user.stats?.partners ?? 0) : partners.length) : '—'}</span>
+            <span className="profile-stat-label">Komunitas Mitra</span>
           </div>
         </div>
       </section>

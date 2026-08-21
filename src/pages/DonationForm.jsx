@@ -21,7 +21,7 @@ const UploadIcon = () => (
 );
 
 export default function DonationForm() {
-  const { isAuthenticated, initialized } = useAuth();
+  const { isAuthenticated, initialized, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -47,6 +47,7 @@ export default function DonationForm() {
   const [itemUnit, setItemUnit] = useState('Buah / Pcs');
   const [itemCondition, setItemCondition] = useState('Sangat Baik');
   const [deliveryMethod, setDeliveryMethod] = useState('drop-point');
+  const [addressMode, setAddressMode] = useState('profile');
   const [pickupAddress, setPickupAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [fileName, setFileName] = useState('');
@@ -95,6 +96,8 @@ export default function DonationForm() {
   const selectedNeed = contextData?.selectedNeedRecords?.length === 1
     ? contextData.selectedNeedRecords[0]
     : null;
+  const profileAddress = user?.location?.trim() || '';
+  const resolvedPickupAddress = addressMode === 'profile' ? profileAddress : pickupAddress.trim();
 
   if (!initialized || !isAuthenticated) {
     return (
@@ -112,6 +115,10 @@ export default function DonationForm() {
       setErrorMsg('Nama barang donasi wajib diisi.');
       return;
     }
+    if (deliveryMethod === 'pickup' && !resolvedPickupAddress) {
+      setErrorMsg('Alamat penjemputan wajib diisi.');
+      return;
+    }
 
     setSubmitting(true);
     setErrorMsg('');
@@ -125,7 +132,7 @@ export default function DonationForm() {
         conditionNote: itemCondition,
         quantity: parseInt(itemQuantity, 10) || 1,
         description: notes.trim(),
-        pickupAddress: deliveryMethod === 'drop-point' ? community.address : pickupAddress.trim(),
+        pickupAddress: deliveryMethod === 'drop-point' ? community.address : resolvedPickupAddress,
         photos: photoFile ? [photoFile] : [],
       });
 
@@ -331,18 +338,54 @@ export default function DonationForm() {
                   </div>
                 ) : (
                   <div className="donation-field-group">
-                    <label htmlFor="pickupAddress" className="donation-field-label">
-                      Alamat Penjemputan
-                    </label>
+                    <div className="donation-address-heading">
+                      <label htmlFor="pickupAddress" className="donation-field-label">
+                        Alamat Penjemputan
+                      </label>
+                      <div className="donation-address-mode" aria-label="Pilihan alamat penjemputan">
+                        <button
+                          type="button"
+                          className={addressMode === 'profile' ? 'is-active' : ''}
+                          onClick={() => {
+                            setAddressMode('profile');
+                            setErrorMsg('');
+                          }}
+                        >
+                          Alamat Profil
+                        </button>
+                        <button
+                          type="button"
+                          className={addressMode === 'manual' ? 'is-active' : ''}
+                          onClick={() => {
+                            setPickupAddress((current) => current || profileAddress);
+                            setAddressMode('manual');
+                            setErrorMsg('');
+                          }}
+                        >
+                          Isi Manual
+                        </button>
+                      </div>
+                    </div>
                     <input
                       id="pickupAddress"
                       type="text"
-                      className="donation-field-input"
-                      placeholder="Masukkan alamat lengkap penjemputan..."
-                      value={pickupAddress}
-                      onChange={(e) => setPickupAddress(e.target.value)}
+                      className={`donation-field-input ${addressMode === 'profile' ? 'is-profile-address' : ''}`}
+                      placeholder={addressMode === 'profile' ? 'Alamat profil belum tersedia' : 'Masukkan alamat lengkap penjemputan...'}
+                      value={addressMode === 'profile' ? profileAddress : pickupAddress}
+                      onChange={(e) => {
+                        setPickupAddress(e.target.value);
+                        if (errorMsg) setErrorMsg('');
+                      }}
+                      readOnly={addressMode === 'profile'}
                       required
                     />
+                    <span className={`donation-address-hint ${!profileAddress && addressMode === 'profile' ? 'is-warning' : ''}`}>
+                      {addressMode === 'profile'
+                        ? profileAddress
+                          ? 'Terisi otomatis dari alamat yang tersimpan di profil Anda.'
+                          : 'Alamat profil belum tersedia. Pilih “Isi Manual” untuk melanjutkan.'
+                        : 'Alamat ini hanya digunakan untuk pengajuan donasi ini.'}
+                    </span>
                   </div>
                 )}
 

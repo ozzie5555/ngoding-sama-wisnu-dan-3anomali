@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { chatService } from '../features/community/services/chatService'
 import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
@@ -39,16 +40,16 @@ function AvatarImg({ src, alt, className }) {
   )
 }
 
-function MessageBody({ message }) {
+function MessageBody({ message, onPreviewImage }) {
   return (
     <>
       {message.replyTo && <div className="message-reply-preview"><strong>{message.replyTo.sender}</strong><span>{message.replyTo.text}</span></div>}
       {message.images?.length > 0 && (
         <div className={`message-image-grid image-count-${message.images.length}`}>
           {message.images.map((url, index) => (
-            <a href={url} target="_blank" rel="noreferrer" key={url} aria-label={`Buka gambar ${index + 1}`}>
+            <button type="button" onClick={() => onPreviewImage(url)} key={url} aria-label={`Perbesar gambar ${index + 1}`}>
               <img src={url} alt={`Lampiran chat ${index + 1}`} loading="lazy" />
-            </a>
+            </button>
           ))}
         </div>
       )}
@@ -59,6 +60,7 @@ function MessageBody({ message }) {
 
 export default function Community() {
   const { isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
   const [topDonors, setTopDonors] = useState([])
   const [topDonorsLoading, setTopDonorsLoading] = useState(true)
   const [communities, setCommunities] = useState(fallbackChatCommunities)
@@ -77,6 +79,7 @@ export default function Community() {
   const [chatLoading, setChatLoading] = useState(false)
   const [chatSending, setChatSending] = useState(false)
   const [chatError, setChatError] = useState('')
+  const [previewImage, setPreviewImage] = useState('')
   const fileInputRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const selected = communities.find((c) => c.id === selectedId) || GENERAL_COMMUNITY
@@ -103,6 +106,15 @@ export default function Community() {
       behavior: 'smooth',
     })
   }, [selectedId, messages.length])
+
+  useEffect(() => {
+    if (!previewImage) return undefined
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setPreviewImage('')
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [previewImage])
 
   useEffect(() => {
     let active = true
@@ -354,7 +366,7 @@ export default function Community() {
                     <div className="message-bubble-group own">
                       <span className="message-sender-label own">You</span>
                       <div className="message-bubble own">
-                        <MessageBody message={msg} />
+                        <MessageBody message={msg} onPreviewImage={setPreviewImage} />
                       </div>
                       <div className="message-actions own">
                         <button type="button" className="msg-action-btn" onClick={() => handleEdit(msg)}>
@@ -380,7 +392,7 @@ export default function Community() {
                     <div className="message-bubble-group other">
                       <span className="message-sender-label other">{msg.sender}</span>
                       <div className="message-bubble other">
-                        <MessageBody message={msg} />
+                        <MessageBody message={msg} onPreviewImage={setPreviewImage} />
                       </div>
                       <div className="message-actions other">
                         <button type="button" className="msg-action-btn" onClick={() => handleReply(msg)}>
@@ -403,6 +415,27 @@ export default function Community() {
               )}
             </div>
 
+            {!isAuthenticated ? (
+              <div className="chat-login-gate" role="status" aria-label="Login diperlukan untuk mengirim pesan">
+                <span className="chat-login-gate-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="4" y="10" width="16" height="11" rx="3" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                </span>
+                <span className="chat-login-gate-copy">
+                  <strong>Masuk untuk bergabung dalam obrolan</strong>
+                  <small>Silakan masuk atau daftar untuk mengirim pesan.</small>
+                </span>
+                <button
+                  type="button"
+                  className="chat-login-gate-button"
+                  onClick={() => navigate('/login', { state: { returnTo: '/komunitas' } })}
+                >
+                  Masuk / Daftar
+                </button>
+              </div>
+            ) : (
             <form className="chat-input-area" onSubmit={handleSend} aria-label="Kirim pesan">
               <input
                 ref={fileInputRef}
@@ -499,6 +532,7 @@ export default function Community() {
                 </svg>
               </button>
             </form>
+            )}
           </section>
 
           <aside className="community-list" aria-label="Jelajahi Komunitas">
@@ -535,6 +569,17 @@ export default function Community() {
       </div>
 
     </main>
+
+    {previewImage && (
+      <div className="chat-image-preview" role="dialog" aria-modal="true" aria-label="Pratinjau gambar chat" onClick={() => setPreviewImage('')}>
+        <div className="chat-image-preview-content" onClick={(event) => event.stopPropagation()}>
+          <button type="button" className="chat-image-preview-back" onClick={() => setPreviewImage('')}>
+            <span aria-hidden="true">&#8592;</span> Kembali
+          </button>
+          <img src={previewImage} alt="Pratinjau lampiran chat" />
+        </div>
+      </div>
+    )}
 
     <Footer />
   </>

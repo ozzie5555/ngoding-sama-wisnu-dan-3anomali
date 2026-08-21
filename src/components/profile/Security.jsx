@@ -9,18 +9,29 @@ import {
 } from './ProfileModal'
 import './Security.css'
 
+const formatPasswordUpdatedAt = (value) => {
+  if (!value) return 'Belum pernah diperbarui'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Belum pernah diperbarui'
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'Asia/Jakarta',
+  }).format(date)
+}
+
 export default function Security() {
-  const { user, updateSecurity, refreshProfile, logout } = useAuth()
+  const { user, refreshProfile, logout } = useAuth()
   const navigate = useNavigate()
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
   const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false)
   const [securityToast, setSecurityToast] = useState('')
-  const [loading, setLoading] = useState(false)
+  const passwordUpdatedLabel = formatPasswordUpdatedAt(user?.passwordLastUpdated)
 
   const handleSavePassword = async (currentPassword, newPassword) => {
-    setLoading(true)
     try {
       await authService.changePassword(currentPassword, newPassword)
       await refreshProfile()
@@ -28,13 +39,11 @@ export default function Security() {
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui kata sandi.')
     } finally {
-      setLoading(false)
       setTimeout(() => setSecurityToast(''), 3000)
     }
   }
 
   const handleSaveEmail = async (newEmail, currentPassword) => {
-    setLoading(true)
     try {
       await authService.changeEmail(newEmail, currentPassword)
       await refreshProfile()
@@ -42,13 +51,11 @@ export default function Security() {
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui email.')
     } finally {
-      setLoading(false)
       setTimeout(() => setSecurityToast(''), 3000)
     }
   }
 
   const handleSaveWhatsapp = async (newNumber) => {
-    setLoading(true)
     try {
       await authService.updateWhatsapp(newNumber)
       await refreshProfile()
@@ -56,7 +63,6 @@ export default function Security() {
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui nomor WhatsApp.')
     } finally {
-      setLoading(false)
       setTimeout(() => setSecurityToast(''), 3000)
     }
   }
@@ -93,11 +99,7 @@ export default function Security() {
           <div className="security-item-info">
             <h3 className="security-item-title">Kata Sandi</h3>
             <p className="security-item-value">
-              Terakhir diperbarui: {user?.passwordLastUpdated
-                ? new Date(user.passwordLastUpdated).toLocaleDateString('id-ID', {
-                    day: 'numeric', month: 'long', year: 'numeric'
-                  })
-                : 'Belum pernah diperbarui'}
+              Terakhir diperbarui: {passwordUpdatedLabel}
             </p>
           </div>
           <button
@@ -189,7 +191,7 @@ export default function Security() {
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
         onSavePassword={handleSavePassword}
-        lastUpdated={user?.passwordLastUpdated}
+        lastUpdated={passwordUpdatedLabel}
       />
 
       <ChangeEmailModal

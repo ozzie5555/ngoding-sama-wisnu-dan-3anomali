@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * LoadingDots - Reusable dot loader matching Reference Design (Page 8)
  * @param {string} size - 'normal' | 'mini' | 'sm'
