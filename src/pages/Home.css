@@ -69,11 +69,11 @@
 .insight .section-heading p { font-size: clamp(16px, 2.5vw, 20px); line-height: 1.6; color: #5a7476; }
 
 /* ==========================================================================
-   INSIGHT SECTION - 3D Carousel (Sesuai Gambar Referensi)
+   INSIGHT SECTION - 3D Carousel
    ========================================================================== */
 .insight {
   padding: 80px 0 100px;
-  background: #d8fc77; /* Warna hijau lime terang pastel */
+  background: #d8fc77;
   position: relative;
   overflow: hidden;
 }
@@ -88,7 +88,7 @@
   padding: 20px 0;
 }
 
-/* Panah Navigasi Bulat */
+/* Navigation Arrow */
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -128,7 +128,7 @@
   min-height: 380px;
 }
 
-/* Style Semua Kartu Carousel */
+/* Card Styles */
 .home-insight-card {
   position: absolute;
   border-radius: 24px;
@@ -143,7 +143,7 @@
   transform: scale(0.8);
 }
 
-/* 1. Kartu Utama (Featured - Tengah) */
+/* Featured Card */
 .home-insight-card.is-featured {
   position: relative;
   width: 620px;
@@ -158,7 +158,7 @@
   transform: scale(1) translateX(0);
 }
 
-/* 2. Kartu Samping (Mengintip) */
+/* Side Cards */
 .home-insight-card.side-card {
   width: 420px;
   height: 340px;
@@ -178,7 +178,7 @@
   transform: translateX(480px) scale(0.9);
 }
 
-/* Konten Dalam Kartu */
+/* Card Content */
 .home-insight-card-content {
   display: flex;
   flex-direction: column;
@@ -211,7 +211,6 @@
   margin: 0 0 auto 0;
 }
 
-/* Tombol Visit Now Pill Style */
 .home-insight-card-action {
   margin-top: auto;
 }
@@ -244,7 +243,6 @@
   box-shadow: 0 6px 0 #050505;
 }
 
-/* Ilustrasi Gambar Kartu */
 .home-insight-card-media {
   width: 45%;
   height: 100%;
@@ -259,7 +257,6 @@
   object-fit: contain;
 }
 
-/* Indikator Dots */
 .dots {
   margin-top: 30px;
   display: flex;
@@ -290,10 +287,9 @@
   justify-content: center;
 }
 
-/* Responsif Layar HP & Tablet */
 @media (max-width: 1024px) {
   .home-insight-card.side-card {
-    display: none; /* Sembunyikan kartu samping di layar sedang/kecil */
+    display: none;
   }
   .home-insight-card.is-featured {
     width: 90%;
@@ -313,9 +309,8 @@
   }
 }
 
-
 /* ==========================================================================
-   SAFE DONATION SECTION (Yuk, Kenali Cara Berdonasi yang Aman dan Tepat)
+   SAFE DONATION SECTION
    ========================================================================== */
 .safe-donation {
   padding: 100px 0;
@@ -341,7 +336,6 @@
   color: #248689;
 }
 
-/* Safe Donation Hero Banner */
 .safe-donation-banner {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
@@ -413,7 +407,6 @@
   filter: drop-shadow(0 12px 24px rgba(36, 134, 137, 0.12));
 }
 
-/* 6 Safety Points Grid */
 .safe-points-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -683,7 +676,6 @@
   .step-grid article::after { display: none; }
   .home .final-cta { min-height: auto; grid-template-columns: 1fr; padding: 70px 24px; }
   .final-cta > img { display: none; }
-  /* 4-card grid → 2 per row at 1200px */
   .home-article-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -711,13 +703,9 @@
     padding: 14px;
     border-radius: 18px;
   }
-  .item-grid article {
-    justify-content: center;
-  }
+  .item-grid article { justify-content: center; }
   .art-blob { height: 150px; margin-bottom: 12px; }
-  .service-card .art-blob {
-    margin-top: 18px;
-  }
+  .service-card .art-blob { margin-top: 18px; }
   .service-card h3, .item-grid h3 {
     margin-bottom: 12px;
     font-size: 14px;
@@ -763,15 +751,12 @@
     max-width: 300px;
     margin: 0 auto;
   }
-  .safe-banner-actions .button {
-    width: 100%;
-  }
+  .safe-banner-actions .button { width: 100%; }
   .safe-points-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  /* 4-card grid → 1 per row on mobile */
   .home-article-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
 
   .faq { padding: 60px 0; }
@@ -791,7 +776,6 @@
   .article-window article.is-featured { width: 100%; }
   .safe-point-card { padding: 20px 16px; border-radius: 16px; }
   .safe-donation-banner { border-radius: 20px; padding: 24px 16px; }
-  /* 4-card grid → 1 column on very small screens */
   .home-article-grid { grid-template-columns: 1fr; }
 }
 

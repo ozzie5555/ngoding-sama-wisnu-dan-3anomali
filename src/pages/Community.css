@@ -13,12 +13,16 @@
 .community-page {
   background: #ffffff;
   font-family: var(--font-sora);
+  display: flex;
+  flex-direction: column;
 }
 
 .community-wrapper {
-  padding: 32px max(3vw, 20px) 24px;
+  padding: 24px max(3vw, 20px);
   max-width: 1380px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .community-page + .donation-impact {
@@ -31,7 +35,6 @@
   gap: 20px;
   align-items: start;
 }
-
 /* LEFT */
 .top-donators {
   background: #ffffff;
