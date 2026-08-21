@@ -218,6 +218,9 @@
 }
 
 /* Testimonial moderation */
+.admin-user-avatar { position: relative; overflow: hidden; }
+.admin-user-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #dff2eb; }
+
 .admin-testimonial-list { display: grid; gap: 12px; margin-top: 18px; }
 .admin-testimonial-card { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; align-items: start; gap: 16px; padding: 18px; border: 1px solid #dcebe7; border-radius: 14px; background: #fbfdfc; }
 .admin-testimonial-card > img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; background: #e8f2ef; }

@@ -98,13 +98,36 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
 
   // Body scroll lock
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!isOpen) return undefined;
+
+    const scrollPosition = window.scrollY;
+    const openedPath = window.location.pathname;
+    const rootOverflow = document.documentElement.style.overflow;
+    const previousBodyStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+    };
+
+    document.documentElement.style.overflow = 'hidden';
+    Object.assign(document.body.style, {
+      overflow: 'hidden',
+      position: 'fixed',
+      top: `-${scrollPosition}px`,
+      left: '0',
+      right: '0',
+      width: '100%',
+    });
+
     return () => {
-      document.body.style.overflow = '';
+      document.documentElement.style.overflow = rootOverflow;
+      Object.assign(document.body.style, previousBodyStyles);
+      if (window.location.pathname === openedPath) {
+        window.scrollTo({ top: scrollPosition, left: 0, behavior: 'auto' });
+      }
     };
   }, [isOpen]);
 

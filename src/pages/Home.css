@@ -753,7 +753,14 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
-  .review-track article { width: 280px; padding: 20px; }
+  .testimonials .review-board { gap: 16px; }
+  .review-track { gap: 14px; }
+  .review-track article { width: 240px; padding: 14px; border-radius: 18px; }
+  .review-track header { gap: 10px; margin-bottom: 12px; }
+  .review-track img { width: 42px; height: 42px; }
+  .review-track h3 { margin-bottom: 2px; font-size: 14px; }
+  .review-track span { font-size: 10px; }
+  .review-track p { font-size: 12px; line-height: 1.5; }
   
   .safe-donation { padding: 60px 0; }
   .safe-donation-banner {

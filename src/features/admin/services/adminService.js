@@ -98,7 +98,7 @@ export const adminService = {
   async getUsers() {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, full_name, username, email, role, phone, created_at')
+      .select('id, full_name, username, email, role, phone, avatar_path, created_at')
       .order('created_at', { ascending: false })
     if (error) throw new Error(error.message)
     return data || []

@@ -81,6 +81,7 @@ export default function Community() {
   const [chatError, setChatError] = useState('')
   const [previewImage, setPreviewImage] = useState('')
   const [previewZoom, setPreviewZoom] = useState(1)
+  const [isCommunityPickerOpen, setIsCommunityPickerOpen] = useState(false)
   const fileInputRef = useRef(null)
   const chatMessagesRef = useRef(null)
   const selected = communities.find((c) => c.id === selectedId) || GENERAL_COMMUNITY
@@ -128,6 +129,39 @@ export default function Community() {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [previewImage])
+
+  useEffect(() => {
+    if (!isCommunityPickerOpen) return undefined
+
+    const scrollPosition = window.scrollY
+    const previousBodyStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsCommunityPickerOpen(false)
+    }
+
+    Object.assign(document.body.style, {
+      overflow: 'hidden',
+      position: 'fixed',
+      top: `-${scrollPosition}px`,
+      left: '0',
+      right: '0',
+      width: '100%',
+    })
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      Object.assign(document.body.style, previousBodyStyles)
+      window.scrollTo({ top: scrollPosition, left: 0, behavior: 'auto' })
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isCommunityPickerOpen])
 
   const handlePreviewImage = (url) => {
     setPreviewZoom(1)
@@ -191,6 +225,7 @@ export default function Community() {
     setReplyingTo(null)
     setEditingMessage(null)
     setAttachedImages([])
+    setIsCommunityPickerOpen(false)
   }
 
   function handleBackToGeneral() {
@@ -351,6 +386,23 @@ export default function Community() {
                   <p className="chat-community-meta">
                     {[selected.category, selected.location].filter(Boolean).join(' - ')}
                   </p>
+                  <button
+                    type="button"
+                    className="mobile-community-picker-trigger"
+                    onClick={() => setIsCommunityPickerOpen(true)}
+                    aria-expanded={isCommunityPickerOpen}
+                    aria-controls="mobile-community-picker"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="m17 9 2 2 3-3" />
+                    </svg>
+                    Pilih Komunitas
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </button>
                 </div>
               </div>
               {selectedId !== 'general' && (
@@ -587,6 +639,75 @@ export default function Community() {
       </div>
 
     </main>
+
+    {isCommunityPickerOpen && (
+      <div
+        className="community-picker-overlay"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setIsCommunityPickerOpen(false)
+        }}
+      >
+        <section
+          id="mobile-community-picker"
+          className="community-picker-sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="community-picker-title"
+        >
+          <div className="community-picker-handle" aria-hidden="true" />
+          <header className="community-picker-header">
+            <div>
+              <h2 id="community-picker-title">Pilih Komunitas</h2>
+              <p>Pilih grup untuk melihat dan mengikuti percakapannya.</p>
+            </div>
+            <button
+              type="button"
+              className="community-picker-close"
+              onClick={() => setIsCommunityPickerOpen(false)}
+              aria-label="Tutup pilihan komunitas"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </header>
+          <ul className="community-picker-list" role="list">
+            {communities.map((community) => {
+              const isActive = selectedId === community.id
+              return (
+                <li key={community.id}>
+                  <button
+                    type="button"
+                    className={`community-picker-option${isActive ? ' is-active' : ''}`}
+                    onClick={() => handleSelectCommunity(community.id)}
+                    aria-pressed={isActive}
+                  >
+                    <span className="community-picker-avatar">
+                      <AvatarImg src={community.image} alt={community.name} className="community-picker-image" />
+                    </span>
+                    <span className="community-picker-copy">
+                      <strong>{community.name}</strong>
+                      <small>{[community.category, community.location].filter(Boolean).join(' - ')}</small>
+                    </span>
+                    <span className="community-picker-status" aria-hidden="true">
+                      {isActive ? (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                          <path d="m5 12 4 4L19 6" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      )}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      </div>
+    )}
 
     {previewImage && (
       <div className="chat-image-preview" role="dialog" aria-modal="true" aria-label="Pratinjau gambar chat" onClick={() => setPreviewImage('')}>

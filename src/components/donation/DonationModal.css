@@ -322,14 +322,30 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 600px) {
+  .donation-modal-overlay { padding: 12px; }
+
   .donation-modal-card {
-    padding: 24px 20px;
-    border-radius: 20px;
+    max-height: calc(100dvh - 24px);
+    padding: 22px 18px;
+    border-radius: 18px;
   }
 
   .donation-modal-title {
     font-size: 20px;
   }
+
+  .auth-gate-icon-badge {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 14px;
+  }
+
+  .auth-gate-icon-badge svg { width: 28px; height: 28px; }
+  .auth-gate-title { font-size: 21px; }
+  .auth-gate-desc { margin-bottom: 20px; font-size: 13px; }
+  .auth-gate-actions { gap: 8px; }
+  .btn-gate-primary,
+  .btn-gate-secondary { height: 46px; }
 
   .donation-modal-actions {
     flex-direction: column;

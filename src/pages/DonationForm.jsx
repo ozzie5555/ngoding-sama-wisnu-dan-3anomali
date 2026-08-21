@@ -58,6 +58,10 @@ export default function DonationForm() {
   const [donationCode, setDonationCode] = useState('');
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [isSubmitted]);
+
+  useEffect(() => {
     if (!photoFile) return undefined;
 
     const reader = new FileReader();
