@@ -1,4 +1,3 @@
-import React from 'react'
 import DonationTracker from './DonationTracker'
 import './DonationActivity.css'
 

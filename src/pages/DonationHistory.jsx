@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { supabase } from '../lib/supabase/client'
@@ -24,7 +24,7 @@ export default function DonationHistory() {
   const [selectedDonation, setSelectedDonation] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const loadDonations = async () => {
+  const loadDonations = useCallback(async () => {
     if (!isAuthenticated || !user?.id) {
       setDonations([])
       setLoading(false)
@@ -44,11 +44,13 @@ export default function DonationHistory() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isAuthenticated, user?.id])
 
   useEffect(() => {
-    loadDonations()
-    if (!isAuthenticated || !user?.id) return undefined
+    const initialLoad = window.setTimeout(loadDonations, 0)
+    if (!isAuthenticated || !user?.id) {
+      return () => window.clearTimeout(initialLoad)
+    }
 
     const channel = supabase
       .channel('my-donation-history')
@@ -61,9 +63,10 @@ export default function DonationHistory() {
       .subscribe()
 
     return () => {
+      window.clearTimeout(initialLoad)
       supabase.removeChannel(channel)
     }
-  }, [isAuthenticated, user?.id])
+  }, [isAuthenticated, user?.id, loadDonations])
 
   const handleOpenDetail = (donation) => {
     setSelectedDonation(donation)

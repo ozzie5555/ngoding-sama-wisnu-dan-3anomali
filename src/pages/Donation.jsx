@@ -80,8 +80,10 @@ export default function Donation() {
   }, [])
 
   useEffect(() => {
-    loadDonations()
-    if (!isAuthenticated || !user?.id) return undefined
+    const initialLoad = window.setTimeout(loadDonations, 0)
+    if (!isAuthenticated || !user?.id) {
+      return () => window.clearTimeout(initialLoad)
+    }
 
     const channel = supabase
       .channel('my-donation-changes')
@@ -98,17 +100,20 @@ export default function Donation() {
       .subscribe()
 
     return () => {
+      window.clearTimeout(initialLoad)
       supabase.removeChannel(channel)
     }
   }, [isAuthenticated, user?.id, loadDonations])
 
   useEffect(() => {
-    if (location.state?.openCariModal || location.search.includes('cari=true')) {
+    const shouldOpen = location.state?.openCariModal || location.search.includes('cari=true')
+    if (!shouldOpen) return undefined
+
+    const openTimer = window.setTimeout(() => {
       setIsCariModalOpen(true)
-      if (location.state?.modalCommunityId) {
-        setModalCommunityId(location.state.modalCommunityId)
-      }
-    }
+      setModalCommunityId(location.state?.modalCommunityId || null)
+    }, 0)
+    return () => window.clearTimeout(openTimer)
   }, [location])
 
   useEffect(() => {

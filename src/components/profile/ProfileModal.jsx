@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react'
 import './ProfileModal.css'
 
+const FALLBACK_PROVINCES = [{ id: '33', name: 'JAWA TENGAH' }]
+const FALLBACK_CITIES = [{ id: '3374', name: 'KOTA SEMARANG' }]
+const FALLBACK_DISTRICTS = [
+  { id: '3374020', name: 'SEMARANG BARAT' },
+  { id: '3374010', name: 'SEMARANG SELATAN' },
+  { id: '3374030', name: 'SEMARANG UTARA' },
+]
+const FALLBACK_VILLAGES = [
+  { id: '3374020005', name: 'NGEMPLAK SIMONGAN' },
+  { id: '3374020006', name: 'BONGSARI' },
+  { id: '3374020007', name: 'GISIKDRONO' },
+]
+
 // ==========================================================
 // 1. DATE PICKER MODAL / POPOVER (Figma Page 5)
 // ==========================================================
@@ -285,7 +298,7 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
             </svg>
           </div>
           <div>
-            <h3 className="modal-title">Ubah Kata sandi</h3>
+            <h3 className="modal-title">Ubah Kata Sandi</h3>
             <p className="modal-subtitle">Terakhir diperbarui: {lastUpdated || 'Belum pernah diperbarui'}</p>
           </div>
         </div>
@@ -559,34 +572,28 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
   const [isLoadingRegions, setIsLoadingRegions] = useState(false)
   const [regionError, setRegionError] = useState('')
 
-  const fallbackProvinces = [{ id: '33', name: 'JAWA TENGAH' }]
-  const fallbackCities = [{ id: '3374', name: 'KOTA SEMARANG' }]
-  const fallbackDistricts = [
-    { id: '3374020', name: 'SEMARANG BARAT' },
-    { id: '3374010', name: 'SEMARANG SELATAN' },
-    { id: '3374030', name: 'SEMARANG UTARA' },
-  ]
-  const fallbackVillages = [
-    { id: '3374020005', name: 'NGEMPLAK SIMONGAN' },
-    { id: '3374020006', name: 'BONGSARI' },
-    { id: '3374020007', name: 'GISIKDRONO' },
-  ]
-
   useEffect(() => {
-    if (!isOpen || provinces.length) return
-    setIsLoadingRegions(true)
-    setRegionError('')
-    fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
-      .then((res) => {
-        if (!res.ok) throw new Error('Wilayah tidak dapat dimuat')
-        return res.json()
-      })
-      .then((data) => setProvinces(data))
-      .catch(() => {
-        setProvinces(fallbackProvinces)
-        setRegionError('Data wilayah online sedang tidak tersedia. Wilayah Jawa Tengah tetap tersedia.')
-      })
-      .finally(() => setIsLoadingRegions(false))
+    if (!isOpen || provinces.length) return undefined
+    let active = true
+    async function loadProvinces() {
+      setIsLoadingRegions(true)
+      setRegionError('')
+      try {
+        const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+        if (!response.ok) throw new Error('Wilayah tidak dapat dimuat')
+        const data = await response.json()
+        if (active) setProvinces(data)
+      } catch {
+        if (active) {
+          setProvinces(FALLBACK_PROVINCES)
+          setRegionError('Data wilayah online sedang tidak tersedia. Wilayah Jawa Tengah tetap tersedia.')
+        }
+      } finally {
+        if (active) setIsLoadingRegions(false)
+      }
+    }
+    loadProvinces()
+    return () => { active = false }
   }, [isOpen, provinces.length])
 
   const handleProvinceChange = (e) => {
@@ -604,7 +611,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pId}.json`)
         .then(res => res.json())
         .then(data => setCities(data))
-        .catch(() => { setCities(pId === '33' ? fallbackCities : []); setRegionError('Daftar kota sementara menggunakan data lokal.') })
+        .catch(() => { setCities(pId === '33' ? FALLBACK_CITIES : []); setRegionError('Daftar kota sementara menggunakan data lokal.') })
     }
   }
 
@@ -621,7 +628,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cId}.json`)
         .then(res => res.json())
         .then(data => setDistricts(data))
-        .catch(() => setDistricts(cId === '3374' ? fallbackDistricts : []))
+        .catch(() => setDistricts(cId === '3374' ? FALLBACK_DISTRICTS : []))
     }
   }
 
@@ -636,7 +643,7 @@ export function LocationPickerModal({ isOpen, onClose, currentLocation, onSaveLo
       fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${dId}.json`)
         .then(res => res.json())
         .then(data => setVillages(data))
-        .catch(() => setVillages(dId === '3374020' ? fallbackVillages : []))
+        .catch(() => setVillages(dId === '3374020' ? FALLBACK_VILLAGES : []))
     }
   }
 

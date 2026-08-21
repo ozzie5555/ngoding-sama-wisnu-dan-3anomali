@@ -1,7 +1,6 @@
-import React from 'react'
 import './DonationTracker.css'
 
-export const TRACKER_STEPS = [
+const TRACKER_STEPS = [
   { key: 'form', label: 'Form', index: 1 },
   { key: 'confirmation', label: 'Konfirmasi', index: 2 },
   { key: 'pickup', label: 'Pengambilan', index: 3 },

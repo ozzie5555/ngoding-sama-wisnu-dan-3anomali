@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../context/useAuth'
 import { donationService } from '../features/donation/services/donationService'
@@ -39,7 +39,7 @@ export default function ProfileHistory() {
   const [selectedDonation, setSelectedDonation] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const loadDonations = async () => {
+  const loadDonations = useCallback(async () => {
     if (!isAuthenticated || !user?.id) {
       setDonations([])
       return
@@ -75,11 +75,12 @@ export default function ProfileHistory() {
       console.error('[ProfileHistory] Failed to load donations:', error)
       setDonations([])
     }
-  }
+  }, [isAuthenticated, user?.id])
 
   useEffect(() => {
-    loadDonations()
-  }, [isAuthenticated, user?.id])
+    const loadTimer = window.setTimeout(loadDonations, 0)
+    return () => window.clearTimeout(loadTimer)
+  }, [loadDonations])
 
   const handleOpenDetail = (donation) => {
     setSelectedDonation(donation)

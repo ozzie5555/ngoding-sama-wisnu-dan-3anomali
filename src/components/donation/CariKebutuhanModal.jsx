@@ -85,12 +85,15 @@ export default function CariKebutuhanModal({ isOpen, onClose, initialCommunityId
 
   // Sync initial props
   useEffect(() => {
-    if (initialCommunityId) {
-      setSelectedCommunityId(initialCommunityId);
-      setModalStep(initialStep || 'detail');
-    } else {
-      setModalStep('search');
-    }
+    const syncTimer = window.setTimeout(() => {
+      if (initialCommunityId) {
+        setSelectedCommunityId(initialCommunityId);
+        setModalStep(initialStep || 'detail');
+      } else {
+        setModalStep('search');
+      }
+    }, 0);
+    return () => window.clearTimeout(syncTimer);
   }, [initialCommunityId, initialStep, isOpen]);
 
   // Body scroll lock
