@@ -11,6 +11,7 @@ export default function Navbar() {
   const [notifications, setNotifications] = useState([])
   const [notificationsLoading, setNotificationsLoading] = useState(false)
   const [notificationError, setNotificationError] = useState('')
+  const [isScrolled, setIsScrolled] = useState(false)
   const actionsRef = useRef(null)
   const { isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
@@ -41,6 +42,16 @@ export default function Navbar() {
       unsubscribe()
     }
   }, [isAuthenticated, user?.id, loadNotifications])
+
+  // Track scroll position to update sticky navbar appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+    handleScroll() // Check initial scroll position
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -104,7 +115,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
       <nav className="navbar" aria-label="Navigasi utama">
         <NavLink to="/" className="brand" onClick={handleNavClick}>
           <img src="/logo.svg" alt="" />
