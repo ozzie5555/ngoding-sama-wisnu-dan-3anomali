@@ -697,7 +697,6 @@
   .button { width: 100%; }
   .hero h1 { font-size: clamp(28px, 7vw, 36px); }
   .section-heading h2 { font-size: 28px; }
-<<<<<<< HEAD
   .stat-grid article {
     min-height: 104px;
     padding: 12px 4px;
@@ -753,7 +752,8 @@
     gap: 6px !important;
     padding: 0;
     overflow: visible;
-=======
+  }
+  .steps .card-rail-controls { display: none; }
   .stat-grid, .service-grid, .item-grid, .partner-grid, .step-grid { grid-template-columns: 1fr; }
   .review-track article { width: 280px; padding: 20px; }
   
@@ -766,7 +766,6 @@
   }
   .safe-donation-banner-content {
     align-items: center;
->>>>>>> bebe7f431a3903337de35f0473e412d06f022ba3
   }
   .safe-banner-actions {
     flex-direction: column;
@@ -783,7 +782,7 @@
   }
 
   /* 4-card grid → 1 per row on mobile */
-  .home-article-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .home-article-grid { grid-template-columns: 1fr; gap: 14px; }
 
   .faq { padding: 60px 0; }
   .faq-item { padding: 18px 20px; border-radius: 16px; }
@@ -795,19 +794,15 @@
   .stat-grid article strong { font-size: 36px; }
   .home section { padding-inline: 16px; }
   .steps { padding-inline: 16px; }
-<<<<<<< HEAD
   .service-grid, .item-grid, .partner-grid { grid-template-columns: 1fr; }
   .service-card, .item-grid article, .partner-card { min-height: 330px; }
   .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; }
   .steps .card-rail { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 18px 10px !important; }
   .article-window { max-width: calc(100vw - 64px); }
   .article-window article.is-featured { width: 100%; }
-=======
   .safe-point-card { padding: 20px 16px; border-radius: 16px; }
   .safe-donation-banner { border-radius: 20px; padding: 24px 16px; }
-  /* 4-card grid → 1 column on very small screens */
   .home-article-grid { grid-template-columns: 1fr; }
->>>>>>> bebe7f431a3903337de35f0473e412d06f022ba3
 }
 
 @media (prefers-reduced-motion: reduce) {
