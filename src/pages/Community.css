@@ -11,15 +11,18 @@
 }
 
 .community-page {
-  min-height: 100vh;
   background: #ffffff;
   font-family: var(--font-sora);
 }
 
 .community-wrapper {
-  padding: 32px max(3vw, 20px) 40px;
+  padding: 32px max(3vw, 20px) 24px;
   max-width: 1380px;
   margin: 0 auto;
+}
+
+.community-page + .donation-impact {
+  margin-top: 40px;
 }
 
 .community-layout {
