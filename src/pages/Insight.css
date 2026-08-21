@@ -697,20 +697,6 @@
   justify-content: center;
 }
 
-.insight-content-status {
-  margin: -8px 0 18px;
-  color: #5f7778;
-  font-size: 13px;
-}
-
-.insight-content-status.is-warning {
-  width: fit-content;
-  padding: 9px 12px;
-  border-radius: 10px;
-  background: #fff8e7;
-  color: #8a6816;
-}
-
 .insight-detail-container {
   position: relative;
   background: #ffffff;

@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import Footer from '../components/Footer'
 import { supabase } from '../lib/supabase/client'
 import { communityService, FALLBACK_COMMUNITIES } from '../features/community/services/communityService'
-import { articleService, FALLBACK_ARTICLES } from '../features/insight/services/articleService'
 import './Home.css'
 
 const services = [
@@ -82,7 +81,6 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState(null)
   const [reviews, setReviews] = useState([])
   const [partners, setPartners] = useState(FALLBACK_COMMUNITIES)
-  const [articles, setArticles] = useState(FALLBACK_ARTICLES.slice(0, 3))
 
   useEffect(() => {
     let active = true
@@ -92,16 +90,6 @@ export default function Home() {
     return () => { active = false }
   }, [])
 
-  useEffect(() => {
-    let active = true
-    articleService.getPublished()
-      .then((rows) => {
-        const publishedArticles = rows.filter((item) => item.contentType === 'article').slice(0, 3)
-        if (active && publishedArticles.length) setArticles(publishedArticles)
-      })
-      .catch((error) => console.error('[Home] Failed to load articles:', error))
-    return () => { active = false }
-  }, [])
 
   useEffect(() => {
     let ignore = false
@@ -136,6 +124,11 @@ export default function Home() {
     }
   }, [])
 
+  const articles = [
+    { title: "Kebaikan Kecil untuk Bumi", date: "Semarang, 18 Juni 2026", image: "/ecology.svg" },
+    { title: "Ide Daur Ulang Sampah", date: "Semarang, 24 Juli 2026", image: "/recycle.svg" },
+    { title: "Berita Ekonomi Sirkular", date: "Jakarta, 29 April 2026", image: "/ecology.svg" },
+  ]
   const visibleArticles = [0, 1, 2].map(offset => articles[(article + offset) % articles.length])
   const reviewSource = reviews.length ? reviews : EMPTY_REVIEW
   const reviewSequence = Array.from(
@@ -158,7 +151,7 @@ export default function Home() {
 
         <section className="impact"><div className="stat-grid">{stats.map(([n, l]) => <article key={l}><AnimatedStat value={n} /><span>{l}</span></article>)}</div><div className="impact-copy"><h2>Dampak Positif<br />Untuk <em>Bumi</em></h2><p>Mengurangi sampah, menghemat sumber daya, dan menciptakan dampak positif bagi bumi melalui penggunaan kembali barang layak pakai.</p></div></section>
 
-        <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />{item.author}</p><Link to={`/insight/${item.slug}`}>Visit Now</Link></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
+        <section className="insight" id="insight"><Heading title="Seputar Tentang" accent="KEMBALI" sub="Temukan berita terbaru, artikel inspiratif, tips gaya hidup berkelanjutan, serta berbagai informasi mengenai program dan dampak KEMBALI." /><div className="article-carousel"><button aria-label="Artikel sebelumnya" onClick={() => setArticle((article + articles.length - 1) % articles.length)}>‹</button><div className="article-window">{visibleArticles.map((item, index) => <article className={index === 1 ? 'is-featured' : ''} key={`${item.title}-${index}`}><div><small>{item.date}</small><h3>{item.title}</h3><p>KEMBALI Insight<br />By - Anonymous</p><a href="#artikel">Visit Now</a></div><img src={item.image} alt="" /></article>)}</div><button aria-label="Artikel berikutnya" onClick={() => setArticle((article + 1) % articles.length)}>›</button></div><div className="dots">{articles.map((item, index) => <i key={item.title} className={article === index ? 'active' : ''} />)}</div></section>
 
         <section className="services" id="layanan"><Heading eyebrow="Kami Menyediakan yang Anda Butuhkan" title="Layanan untuk" accent="Anda" sub="Kami Selalu Memberikan Layanan yang Terbaik" /><div className="service-grid">{services.map(([img, title, action, color], i) => <article className="service-card" key={title}><div className={'art-blob ' + color}><img src={'/' + img} alt="" /></div><h3>{title}</h3>{i === 0 ? <Link to="/donasi?cari=true">{action}<b>&rarr;</b></Link> : <a href={i === 3 ? '#komunitas' : '#insight'}>{action}<b>&rarr;</b></a>}</article>)}</div></section>
 
