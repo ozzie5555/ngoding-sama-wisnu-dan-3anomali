@@ -1034,5 +1034,5 @@
   .community-chat { height: 430px; min-height: 0; }
 }
 @media (max-width: 840px) {
-  .community-chat { height: 420px; min-height: 0; }
+  .community-chat { height: clamp(540px, 72dvh, 680px); min-height: 0; }
 }
