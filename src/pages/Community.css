@@ -10,12 +10,7 @@
   border: 0;
 }
 
-/* Update CSS untuk .community-page dan .community-wrapper */
-
-/* Update pada Community.css */
-
 .community-page {
-  min-height: 100vh;
   background: #ffffff;
   font-family: var(--font-sora);
   display: flex;
@@ -23,19 +18,22 @@
 }
 
 .community-wrapper {
-  /* Ubah padding bawah dari 40px menjadi lebih kecil (misal: 16px) */
-  padding: 24px max(3vw, 20px) 16px; 
+  padding: 24px max(3vw, 20px);
   max-width: 1380px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
+.community-page + .donation-impact {
+  margin-top: 40px;
+}
+
 .community-layout {
   display: grid;
   grid-template-columns: 180px 1fr 320px;
   gap: 20px;
-  align-items: start; /* UBAH dari 'stretch' ke 'start' */
+  align-items: start;
 }
 /* LEFT */
 .top-donators {

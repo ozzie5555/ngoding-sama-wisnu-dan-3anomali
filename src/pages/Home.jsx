@@ -444,7 +444,7 @@ export default function Home() {
               return (
                 <article
                   key={q}
-                  className={`faq-item reveal-on-scroll reveal-delay-${(index % 4) + 1} ${isOpen ? 'is-open' : ''}`}
+                  className={`faq-item ${isOpen ? 'is-open' : ''}`}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                 >
                   <div className="faq-header">
