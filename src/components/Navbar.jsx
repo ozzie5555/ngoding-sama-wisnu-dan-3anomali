@@ -55,6 +55,22 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (!open) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [open])
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -125,9 +141,10 @@ export default function Navbar() {
         </NavLink>
 
         <button
-          className="menu-toggle"
+          className={`menu-toggle ${open ? 'is-open' : ''}`}
           aria-label={open ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={open}
+          aria-controls="mobile-navigation"
           onClick={() => {
             setOpen((current) => !current)
             setDropdownOpen(false)
@@ -139,7 +156,28 @@ export default function Navbar() {
           <span />
         </button>
 
-        <div className={'nav-menu ' + (open ? 'is-open' : '')}>
+        <button
+          type="button"
+          className={`nav-backdrop ${open ? 'is-open' : ''}`}
+          aria-label="Tutup menu navigasi"
+          tabIndex={open ? 0 : -1}
+          onClick={() => setOpen(false)}
+        />
+
+        <div id="mobile-navigation" className={'nav-menu ' + (open ? 'is-open' : '')}>
+          <div className="mobile-nav-header">
+            <Link to="/" className="mobile-nav-brand" onClick={handleNavClick}>
+              <img src="/logo.svg" alt="" />
+              <span>KEMBALI</span>
+            </Link>
+            <button type="button" className="mobile-menu-close" onClick={() => setOpen(false)} aria-label="Tutup menu">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+
+          <span className="mobile-nav-label">Menu Utama</span>
           <NavLink to="/" end onClick={handleNavClick}>
             Beranda
           </NavLink>
