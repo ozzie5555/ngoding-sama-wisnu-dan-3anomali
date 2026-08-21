@@ -269,7 +269,7 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
 
   if (!isOpen) return null
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
     if (!newPassword || newPassword.length < 8) {
       setError('Kata sandi baru harus minimal 8 karakter.')
@@ -279,8 +279,12 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
       setError('Konfirmasi kata sandi tidak cocok.')
       return
     }
-    onSavePassword(currentPassword, newPassword)
-    onClose()
+    try {
+      await onSavePassword(currentPassword, newPassword)
+      onClose()
+    } catch (saveError) {
+      setError(saveError.message || 'Kata sandi saat ini salah.')
+    }
   }
 
   return (
@@ -304,7 +308,7 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
         </div>
 
         <form onSubmit={handleSave} className="modal-form">
-          {error && <div className="modal-alert-error">{error}</div>}
+          {error && <div className="modal-alert-error" role="alert">{error}</div>}
 
           <div className="modal-form-group">
             <label>Kata sandi saat ini*</label>
@@ -312,7 +316,10 @@ export function ChangePasswordModal({ isOpen, onClose, onSavePassword, lastUpdat
               type="password"
               placeholder="Masukkan kata sandi saat ini"
               value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              onChange={(e) => {
+                setCurrentPassword(e.target.value)
+                setError('')
+              }}
               required
             />
           </div>

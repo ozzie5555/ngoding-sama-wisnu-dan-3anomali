@@ -49,6 +49,7 @@ export default function Security() {
       setSecurityToast('Kata sandi berhasil diperbarui!')
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui kata sandi.')
+      throw err
     } finally {
       setTimeout(() => setSecurityToast(''), 3000)
     }
