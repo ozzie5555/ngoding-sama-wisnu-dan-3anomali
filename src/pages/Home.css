@@ -742,19 +742,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
-<<<<<<< HEAD
-  .steps .card-rail {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    grid-auto-flow: row;
-    gap: 6px !important;
-    padding: 0;
-    overflow: visible;
-  }
-  .steps .card-rail-controls { display: none; }
-  .stat-grid, .service-grid, .item-grid, .partner-grid, .step-grid { grid-template-columns: 1fr; }
-=======
->>>>>>> cbe05c18bead62b2714834b75d2ac98a7492767f
   .review-track article { width: 280px; padding: 20px; }
   
   .safe-donation { padding: 60px 0; }
