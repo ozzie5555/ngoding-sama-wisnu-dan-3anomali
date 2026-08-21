@@ -689,6 +689,19 @@
 }
 
 @media (max-width: 768px) {
+  .article-carousel {
+    flex-wrap: wrap;
+    gap: 16px 6px;
+  }
+  .article-window {
+    flex: 0 0 100%;
+    order: 1;
+  }
+  .carousel-arrow {
+    position: static;
+    order: 2;
+    transform: none;
+  }
   .home .hero { grid-template-columns: 1fr; gap: 0; padding: 80px 20px 100px; text-align: center; }
   .hero-inner { grid-template-columns: 1fr; gap: 0; }
   .hero-copy { display: flex; flex-direction: column; align-items: center; padding-right: 0; }
