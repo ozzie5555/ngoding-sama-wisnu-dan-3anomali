@@ -373,7 +373,8 @@
   .donation-actions { width: 100%; max-width: 320px; margin-inline: auto; }
   .donation-actions button, .donation-actions a { min-width: 0; width: 100%; }
   .donation-flow { padding: 22px 18px !important; }
-  .flow-row, .why-grid, .donation-options, .verified-grid { grid-template-columns: 1fr; }
+  .flow-row { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .why-grid, .donation-options, .verified-grid { grid-template-columns: 1fr; }
   .flow-row article, .why article { flex-direction: column; align-items: center; gap: 6px; text-align: center; }
   .flow-row b, .why article .why-icon { flex-basis: 36px; width: 36px; height: 36px; }
   .why article .why-icon { padding: 8px; }

@@ -825,7 +825,7 @@
   }
 
   /* Tampilkan wrapper kontrol mobile */
-  .carousel-controls-mobile {
+  .carousel-controls {
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -834,7 +834,7 @@
   }
 
   /* Tombol panah khusus di dalam wrapper mobile */
-  .carousel-controls-mobile .carousel-arrow {
+  .carousel-controls .carousel-arrow {
     display: flex !important;
     position: static !important;
     transform: none !important;
