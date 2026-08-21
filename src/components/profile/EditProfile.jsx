@@ -304,10 +304,10 @@ export default function EditProfile() {
                 id="input-email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="email@contoh.com"
-                required
+                readOnly
+                aria-describedby="input-email-note"
               />
+              <small id="input-email-note" className="input-helper-text">Ubah email melalui menu Keamanan.</small>
             </div>
 
             <div className="input-group">

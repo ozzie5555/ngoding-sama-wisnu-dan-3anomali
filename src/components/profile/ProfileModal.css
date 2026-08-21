@@ -451,6 +451,13 @@
   background: #1c727a;
 }
 
+.security-modal .modal-btn-primary:disabled,
+.security-modal .modal-btn-cancel:disabled,
+.security-modal .modal-x-close:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
 .modal-btn-teal-full {
   background: var(--color-teal);
   color: #ffffff;

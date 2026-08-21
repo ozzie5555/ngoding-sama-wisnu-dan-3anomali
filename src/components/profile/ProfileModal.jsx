@@ -424,29 +424,56 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
   const [password, setPassword] = useState('')
   const [newEmail, setNewEmail] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   if (!isOpen) return null
 
-  const handleStep1Submit = (e) => {
-    e.preventDefault()
-    if (password.length > 0) {
-      setStep(2)
-    }
+  const resetAndClose = () => {
+    if (isSaving) return
+    setStep(1)
+    setPassword('')
+    setNewEmail('')
+    setConfirmPassword('')
+    setError('')
+    onClose()
   }
 
-  const handleStep2Submit = (e) => {
+  const handleStep1Submit = (e) => {
     e.preventDefault()
-    if (newEmail) {
-      onSaveEmail(newEmail, password)
-      onClose()
-      setStep(1)
+    if (!password) return
+    setError('')
+    setStep(2)
+  }
+
+  const handleStep2Submit = async (e) => {
+    e.preventDefault()
+    const normalizedEmail = newEmail.trim().toLowerCase()
+    if (normalizedEmail === currentEmail.trim().toLowerCase()) {
+      setError('Email baru harus berbeda dari email saat ini.')
+      return
+    }
+    if (confirmPassword !== password) {
+      setError('Konfirmasi kata sandi tidak cocok.')
+      return
+    }
+
+    try {
+      setError('')
+      setIsSaving(true)
+      await onSaveEmail(normalizedEmail, password)
+      setIsSaving(false)
+      resetAndClose()
+    } catch (saveError) {
+      setError(saveError.message || 'Permintaan perubahan email gagal.')
+      setIsSaving(false)
     }
   }
 
   return (
-    <div className="profile-modal-overlay" onClick={onClose}>
+    <div className="profile-modal-overlay" onClick={resetAndClose}>
       <div className="profile-modal-box security-modal" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="modal-x-close" onClick={onClose} aria-label="Tutup modal">
+        <button type="button" className="modal-x-close" onClick={resetAndClose} aria-label="Tutup modal" disabled={isSaving}>
           &times;
         </button>
 
@@ -466,6 +493,7 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
             </div>
 
             <form onSubmit={handleStep1Submit} className="modal-form">
+              {error && <div className="modal-alert-error" role="alert">{error}</div>}
               <div className="modal-form-group">
                 <label>Email atau username</label>
                 <input
@@ -488,11 +516,11 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
               </div>
 
               <div className="modal-buttons-row modal-space-between">
-                <button type="button" className="modal-btn-cancel" onClick={onClose}>
+                <button type="button" className="modal-btn-cancel" onClick={resetAndClose}>
                   Batal
                 </button>
                 <button type="submit" className="modal-btn-primary">
-                  Simpan
+                  Lanjut
                 </button>
               </div>
             </form>
@@ -516,6 +544,7 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
             </div>
 
             <form onSubmit={handleStep2Submit} className="modal-form">
+              {error && <div className="modal-alert-error" role="alert">{error}</div>}
               <div className="modal-form-group">
                 <label>Masukkan Email</label>
                 <input
@@ -523,27 +552,31 @@ export function ChangeEmailModal({ isOpen, onClose, currentEmail, onSaveEmail })
                   placeholder="nama@email.com"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
+                  disabled={isSaving}
+                  autoComplete="email"
                   required
                 />
               </div>
 
               <div className="modal-form-group">
-                <label>Password</label>
+                <label>Konfirmasi Password</label>
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isSaving}
+                  autoComplete="current-password"
                   required
                 />
               </div>
 
               <div className="modal-buttons-row modal-space-between">
-                <button type="button" className="modal-btn-cancel" onClick={() => setStep(1)}>
-                  Batal
+                <button type="button" className="modal-btn-cancel" onClick={() => { setError(''); setStep(1) }} disabled={isSaving}>
+                  Kembali
                 </button>
-                <button type="submit" className="modal-btn-primary">
-                  Simpan
+                <button type="submit" className="modal-btn-primary" disabled={isSaving}>
+                  {isSaving ? 'Mengirim...' : 'Simpan'}
                 </button>
               </div>
             </form>

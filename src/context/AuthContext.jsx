@@ -27,7 +27,8 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .maybeSingle()
 
-      const email = profile?.email || sessionEmail || ''
+      // Supabase Auth is the source of truth after an email-change confirmation.
+      const email = sessionEmail || profile?.email || ''
 
       if (error) {
         console.error('[Auth] fetchProfile error:', error.message)

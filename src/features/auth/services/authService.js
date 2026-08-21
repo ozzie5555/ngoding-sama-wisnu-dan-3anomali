@@ -208,7 +208,6 @@ export const authService = {
     const profileUpdates = {
       full_name: updates.name,
       username: username ? `@${username}` : null,
-      email: updates.email,
       phone: updates.phone,
       birth_date: updates.birthDate || null,
       address: updates.location,
@@ -388,6 +387,20 @@ export const authService = {
     const user = await authService.getAuthUser();
     if (!user) throw new Error('Not authenticated');
 
+    const normalizedEmail = newEmail.trim().toLowerCase();
+    if (!normalizedEmail) throw new Error('Email baru wajib diisi.');
+    if (normalizedEmail === user.email?.toLowerCase()) {
+      throw new Error('Email baru harus berbeda dari email saat ini.');
+    }
+    if (user.new_email?.toLowerCase() === normalizedEmail) {
+      return {
+        success: true,
+        pendingConfirmation: true,
+        email: normalizedEmail,
+        alreadyPending: true,
+      };
+    }
+
     // Re-authenticate first
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: user.email,
@@ -397,16 +410,30 @@ export const authService = {
     if (authError) throw new Error('Password salah.');
 
     // Update email
-    const { error } = await supabase.auth.updateUser({ email: newEmail });
-    if (error) throw new Error(error.message);
+    const { data, error } = await supabase.auth.updateUser({ email: normalizedEmail });
+    if (error) {
+      const isRateLimited = error.status === 429 || error.code === 'over_email_send_rate_limit';
+      if (isRateLimited) {
+        const latestUser = await authService.getAuthUser();
+        if (latestUser?.new_email?.toLowerCase() === normalizedEmail) {
+          return {
+            success: true,
+            pendingConfirmation: true,
+            email: normalizedEmail,
+            alreadyPending: true,
+          };
+        }
+        throw new Error('Permintaan perubahan email terlalu sering. Tunggu beberapa menit sebelum mencoba lagi.');
+      }
+      throw new Error(error.message);
+    }
 
-    // Update email in profiles table
-    await supabase
-      .from('profiles')
-      .update({ email: newEmail })
-      .eq('id', user.id);
-
-    return { success: true };
+    // Supabase keeps the current email active until the confirmation flow is complete.
+    return {
+      success: true,
+      pendingConfirmation: data.user?.email !== normalizedEmail,
+      email: normalizedEmail,
+    };
   },
 
   // ==========================================

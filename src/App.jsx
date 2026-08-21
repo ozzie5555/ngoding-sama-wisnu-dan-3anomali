@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import { Route, Routes, useLocation, useNavigate, Navigate } from 'react-router'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/useAuth'
@@ -116,6 +116,10 @@ function AppContent() {
     && sessionStorage.getItem("kembali:intro-seen") !== "true"
     && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ))
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.pathname])
 
   const finishIntro = () => {
     sessionStorage.setItem("kembali:intro-seen", "true")

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../../context/useAuth'
 import { authService } from '../../features/auth/services/authService'
+import AnimatedCheckmark from '../../features/auth/components/AnimatedCheckmark'
 import {
   ChangePasswordModal,
   WhatsappModal,
@@ -29,7 +30,17 @@ export default function Security() {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
   const [isWhatsappModalOpen, setIsWhatsappModalOpen] = useState(false)
   const [securityToast, setSecurityToast] = useState('')
+  const [emailChangeSuccess, setEmailChangeSuccess] = useState(null)
   const passwordUpdatedLabel = formatPasswordUpdatedAt(user?.passwordLastUpdated)
+
+  useEffect(() => {
+    if (!emailChangeSuccess) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [emailChangeSuccess])
 
   const handleSavePassword = async (currentPassword, newPassword) => {
     try {
@@ -45,11 +56,17 @@ export default function Security() {
 
   const handleSaveEmail = async (newEmail, currentPassword) => {
     try {
-      await authService.changeEmail(newEmail, currentPassword)
-      await refreshProfile()
-      setSecurityToast('Email berhasil diperbarui!')
+      const result = await authService.changeEmail(newEmail, currentPassword)
+      if (result.pendingConfirmation) {
+        setSecurityToast('')
+        setEmailChangeSuccess({ alreadyPending: result.alreadyPending })
+      } else {
+        setSecurityToast('Email berhasil diperbarui!')
+      }
+      return result
     } catch (err) {
       setSecurityToast(err.message || 'Gagal memperbarui email.')
+      throw err
     } finally {
       setTimeout(() => setSecurityToast(''), 3000)
     }
@@ -207,6 +224,47 @@ export default function Security() {
         currentWhatsapp={user?.whatsapp}
         onSaveWhatsapp={handleSaveWhatsapp}
       />
+
+      {emailChangeSuccess && (
+        <div
+          className="security-success-overlay"
+          role="presentation"
+          onClick={() => setEmailChangeSuccess(null)}
+        >
+          <section
+            className="security-success-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="email-change-success-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="security-success-close"
+              onClick={() => setEmailChangeSuccess(null)}
+              aria-label="Tutup pemberitahuan"
+            >
+              &times;
+            </button>
+            <AnimatedCheckmark className="security-success-checkmark" />
+            <p className="security-success-eyebrow">Permintaan terkirim</p>
+            <h3 id="email-change-success-title">Cek email untuk melanjutkan</h3>
+            <p>
+              {emailChangeSuccess.alreadyPending
+                ? 'Link perubahan email sudah dikirim sebelumnya.'
+                : 'Link konfirmasi perubahan email sudah dikirim.'}
+              {' '}Periksa inbox email lama dan email baru, lalu klik link konfirmasinya.
+            </p>
+            <button
+              type="button"
+              className="security-success-action"
+              onClick={() => setEmailChangeSuccess(null)}
+            >
+              Saya mengerti
+            </button>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

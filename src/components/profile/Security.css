@@ -161,6 +161,137 @@
   background: #173d41;
 }
 
+.security-success-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(12, 35, 38, 0.48);
+  backdrop-filter: blur(5px);
+  animation: securitySuccessFadeIn 220ms ease-out both;
+}
+
+.security-success-card {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 38px 32px 30px;
+  border: 1px solid rgba(32, 196, 122, 0.18);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 80px rgba(12, 35, 38, 0.24);
+  text-align: center;
+  animation: securitySuccessCardIn 320ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.security-success-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.security-success-close:hover {
+  background: #f0f7f6;
+  color: var(--color-navy);
+}
+
+.security-success-checkmark {
+  width: 92px;
+  height: 92px;
+  margin-bottom: 14px;
+}
+
+.security-success-checkmark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.security-success-checkmark .animated-checkmark__ring {
+  fill: rgba(32, 196, 122, 0.1);
+  stroke: #20c47a;
+  stroke-width: 3;
+  stroke-dasharray: 240;
+  stroke-dashoffset: 240;
+  animation: securitySuccessRing 520ms cubic-bezier(.22, 1, .36, 1) forwards,
+    securitySuccessPop 520ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.security-success-checkmark .animated-checkmark__tick {
+  fill: none;
+  stroke: #20c47a;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 62;
+  stroke-dashoffset: 62;
+  animation: securitySuccessTick 420ms cubic-bezier(.22, 1, .36, 1) 260ms forwards;
+}
+
+.security-success-eyebrow {
+  margin: 0 0 7px;
+  color: #20a56b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.security-success-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-navy);
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.security-success-card > p:not(.security-success-eyebrow) {
+  max-width: 340px;
+  margin: 0 auto;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.security-success-action {
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 11px 24px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-dark-teal);
+  color: #ffffff;
+  font-family: var(--font-sora);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.security-success-action:hover {
+  background: #173d41;
+}
+
+@keyframes securitySuccessFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes securitySuccessCardIn {
+  from { opacity: 0; transform: translateY(12px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes securitySuccessRing { to { stroke-dashoffset: 0; } }
+@keyframes securitySuccessTick { to { stroke-dashoffset: 0; } }
+@keyframes securitySuccessPop {
+  0% { transform: scale(.72); opacity: .35; }
+  65% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 @media (max-width: 768px) {
   .security-bottom-actions {
     flex-direction: column-reverse;
@@ -168,5 +299,28 @@
   .btn-security-reset,
   .btn-security-save {
     width: 100%;
+  }
+
+  .security-success-card {
+    padding: 34px 22px 24px;
+    border-radius: 20px;
+  }
+
+  .security-success-card h3 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .security-success-overlay,
+  .security-success-card,
+  .security-success-checkmark .animated-checkmark__ring,
+  .security-success-checkmark .animated-checkmark__tick {
+    animation: none;
+  }
+
+  .security-success-checkmark .animated-checkmark__ring,
+  .security-success-checkmark .animated-checkmark__tick {
+    stroke-dashoffset: 0;
   }
 }

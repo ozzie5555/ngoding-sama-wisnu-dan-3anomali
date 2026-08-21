@@ -44,6 +44,18 @@
   min-width: 0;
 }
 
+.edit-profile-form input[readonly] {
+  background: #f3f7f6;
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.input-helper-text {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 /* =======================================================
    Photo Upload Section
    ======================================================= */
