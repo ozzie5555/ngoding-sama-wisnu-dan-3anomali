@@ -1,130 +1,121 @@
 # KEMBALI
 
-> **Give pre-loved items a second chance. Create real impact together.**
+> **Barang bekas tidak harus berakhir menjadi sampah. Beri kesempatan kedua, hadirkan manfaat kembali.**
 
-KEMBALI is a circular-donation platform that connects people with reusable items to verified communities that need them.
+KEMBALI (**Kolaborasi Ekonomi Masyarakat Berbasis Lingkungan**) adalah platform berbasis web yang menghubungkan masyarakat, komunitas, UMKM, dan bank sampah dalam satu ekosistem ekonomi sirkular.
 
 <p align="left">
-  <a href="https://kembali-donasi.vercel.app/"><strong>Live Demo</strong></a>
+  <a href="https://kembali-donasi.vercel.app/"><strong>Demo Langsung</strong></a>
   ·
   <a href="https://github.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali"><strong>Repository</strong></a>
 </p>
 
-![KEMBALI homepage preview](https://raw.githubusercontent.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali/main/ekspor/Landing%20Page%20%2B%20Homepage.png)
+## Tentang KEMBALI
 
-## About
+KEMBALI adalah platform berbasis web yang menerapkan konsep ekonomi sirkular dengan menghubungkan masyarakat dalam satu ekosistem untuk menjual, menukar, mendonasikan, memperbaiki, dan mendaur ulang barang yang masih dapat diolah menjadi sesuatu yang bernilai kembali.
 
-KEMBALI was built as a web platform for donating reusable goods and upcycled work to communities and organizations that need them. The platform brings together donors, verified community partners, and administrators in one clear donation journey—from discovering a community and submitting an item, to status tracking and delivery confirmation.
+Platform ini hadir untuk mengurangi penumpukan sampah di sekitar kita sekaligus meningkatkan nilai ekonomi barang bekas melalui pemanfaatan kembali secara berkelanjutan. KEMBALI juga menyediakan edukasi mengenai gaya hidup *zero waste*, informasi bank sampah, serta fitur yang mendorong masyarakat untuk lebih peduli terhadap lingkungan sekitar.
 
-The project addresses a simple but important problem: many usable items are discarded because donors do not know where to send them, while communities often struggle to find the resources they need. KEMBALI offers a structured and transparent alternative through verified partners, item-photo verification, donation status updates, and impact-oriented information.
+Melalui kolaborasi antara masyarakat, UMKM, komunitas, dan bank sampah, KEMBALI bertujuan menciptakan kebiasaan baru: barang bekas bukan untuk dibuang, melainkan untuk kembali dimanfaatkan, kembali bernilai, dan kembali memberikan manfaat bagi lingkungan maupun perekonomian.
 
-The primary users are individuals who want to donate, community partners who receive and manage donations, and administrators who verify submissions and monitor the donation lifecycle. The experience is designed to stay approachable for first-time users while providing the operational tools needed for a reliable donation process.
+## Fitur Utama
 
-## Features
+- **Eksplorasi komunitas terverifikasi** — Pengguna dapat menemukan komunitas mitra, melihat lokasi dan deskripsinya, serta memahami jenis barang yang sedang dibutuhkan.
+- **Pengajuan donasi barang** — Pengguna dapat mengajukan barang layak pakai atau karya daur ulang dengan mengisi detail barang, alamat penjemputan, dan foto untuk proses verifikasi.
+- **Pelacakan perjalanan donasi** — Setiap donasi memiliki status yang jelas mulai dari menunggu verifikasi, diverifikasi, penjemputan, pengiriman, hingga diterima komunitas.
+- **Aktivitas dan riwayat donasi** — Pengguna dapat melihat donasi yang sedang berjalan, riwayat penyaluran, komunitas penerima, serta detail perkembangan setiap pengajuan.
+- **Profil dan pengaturan privasi** — Pengguna dapat mengatur data diri, foto profil, domisili umum, visibilitas kontribusi, laporan dampak, dan penyimpanan riwayat donasi.
+- **Autentikasi akun** — Tersedia login email, login username, Google OAuth, pendaftaran akun, pemulihan kata sandi, verifikasi Cloudflare Turnstile, dan proses melengkapi profil.
+- **Live chat komunitas** — Pengguna yang sudah login dapat berkomunikasi melalui ruang chat komunitas, mengirim pesan, membalas, menyalin, mengedit, serta mengirim lampiran gambar.
+- **Papan peringkat donatur** — Komunitas dapat menampilkan daftar donatur berdasarkan jumlah barang yang telah didonasikan dengan tetap menghormati pengaturan privasi pengguna.
+- **Dashboard admin dan manager** — Petugas dapat memantau antrean donasi, melihat foto barang, mengambil atau melepas tugas, memperbarui status, serta memeriksa aktivitas operasional.
+- **Ulasan dan moderasi testimoni** — Donatur dapat mengirim ulasan setelah donasi diterima. Admin dapat memilih ulasan yang layak ditampilkan pada halaman Beranda.
+- **Responsif di berbagai perangkat** — Tampilan menyesuaikan desktop, tablet, dan mobile dengan navigasi adaptif, card rail yang dapat digeser, tombol ramah sentuhan, serta layout yang tetap terbaca pada layar kecil.
 
-- **Community discovery** — Explore verified communities, their locations, descriptions, and current needs.
-- **Donation submission** — Submit reusable goods or upcycled work with item details, pickup address, and verification photos.
-- **Donation tracking** — Follow the journey of a donation through pending, verification, pickup, shipping, and received stages.
-- **Profile & privacy controls** — Manage personal information, avatar, location visibility, contribution visibility, impact reporting, and donation history.
-- **Authentication** — Email/password, username login, Google OAuth, password recovery, Cloudflare Turnstile, and profile completion flow.
-- **Realtime community chat** — Communicate with community members and view the current top-donor leaderboard.
-- **Admin monitoring** — Review donation submissions, assign staff, update statuses, inspect item photos, and moderate user testimonials.
-- **Impact testimonials** — Donors can submit a review after a donation is received; approved testimonials can appear on the homepage.
-- **Responsive Design** — A mobile-first experience with adaptive navigation, compact card rails, touch-friendly controls, and responsive layouts for desktop and mobile screens.
+## Desain dan Pengalaman Pengguna
 
-## Design & Experience
+Antarmuka KEMBALI menggunakan gaya visual yang bersih, hangat, dan dekat dengan tema lingkungan. Warna hijau digunakan sebagai identitas utama untuk menyampaikan kesan pertumbuhan, keberlanjutan, dan kepedulian terhadap lingkungan. Kartu dengan sudut membulat, bayangan lembut, ilustrasi, dan ruang kosong yang cukup membantu pengguna memahami informasi tanpa merasa penuh.
 
-The interface follows a clean, warm, and approachable visual language inspired by the idea of reuse and community care. Soft green tones, generous spacing, rounded cards, and clear status indicators create a calm experience without hiding important actions.
+Perancangan juga berfokus pada aksesibilitas, kejelasan informasi, dan umpan balik yang mudah dipahami. Setiap proses penting memiliki indikator loading, pesan validasi, notifikasi keberhasilan, animasi centang, dialog konfirmasi, dan status donasi yang terlihat jelas. Layout dan interaksi telah disesuaikan agar tetap nyaman digunakan melalui laptop maupun perangkat mobile.
 
-Design decisions focus on accessibility, clarity, feedback, and consistent interaction patterns. Loading states, success checkmark animations, validation messages, modal confirmations, and realtime updates help users understand what is happening at each step.
+## Fitur Utama: Alur Donasi
 
-## Preview
+Alur utama KEMBALI dibuat agar proses donasi dapat dipahami oleh pengguna baru:
 
-### Homepage
+1. Pengguna melihat komunitas terverifikasi dan kebutuhan yang tersedia.
+2. Pengguna masuk atau membuat akun KEMBALI.
+3. Pengguna melengkapi profil dan domisili untuk kebutuhan koordinasi.
+4. Pengguna mengisi formulir donasi, alamat penjemputan, detail barang, dan foto verifikasi.
+5. Komunitas atau admin memeriksa pengajuan dan memperbarui status donasi.
+6. Pengguna dapat melacak proses penjemputan, pengiriman, hingga barang diterima.
+7. Setelah donasi diterima, pengguna dapat memberikan ulasan dan melihat dampaknya.
 
-![Homepage](https://raw.githubusercontent.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali/main/ekspor/Landing%20Page%20%2B%20Homepage.png)
-
-### Donation page
-
-![Donation page](https://raw.githubusercontent.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali/main/ekspor/Donasi.png)
-
-### Main feature
-
-The main feature is the end-to-end donation flow:
-
-1. Discover a verified community and its needs.
-2. Sign in or create an account.
-3. Submit the item, pickup address, and verification photos.
-4. Track the donation status from the profile or donation page.
-5. Receive the item through the partner community.
-6. Share feedback after the donation is received.
-
-## User Flow
+## Alur Pengguna
 
 ```text
-Landing Page
+Halaman Beranda
     │
-    ├── Explore communities and needs
+    ├── Jelajahi komunitas dan kebutuhan
     │       │
-    │       └── Donation form
+    │       └── Formulir pengajuan donasi
     │
-    └── Authentication
+    └── Autentikasi
             │
-            ├── Complete profile
-            ├── Donation activity & tracking
-            ├── Profile, privacy & security
-            └── Community chat
+            ├── Lengkapi profil
+            ├── Aktivitas dan pelacakan donasi
+            ├── Profil, privasi, dan keamanan
+            └── Live chat komunitas
 
-Admin / Manager
+Admin / Manager Komunitas
     │
-    ├── Monitor donation queue
-    ├── Verify item submissions
-    ├── Assign and update donation status
-    └── Moderate testimonials
+    ├── Memantau antrean pengajuan
+    ├── Memverifikasi barang dan foto
+    ├── Mengambil tugas dan memperbarui status
+    └── Memoderasi ulasan pengguna
 ```
 
-## Tech Stack
+## Teknologi yang Digunakan
 
-| Category | Technology |
+| Kategori | Teknologi |
 | --- | --- |
-| Frontend | React 19 + Vite |
+| Frontend | React 19 dan Vite |
 | Routing | React Router 7 |
-| Styling | CSS, responsive CSS, SVG assets |
-| Backend | Supabase Auth, Edge Functions, Storage, Realtime |
-| Database | PostgreSQL through Supabase |
-| Security | Row Level Security (RLS) + Cloudflare Turnstile |
+| Styling | CSS responsif dan aset SVG |
+| Backend | Supabase Auth, Edge Functions, Storage, dan Realtime |
+| Database | PostgreSQL melalui Supabase |
+| Keamanan | Row Level Security (RLS) dan Cloudflare Turnstile |
 | Deployment | Vercel |
 
-## Project Structure
+## Struktur Project
 
 ```text
 project/
-├── public/                 # Logos, illustrations, icons, and public assets
+├── public/                 # Logo, ilustrasi, ikon, dan aset publik
 ├── src/
-│   ├── components/         # Shared UI and profile/admin components
-│   ├── context/            # Authentication and application context
-│   ├── features/auth/      # Login, signup, reset password, and auth services
-│   ├── lib/                # Supabase client and shared utilities
-│   └── pages/              # Homepage, donation, community, insight, profile, admin
+│   ├── components/         # Komponen UI bersama, profil, dan admin
+│   ├── context/            # Context autentikasi dan state aplikasi
+│   ├── features/auth/      # Login, daftar, reset password, dan layanan auth
+│   ├── lib/                # Client Supabase dan utilitas bersama
+│   └── pages/              # Beranda, donasi, komunitas, insight, profil, admin
 ├── supabase/
 │   ├── functions/          # Supabase Edge Functions
-│   └── migrations/         # Database schema, policies, RPCs, and realtime setup
-├── ekspor/                 # Design exports and visual references
-├── backend.md              # Backend architecture and implementation notes
-├── userflow.md             # Product and user-flow documentation
+│   └── migrations/         # Schema database, policy, RPC, dan realtime
+├── ekspor/                 # Hasil ekspor desain dan referensi visual
+├── backend.md              # Arsitektur dan catatan implementasi backend
+├── userflow.md             # Dokumentasi alur produk dan pengguna
 └── README.md
 ```
 
-## Getting Started
+## Persiapan Menjalankan Project
 
-### Prerequisites
+### Prasyarat
 
 - Node.js 22.x
 - npm
 - Git
-- A Supabase project for backend features
+- Project Supabase untuk fitur backend
 
-### Installation
+### Instalasi
 
 ```bash
 git clone https://github.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali.git
@@ -134,36 +125,36 @@ npm install
 
 ### Environment Variables
 
-Create a `.env.local` file from the example:
+Buat file `.env.local` dari file contoh:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Configure the required frontend variables:
+Isi variabel frontend berikut:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-VITE_TURNSTILE_SITE_KEY=your_cloudflare_turnstile_site_key
+VITE_SUPABASE_URL=url_project_supabase_kamu
+VITE_SUPABASE_PUBLISHABLE_KEY=publishable_key_supabase_kamu
+VITE_TURNSTILE_SITE_KEY=site_key_cloudflare_turnstile_kamu
 VITE_ENABLE_DEMO_OTP=true
 ```
 
-`VITE_ENABLE_DEMO_OTP=true` is intended for the competition demonstration flow while a production WhatsApp OTP provider is not configured. The demo code is `1234`. Never commit `.env.local`, service-role keys, database passwords, Turnstile secret keys, or other private credentials.
+`VITE_ENABLE_DEMO_OTP=true` digunakan untuk kebutuhan demo lomba selama provider WhatsApp OTP produksi belum dikonfigurasi. Kode demo yang digunakan adalah `1234`. Jangan pernah memasukkan `.env.local`, service-role key, password database, Turnstile secret key, atau kredensial pribadi lainnya ke repository.
 
-### Run Locally
+### Menjalankan Secara Lokal
 
 ```bash
 npm run dev
 ```
 
-The application will be available at:
+Aplikasi dapat dibuka melalui:
 
 ```text
 http://localhost:5173
 ```
 
-Useful quality checks:
+Pengecekan kualitas kode:
 
 ```bash
 npm run lint
@@ -172,37 +163,38 @@ npm run build
 
 ## Deployment
 
-The production deployment uses Vercel with Vite:
+Versi produksi KEMBALI menggunakan Vercel dengan konfigurasi Vite:
 
-- **Live Website:** https://kembali-donasi.vercel.app/
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Node.js:** `22.x`
+- **Website:** https://kembali-donasi.vercel.app/
+- **Perintah build:** `npm run build`
+- **Folder output:** `dist`
+- **Versi Node.js:** `22.x`
 
-Add the same `VITE_*` variables in Vercel Project Settings for Preview and Production environments. Supabase Auth redirect URLs and the Cloudflare Turnstile hostname must include the deployed domain.
+Tambahkan variabel `VITE_*` yang sama pada Vercel Project Settings untuk environment Preview dan Production. Supabase Auth juga perlu dikonfigurasi dengan redirect URL domain produksi, sedangkan hostname domain Vercel perlu ditambahkan ke widget Cloudflare Turnstile.
 
-## Team
+## Tim
 
-| Member | Role |
+| Anggota | Peran |
 | --- | --- |
-| Hanin | UI/UX Designer |
-| Elok | UI/UX Designer · Frontend Developer |
-| Wisnu | Frontend Developer |
-| Krisna | Frontend Developer · Backend Developer |
+| Hanin | Desainer UI/UX |
+| Elok | Desainer UI/UX · Frontend |
+| Wisnu | Frontend |
+| Krisna | Frontend Tipis" Backend Tebal" |
 
-## Competition
+## Kompetisi
 
-- **Competition:** SATU CREANOVA
-- **Year:** 2026
-- **Category:** Web Development
+- **Nama lomba:** SATU CREANOVA
+- **Tahun:** 2026
+- **Kategori:** Web Development
 
-## Future Improvements
+## Pengembangan Berikutnya
 
-- Connect WhatsApp OTP to a production messaging provider such as Twilio.
-- Expand community and article management tools for administrators and community managers.
-- Add richer impact analytics and downloadable donation reports.
-- Strengthen automated end-to-end testing for realtime status updates, chat, and role-based access.
+- Menghubungkan verifikasi WhatsApp OTP dengan provider produksi seperti Twilio.
+- Menambahkan pengelolaan komunitas, kebutuhan, dan artikel secara langsung dari dashboard admin.
+- Menambahkan analitik dampak yang lebih lengkap serta laporan donasi yang dapat diunduh.
+- Memperluas pengujian otomatis untuk realtime status donasi, live chat, dan hak akses berbasis role.
+- Mengembangkan integrasi lebih banyak bank sampah, UMKM, dan komunitas di berbagai wilayah.
 
-## License
+## Lisensi
 
-This project was created by the KEMBALI team as part of **SATU CREANOVA 2026 — Web Development**.
+Project ini dibuat oleh tim KEMBALI sebagai bagian dari **SATU CREANOVA 2026 — Web Development**.
