@@ -10,7 +10,7 @@ KEMBALI (**Kolaborasi Ekonomi Masyarakat Berbasis Lingkungan**) is a web platfor
   <a href="https://github.com/ozzie5555/ngoding-sama-wisnu-dan-3anomali"><strong>Repository</strong></a>
 </p>
 
-## About
+## 🌱 About
 
 KEMBALI is designed to help people sell, exchange, donate, repair, and recycle items that still have practical or economic value. Instead of treating used goods as waste, the platform provides a more organized way to put them back into circulation through community partners and verified organizations.
 
@@ -18,7 +18,7 @@ The project responds to two connected challenges: the growing amount of househol
 
 The platform is intended for donors, community partners, waste banks, small businesses, and administrators. Its goal is to make responsible reuse easier to understand and easier to practice, while giving each party the information needed to participate in the process.
 
-## Features
+## ✨ Features
 
 - **Verified community discovery** — Browse partner communities, their locations, descriptions, and current needs.
 - **Donation submission** — Submit reusable goods or upcycled work with item details, a pickup address, and verification photos.
@@ -32,13 +32,13 @@ The platform is intended for donors, community partners, waste banks, small busi
 - **Testimonial moderation** — Donors can submit feedback after a donation is received, while administrators decide which testimonials appear on the homepage.
 - **Responsive interface** — The layout adapts to desktop, tablet, and mobile screens with touch-friendly controls, compact card rails, and adaptive navigation.
 
-## Design and User Experience
+## 🎨 Design and User Experience
 
 The interface uses a clean and approachable visual system based on the project's environmental theme. Green tones communicate sustainability and growth, while rounded cards, soft shadows, illustrations, and consistent spacing keep the content easy to scan.
 
 The experience is built around clear feedback and predictable actions. Important operations provide loading states, validation messages, confirmation dialogs, success animations, and visible donation statuses. The same interaction principles are carried across desktop and mobile layouts so that the main flow remains familiar on different screen sizes.
 
-## Core Donation Flow
+## 🔄 Core Donation Flow
 
 The primary flow is intentionally straightforward:
 
@@ -50,7 +50,7 @@ The primary flow is intentionally straightforward:
 6. Track pickup, shipping, and receipt status from the donation activity page.
 7. Submit feedback after the item has been received.
 
-## User Flow
+## 🧭 User Flow
 
 ```text
 +------------------+
@@ -76,19 +76,30 @@ Admin / Community Manager
          +--> Moderate user testimonials
 ```
 
-## Technology Stack
+## ⚙️ Technology Stack
 
-| Category | Technology |
+<p>
+  <img src="https://img.shields.io/badge/React%2019-20232A?logo=react&logoColor=61DAFB" alt="React 19" />
+  <img src="https://img.shields.io/badge/Vite%208-646CFF?logo=vite&logoColor=FFFFFF" alt="Vite 8" />
+  <img src="https://img.shields.io/badge/React%20Router%207-CA4245?logo=reactrouter&logoColor=FFFFFF" alt="React Router 7" />
+  <img src="https://img.shields.io/badge/Responsive%20CSS-1572B6?logo=css3&logoColor=FFFFFF" alt="Responsive CSS" />
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=FFFFFF" alt="Supabase" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=FFFFFF" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Cloudflare%20Turnstile-F38020?logo=cloudflare&logoColor=FFFFFF" alt="Cloudflare Turnstile" />
+  <img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=FFFFFF" alt="Vercel" />
+</p>
+
+| Category | Technology and Use |
 | --- | --- |
-| Frontend | React 19 and Vite |
-| Routing | React Router 7 |
-| Styling | Responsive CSS and SVG assets |
-| Backend services | Supabase Auth, Edge Functions, Storage, and Realtime |
-| Database | PostgreSQL through Supabase |
-| Security | Row Level Security (RLS) and Cloudflare Turnstile |
-| Deployment | Vercel |
+| Frontend | React 19 and Vite 8 for building the application interface. |
+| Routing | React Router 7 for page navigation and authentication flows. |
+| Styling | Responsive CSS and SVG assets for desktop and mobile layouts. |
+| Backend | Supabase Auth, Edge Functions, Storage, and Realtime for application services. |
+| Database | PostgreSQL through Supabase for profiles, communities, donations, chat, and activity data. |
+| Security | Row Level Security (RLS) and Cloudflare Turnstile for access protection. |
+| Deployment | Vercel for production builds and hosting. |
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```text
 project/
@@ -108,7 +119,7 @@ project/
 └── README.md
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -163,7 +174,7 @@ npm run lint
 npm run build
 ```
 
-## Deployment
+## ☁️ Deployment
 
 The production application is deployed to Vercel using the Vite build configuration.
 
@@ -174,7 +185,7 @@ The production application is deployed to Vercel using the Vite build configurat
 
 The `VITE_*` variables must be added to the Vercel Project Settings for both Preview and Production environments. Supabase Auth redirect URLs and the Cloudflare Turnstile hostname must also include the production domain.
 
-## Team
+## 👥 Team
 
 | Member | Role |
 | --- | --- |
@@ -183,14 +194,14 @@ The `VITE_*` variables must be added to the Vercel Project Settings for both Pre
 | Wisnu | Frontend Developer |
 | Krisna | Frontend Developer · Backend Developer |
 
-## Competition
+## 🏆 Competition
 
 - **Competition:** SATU CREANOVA
 - **Year:** 2026
 - **Category:** Web Development
 - **Team:** Wisnu_bersama_3_anomali
 
-## Future Improvements
+## 🔭 Future Improvements
 
 - Connect WhatsApp OTP to a production messaging provider such as Twilio.
 - Add direct community, needs, and article management to the administrator dashboard.
@@ -198,6 +209,6 @@ The `VITE_*` variables must be added to the Vercel Project Settings for both Pre
 - Expand automated testing for realtime donation updates, live chat, and role-based access.
 - Extend the partner network to include more waste banks, small businesses, and community organizations.
 
-## License
+## 📄 License
 
 This project was created by the KEMBALI team for **SATU CREANOVA 2026 — Web Development**.
