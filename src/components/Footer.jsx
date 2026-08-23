@@ -41,7 +41,7 @@ export default function Footer() {
 
   return (
     <>
-      <section className="donation-impact" aria-labelledby="footer-impact-title">
+      <section id="footer-cta" className="donation-impact" aria-labelledby="footer-impact-title">
         <div>
           <h2 id="footer-impact-title">Siap Memberikan Kehidupan<br />Kedua untuk Barangmu?</h2>
           <p>Salurkan barang layak pakai ke komunitas yang membutuhkan hanya dalam beberapa langkah mudah.</p>

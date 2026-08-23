@@ -202,7 +202,7 @@ export default function Home() {
               <p><strong>KEMBALI</strong> menghubungkan <strong>donatur</strong> dengan penerima<span className="desktop-break"><br /></span> <strong>manfaat</strong>, menyelamatkan barang layak pakai dari tempat<span className="desktop-break"><br /></span> sampah dan memberikan dampak nyata bagi lingkungan.</p>
               <div className="actions">
                 <Link className="button primary" to="/donasi">Mulai Donasi Sekarang <b>→</b></Link>
-                <a className="button secondary" href="#layanan">Hubungi Kami</a>
+                <a className="button secondary" href="#footer-cta">Hubungi Kami</a>
               </div>
             </div>
             <img className="hero-art reveal-on-scroll reveal-delay-2" src="/HEROSECTION_1_VECTOR.svg" alt="Orang-orang berbagi barang layak pakai" />
