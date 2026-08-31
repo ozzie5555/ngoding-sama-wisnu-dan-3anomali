@@ -28,6 +28,17 @@ function DonationDetailModalContent({ onClose, donation, onReviewSubmitted }) {
   const [submittedReview, setSubmittedReview] = useState(Boolean(donation.reviewSubmitted))
   const [activeTab, setActiveTab] = useState(isCompleted ? 'review' : 'tracking')
 
+  const handleHelpClick = (event) => {
+    event.preventDefault()
+    onClose()
+    window.setTimeout(() => {
+      document.getElementById('footer-cta')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 0)
+  }
+
   const handleSendReview = async (e) => {
     e.preventDefault()
     if (!reviewMessage.trim()) return
@@ -190,7 +201,7 @@ function DonationDetailModalContent({ onClose, donation, onReviewSubmitted }) {
                 )}
 
                 <div className="modal-help-link-row">
-                  <a href="#faq" onClick={(e) => { e.preventDefault(); alert('Pusat Bantuan KEMBALI: Hubungi kami di support@kembali.id atau WhatsApp 0812-3456-7890') }}>
+                  <a href="#footer-cta" onClick={handleHelpClick}>
                     Ada kendala? Hubungi Pusat Bantuan
                   </a>
                 </div>
@@ -225,7 +236,7 @@ function DonationDetailModalContent({ onClose, donation, onReviewSubmitted }) {
                 </div>
 
                 <div className="modal-help-link-row">
-                  <a href="#faq" onClick={(e) => { e.preventDefault(); alert('Pusat Bantuan KEMBALI: Hubungi kami di support@kembali.id atau WhatsApp 0812-3456-7890') }}>
+                  <a href="#footer-cta" onClick={handleHelpClick}>
                     Ada kendala? Hubungi Pusat Bantuan
                   </a>
                 </div>
