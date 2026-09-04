@@ -17,8 +17,8 @@ export default function AuthLayout({ children }) {
           <nav className="auth-right-nav">
             <Link to="/">Beranda</Link>
             <Link to="/donasi">Donasi</Link>
-            <a href="#insight">Insight</a>
-            <Link to="/donasi#verified">Komunitas</Link>
+            <Link to="/insight">Insight</Link>
+            <Link to="/komunitas">Komunitas</Link>
           </nav>
           <div className="auth-right-illustration-container">
             <img src="/HEROSECTION_1_VECTOR.svg" alt="KEMBALI Illustration" className="auth-right-illustration" />
